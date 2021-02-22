@@ -1,0 +1,52 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+<head>
+<body>
+
+<main role="main" class="container">
+    <div class="text-nowrap" style="margin-top: 40px;margin-bottom: 40px;">
+        <p id="updating-text">{{ default_text }}</p>
+    </div>
+</main>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+var is_updating = false;
+is_updating = true;
+
+function updateText(){
+    if (!is_updating) return;
+    data = $("#updating-text").html();
+    $.ajax({
+      url: "/update",
+      type: "GET",
+      data: {"secret_data": data,
+      "solution_id": {{ solution_id }}},
+      success: function(response) {
+        if (!response){
+            end_updating();
+        }
+        else{
+        $("#updating-text").html(response);
+        }
+      },
+      error: function(xhr) {
+        end_updating();
+      }
+    });
+};
+
+function end_updating(){
+    is_updating = false;
+};
+
+updateText();
+setInterval(updateText, {{ update_timeout * 1000 }});
+
+
+</script>
+</body>
+
+{% endblock %}
