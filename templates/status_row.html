@@ -1,0 +1,5 @@
+{% for j in row %}{% if loop.first %}
+<th>{{ j[0] }}</th>{% else %}
+<td>
+    <div class="{% if j[1] %}fw-bold {{ j[1] }}{% endif %}">{{ j[0] }}</div>
+</td>{% endif %}{% endfor %}

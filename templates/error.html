@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<head>
+<body class="text-center">
+<div class="justify-content-center align-items-center" style="height: 40vh;"></div>
+<h1 class="align-content-center">Oops...</h1>
+</br>
+<div class="d-flex justify-content-center align-items-center">
+    <h1>{{ code }}</h1>
+    <div class="inline-block align-middle">
+        <h1 class="font-weight-normal lead" id="desc" style="margin-left: 10px">| Something went wrong.</h1>
+    </div>
+</div>
+</br>
+<button type="button" onclick="history.back()" class="btn btn-primary">Return back</button>
+</body>
+
+{% endblock %}

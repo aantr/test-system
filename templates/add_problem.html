@@ -1,0 +1,43 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+<head>
+<body>
+
+<main role="main" class="container">
+    </br>
+    {% if message %}
+    <div class="alert alert-danger" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success" role="alert">
+        {{ success }}
+    </div>
+    {% endif %}
+    <form action="" method="post" enctype="multipart/form-data">
+        <div>{{ form.csrf_token }}</div>
+
+        <h6>{{ form.name.label.text }}</h6>
+        {{ form.name(class="form-control", style="max-width: 50vw") }}</br>
+
+        <h6>{{ form.task_text.label.text }}</h6>
+        {{ form.task_text(class="form-control", style="min-height: 200px") }}</br>
+
+        <h6>{{ form.file.label.text }}</h6>
+        {{ form.file(class="form-control", style="max-width: 50vw") }}</br>
+
+        <h6>{{ form.time.label.text }}</h6>
+        {{ form.time(class="form-control", style="max-width: 50vw") }}</br>
+
+        <h6>{{ form.memory.label.text }}</h6>
+        {{ form.memory(class="form-control", style="max-width: 50vw") }}</br>
+
+        {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
+    </form>
+</main>
+
+</body>
+
+{% endblock %}

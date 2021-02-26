@@ -2,6 +2,8 @@ import json
 import os
 from subprocess import Popen, PIPE
 
+directory = os.path.dirname(__file__)
+
 
 class ProgLang:
     def __init__(self, name, code_name, extension, encoding='cp866'):
@@ -117,19 +119,18 @@ class ProgLangJava(ProgLang):
         return 1, [self.compiler[1], '-classpath', d, 'program']
 
 
+def set_lang_config(config):
+    config = config
+    encoding = config['encoding']
+    for i in languages.values():
+        i: ProgLang
+        i.compiler = config[i.code_name]
+        i.encoding = encoding
+
+
 languages = {i.code_name: i for i in map(
     lambda x: x(),
     [
         ProgLangPython, ProgLangPascalABCNET,
         ProgLangCPP, ProgLangJava, ProgLangC, ProgLangCS
     ])}
-
-directory = os.path.dirname(__file__)
-
-with open(os.path.join(directory, 'config', 'prog_lang.json'), 'r') as f:
-    data = json.load(f)
-    encoding = data['encoding']
-    for i in languages.values():
-        i: ProgLang
-        i.compiler = data[i.code_name]
-        i.encoding = encoding
