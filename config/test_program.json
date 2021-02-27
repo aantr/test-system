@@ -1,0 +1,25 @@
+{
+  "encoding": "cp866",
+  "run_as_user_uid": 0,
+  "languages": {
+    "python": [
+      "python"
+    ],
+    "pascalabc.net": [
+      "C:\\Program Files (x86)\\PascalABC.NET\\pabcnetcclear.exe"
+    ],
+    "c++": [
+      "g++"
+    ],
+    "c": [
+      "gcc"
+    ],
+    "c#": [
+      "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\csc.exe"
+    ],
+    "java": [
+      "C:\\Program Files\\Java\\jdk-13.0.1\\bin\\javac.exe",
+      "C:\\Program Files\\Java\\jdk-13.0.1\\bin\\java.exe"
+    ]
+  }
+}

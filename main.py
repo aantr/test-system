@@ -14,13 +14,14 @@ from forms.login import LoginForm
 from forms.submit_problem import SubmitProblemForm
 from forms.submit_solution import SubmitSolutionForm
 from program_testing.message import get_message_solution
-from program_testing.prog_lang import languages, set_lang_config
+import program_testing.prog_lang as prog_lang
+import program_testing.test_program as test_program
 from program_testing.test_program import TestProgram, TestResult
 
 SECRET_KEY = 'test_system_secret_key'
 DEBUG = False
 DB_PT = os.path.abspath('db/test_system.db')
-CONFIG_LANG = os.path.abspath('config/prog_lang.json')
+CONFIG_LANG = os.path.abspath('config/test_program.json')
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -268,7 +269,10 @@ def update():
 if __name__ == '__main__':
     with open(app.config['CONFIG_LANG'], 'r') as f:
         data = json.load(f)
-        set_lang_config(data)
+    prog_lang.init(data)
+    test_program.init(data)
+
+    languages = prog_lang.get_languages()
 
     db_session.global_init(app.config['DB_PT'])
 

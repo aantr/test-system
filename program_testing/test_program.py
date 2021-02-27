@@ -1,5 +1,6 @@
 import json
 import os
+import platform
 import shutil
 import threading
 import time
@@ -8,7 +9,9 @@ from datetime import datetime
 from subprocess import Popen, PIPE
 from zipfile import ZipFile
 import psutil
-from program_testing.prog_lang import ProgLang, languages
+
+from program_testing import prog_lang
+from program_testing.prog_lang import ProgLang
 from data import db_session
 from data.problem import Problem
 from data.solution import Solution
@@ -16,7 +19,16 @@ from io import BytesIO
 
 directory = os.path.dirname(__file__)
 write_solution_timeout = 0.3
+languages = None
 DEBUG = True
+
+user_uid = None
+
+
+def init(config):
+    global user_uid, languages
+    user_uid = config['run_as_user_uid']
+    languages = prog_lang.get_languages()
 
 
 def set_write_solution_timeout(value):
@@ -142,7 +154,7 @@ class TestProgram:
             solution.state = 2
             solution.state_arg = i
 
-            proc = Popen(compile_result[1], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+            proc = self.create_process(compile_result[1])
             proc.stdin.write(stdin.encode(lang.encoding))
             proc.stdin.close()
             start_time = datetime.now()
@@ -361,6 +373,25 @@ class TestProgram:
         if s1:
             return False
         return True
+
+    @staticmethod
+    def create_process(cmd):
+        system = platform.system()
+        if system == 'Windows':
+            proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
+            return proc
+        elif system == 'Linux':
+            proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
+                         preexec_fn=TestProgram.set_user(user_uid))
+            return proc
+        raise ValueError(f'Unrecognized system: {platform.system()}')
+
+    @staticmethod
+    def set_user(user_uid):
+        def decorated():
+            os.setuid(user_uid)
+
+        return decorated
 
     @staticmethod
     def get_memory(pid):
