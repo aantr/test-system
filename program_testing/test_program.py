@@ -22,12 +22,15 @@ write_solution_timeout = 0.3
 languages = None
 DEBUG = True
 
-user_uid = None
+run_as_user_uid_linux = None
+run_as_user_name_windows = None
 
 
 def init(config):
-    global user_uid, languages
-    user_uid = config['run_as_user_uid']
+    global run_as_user_uid_linux, \
+        run_as_user_name_windows, languages
+    run_as_user_uid_linux = config['run_as_user_linux']
+    run_as_user_name_windows = config['run_as_user_windows']
     languages = prog_lang.get_languages()
 
 
@@ -378,11 +381,12 @@ class TestProgram:
     def create_process(cmd):
         system = platform.system()
         if system == 'Windows':
+            # cmd = ['runas', '/noprofile', f'/user:{run_as_user_name_windows}', ' '.join(cmd)]
             proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
             return proc
         elif system == 'Linux':
             proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
-                         preexec_fn=TestProgram.set_user(user_uid))
+                         preexec_fn=TestProgram.set_user(run_as_user_uid_linux))
             return proc
         raise ValueError(f'Unrecognized system: {platform.system()}')
 

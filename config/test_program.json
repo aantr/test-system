@@ -1,6 +1,9 @@
 {
   "encoding": "cp866",
-  "run_as_user_uid": 0,
+
+  "run_as_user_linux": 0,
+  "run_as_user_windows": "",
+
   "languages": {
     "python": [
       "python"

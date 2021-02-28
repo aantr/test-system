@@ -213,7 +213,7 @@ def submit(problem_id):
         if form.file.data:
             source = form.file.data.stream.read()
         elif form.text.data:
-            source = form.text.data
+            source = form.text.data.encode()
         else:
             return render_template('submit.html', form=form,
                                    problem=problem, message='Select file or input source code')
