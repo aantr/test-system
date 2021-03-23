@@ -5,7 +5,6 @@ import shutil
 import threading
 import time
 import zipfile
-from datetime import datetime
 from subprocess import Popen, PIPE
 from zipfile import ZipFile
 import psutil
@@ -19,19 +18,26 @@ from io import BytesIO
 
 directory = os.path.dirname(__file__)
 write_solution_timeout = 0.3
+check_proc_delay = 0.001
 languages = None
-DEBUG = True
+DEBUG = False
 
 run_as_user_uid_linux = None
-run_as_user_name_windows = None
+
+test_program = None
 
 
 def init(config):
     global run_as_user_uid_linux, \
-        run_as_user_name_windows, languages
+        languages, test_program
     run_as_user_uid_linux = config['run_as_user_linux']
-    run_as_user_name_windows = config['run_as_user_windows']
     languages = prog_lang.get_languages()
+    test_program = TestProgram()
+
+
+def get_test_program():
+    global test_program
+    return test_program
 
 
 def set_write_solution_timeout(value):
@@ -62,6 +68,9 @@ class TestProgram:
         self.write_solution(session, solution)
 
     def start(self, threads=1):
+        if os.name == 'posix':
+            print(f'[Test system] Unix system detected, '
+                  f'run all processes in uid: {run_as_user_uid_linux}')
         print('[Test system] Clear source folder')
         folder = os.path.join(directory, 'source_solution')
         for filename in os.listdir(folder):
@@ -95,7 +104,7 @@ class TestProgram:
         db_sess = db_session.create_session()
 
         while True:
-            time.sleep(0.05)
+            time.sleep(0.1)
             if self.queue:
                 try:
                     solution_id = self._get_from_queue(db_sess)
@@ -106,7 +115,6 @@ class TestProgram:
                     self._run_testing(solution_id, db_sess, source_dir)
 
     def _run_testing(self, solution_id, db_sess, source_dir):
-
         solution = self.read_solution(db_sess, solution_id)
         problem = self.read_problem(db_sess, solution.problem_id)
         if solution is None:
@@ -125,8 +133,8 @@ class TestProgram:
         lang: ProgLang = languages[solution.lang_code_name]
         name = 'solution.' + lang.extension
         source = os.path.join(source_dir, name)
-        path = os.path.join('solution', str(solution.id))
-        shutil.copy(os.path.join(directory, path, 'solution.source'), source)
+        path = os.path.join('files', 'source_code', f'{solution.source_code.id}.source')
+        shutil.copy(path, source)
 
         compile_result = lang.compile(os.path.abspath(source))
         if not compile_result[0]:
@@ -142,8 +150,7 @@ class TestProgram:
             self.write_solution(db_sess, solution)
             return
 
-        check_proc_delay = 0.001
-        write_solution_start = datetime.now()
+        write_solution_start = self.get_start_time()
         verdict = 10
         max_time = 0
         max_memory = 0
@@ -160,17 +167,17 @@ class TestProgram:
             proc = self.create_process(compile_result[1])
             proc.stdin.write(stdin.encode(lang.encoding))
             proc.stdin.close()
-            start_time = datetime.now()
+            start_time = self.get_start_time()
             run = True
             if DEBUG:
-                prev_time = datetime.now()
+                prev_time = self.get_start_time()
                 count = 0
                 summary = 0
             while run:
                 if DEBUG:
                     count += 1
-                    summary += (datetime.now() - prev_time).total_seconds()
-                    prev_time = datetime.now()
+                    summary += self.get_delta_time(prev_time)
+                    prev_time = self.get_start_time()
                 try:
                     current_memory = self.get_memory(proc.pid)
                 except psutil.NoSuchProcess:
@@ -180,7 +187,7 @@ class TestProgram:
                 if check_proc_delay:
                     time.sleep(check_proc_delay)
 
-                delta = (datetime.now() - start_time).total_seconds()
+                delta = self.get_delta_time(start_time)
                 current_time = delta
 
                 if current_time >= problem.time_limit:
@@ -190,10 +197,10 @@ class TestProgram:
                     verdict = 14
                     run = False
 
-                delta = (datetime.now() - write_solution_start).total_seconds()
+                delta = self.get_delta_time(write_solution_start)
                 if delta >= write_solution_timeout and new_test:
                     new_test = False
-                    write_solution_start = datetime.now()
+                    write_solution_start = self.get_start_time()
                     self.write_solution(db_sess, solution, cols=('state', 'state_arg'))
 
                 if proc.poll() is not None:
@@ -236,57 +243,49 @@ class TestProgram:
         self.write_test_results(solution, test_results)
         self.write_solution(db_sess, solution)
 
-    @staticmethod
-    def add_solution(source, id):
-        path = os.path.join(directory, 'solution', str(id))
-        try:
-            os.mkdir(path)
-        except FileExistsError:
-            raise FileExistsError(f'[Test system] Such solution already created: {id}')
-        finally:
-            with open(os.path.join(path, 'solution.source'), 'wb') as f:
-                f.write(source)
+    def get_queue_length(self):
+        return len(self.queue)
 
     @staticmethod
-    def add_problem(id, bytes_zip_tests, task):
-        path = os.path.join(directory, 'problem', str(id))
-        try:
-            os.mkdir(path)
-        except FileExistsError:
-            raise FileExistsError(f'[Test system] Such solution already created: {id}')
-        finally:
-            with open(os.path.join(path, 'task.txt'), 'w') as f:
-                f.write(task)
-            try:
-                os.mkdir(os.path.join(path, 'tests'))
-            except FileExistsError:
-                ...
-            temp_filename = os.path.join(path, 'arch.zip')
-            with open(temp_filename, 'wb') as f:
-                f.write(bytes_zip_tests)
-            shutil.unpack_archive(temp_filename, os.path.join(path, 'tests'))
-            os.remove(temp_filename)
+    def add_solution(source, solution):
+        path = os.path.join('files', 'source_code',
+                            f'{str(solution.source_code.id)}.source')
+        with open(path, 'wb') as f:
+            f.write(source)
 
     @staticmethod
-    def remove_solution(id):
-        path = os.path.join(directory, 'solution', str(id))
+    def add_problem(problem, bytes_zip_tests, task):
+        path_task = os.path.join('files', 'task', f'{problem.task.id}.html')
+        dir_tests = os.path.join('files', 'tests', f'{problem.problem_tests.id}')
+
+        with open(path_task, 'w', encoding='utf-8') as f:
+            f.write(task)
         try:
-            os.remove(path)
-        except FileNotFoundError:
-            raise ValueError(f'[Test system] Such solution not found: {id}')
+            os.mkdir(dir_tests)
+        except FileExistsError:
+            shutil.rmtree(dir_tests)
+            os.mkdir(dir_tests)
+        temp_filename = os.path.join(dir_tests, 'temp.zip')
+        with open(temp_filename, 'wb') as f:
+            f.write(bytes_zip_tests)
+        shutil.unpack_archive(temp_filename, dir_tests)
+        os.remove(temp_filename)
 
     @staticmethod
     def write_test_results(solution, test_results: list):
-        path = os.path.join('solution', str(solution.id))
-        with open(os.path.join(directory, path, 'test_results.json'), 'w') as f:
-            json.dump([[x[1] for x in sorted(res.__dict__.items())] for res in test_results], f)
+        path = os.path.join('files', 'test_result',
+                            f'{str(solution.test_result.id)}.json')
+        with open(path, 'w') as f:
+            json.dump([[x[1] for x in sorted(res.__dict__.items())]
+                       for res in test_results], f)
 
     @staticmethod
     def read_test_results(solution) -> list:
-        path = os.path.join('solution', str(solution.id))
+        path = os.path.join('files', 'test_result',
+                            f'{str(solution.test_result.id)}.json')
         res = []
         try:
-            with open(os.path.join(directory, path, 'test_results.json'), 'r') as f:
+            with open(path, 'r') as f:
                 read = json.load(f)
         except FileNotFoundError:
             return res
@@ -300,7 +299,7 @@ class TestProgram:
     @staticmethod
     def write_solution(session, solution, cols=None, commit=True):
         if DEBUG:
-            start = datetime.now()
+            start = TestProgram.get_start_time()
         if cols is None:
             cols = Solution.__table__.columns.keys()
         session.query(Solution).filter(Solution.id == solution.id).update(
@@ -311,7 +310,7 @@ class TestProgram:
             session.commit()
         if DEBUG:
             print(f'[Test system DEBUG] --- Time of writing solution ---: '
-                  f'{(datetime.now() - start).total_seconds():.7f}')
+                  f'{TestProgram.get_delta_time(start):.7f}')
 
     @staticmethod
     def read_solution(session, id):
@@ -333,12 +332,17 @@ class TestProgram:
         return session.query(Problem).filter(Problem.id == id).first()
 
     @staticmethod
+    def read_problem_task(problem):
+        task = os.path.join('files', 'task', f'{problem.task.id}.html')
+        with open(task, 'r', encoding='utf-8') as f:
+            return f.read()
+
+    @staticmethod
     def read_tests(problem, n=None):
-        path = os.path.join('problem', str(problem.id))
-        dir_path = os.path.join(directory, path, 'tests')
+        path = os.path.join('files', 'tests', f'{problem.id}')
         res = []
         k = 0
-        for root, dirs, files in os.walk(dir_path):
+        for root, dirs, files in os.walk(path):
             for name in files:
                 if os.path.splitext(name)[1] == '.in':
                     name_out = os.path.splitext(name)[0] + '.out'
@@ -349,7 +353,7 @@ class TestProgram:
                                 return [res[-1]]
                             k += 1
         if not res:
-            raise FileNotFoundError(f'[Test system] No tests on "{dir_path}"')
+            raise FileNotFoundError(f'[Test system] No tests on "{path}"')
         return res
 
     @staticmethod
@@ -360,6 +364,8 @@ class TestProgram:
                 files = z.namelist()
                 for name in files:
                     filename = os.path.split(name)[1]
+                    if not filename:
+                        continue
                     path_w = os.path.join(os.path.split(name)[0],
                                           os.path.splitext(filename)[0])
                     if os.path.splitext(filename)[1] == '.in':
@@ -369,6 +375,9 @@ class TestProgram:
                             s1.remove(path_w)
                         else:
                             return False
+                    else:
+                        print(filename)
+                        return False
         except zipfile.error as e:
             if DEBUG:
                 print(e)
@@ -379,12 +388,11 @@ class TestProgram:
 
     @staticmethod
     def create_process(cmd):
-        system = platform.system()
-        if system == 'Windows':
-            # cmd = ['runas', '/noprofile', f'/user:{run_as_user_name_windows}', ' '.join(cmd)]
+        system = os.name
+        if system == 'nt':
             proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
             return proc
-        elif system == 'Linux':
+        elif system == 'posix':
             proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
                          preexec_fn=TestProgram.set_user(run_as_user_uid_linux))
             return proc
@@ -402,3 +410,11 @@ class TestProgram:
         """Returns used memory in bytes"""
         process = psutil.Process(pid)
         return process.memory_info().rss
+
+    @staticmethod
+    def get_start_time():
+        return time.time()
+
+    @staticmethod
+    def get_delta_time(start):
+        return time.time() - start

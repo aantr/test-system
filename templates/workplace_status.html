@@ -1,11 +1,31 @@
-{% extends "workspace_base.html" %}
-{% block workspace_content %}
+{% extends "workplace_base.html" %}
+{% block workplace_content %}
 
-Description:
-<p>
-    {{ session.description }}
-</p>
+<table class="table table-hover">
+    <thead class="thead-light">
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Date</th>
+        <th scope="col">Language</th>
+        <th scope="col">Verdict</th>
+        <th scope="col">Max time</th>
+        <th scope="col">Max memory</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in solution_rows %}
+    <tr id="solution-row-{{ i[1] }}">{{ i[0] }}</tr>
+    {% endfor %}
+    </tbody>
+</table>
 
-<a href="/leave_session" class="btn btn-danger">Leave session</a>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+var rows_to_update = [{{ rows_to_update | join(', ') }}];
+var update_timeout = {{ update_timeout * 1000 }};
+
+</script>
+<script src="{{ url_for('static', filename='js/status.js') }}"></script>
 
 {% endblock %}

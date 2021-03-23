@@ -6,38 +6,104 @@
 
 <main role="main" class="container">
     </br>
-    {% if message %}
-    <div class="alert alert-danger" role="alert">
-        {{ message }}
+    {% for cat, msg in get_flashed_messages(True) %}
+    <div class="alert alert-{{ cat }}" role="alert">
+        {{ msg }}
     </div>
-    {% endif %}
-    {% if success %}
-    <div class="alert alert-success" role="alert">
-        {{ success }}
-    </div>
-    {% endif %}
+    {% endfor %}
     <form action="" method="post" enctype="multipart/form-data">
         <div>{{ form.csrf_token }}</div>
 
         <h6>{{ form.name.label.text }}</h6>
-        {{ form.name(class="form-control", style="max-width: 50vw") }}</br>
+        {{ form.name(class="form-control", style="max-width: 30vw") }}</br>
 
         <h6>{{ form.task_text.label.text }}</h6>
-        {{ form.task_text(class="form-control", style="min-height: 200px") }}</br>
+        {{ form.task_text(class="form-control", style="min-height: 250px") }}</br>
+
+        <h6>{{ form.images.label.text }}</h6>
+        {{ form.images(class="form-control", style="max-width: 30vw", id="file-im") }}<br>
+
+        <h6>{{ form.input_text.label.text }}</h6>
+        {{ form.input_text(class="form-control", style="min-height: 200px") }}<br>
+
+        <h6>{{ form.output_text.label.text }}</h6>
+        {{ form.output_text(class="form-control", style="min-height: 200px") }}<br>
+
+        <h6>{{ form.examples.label.text }}</h6>
+
+        <div class="row g-3">
+
+            <div class="col-md-9">
+                {{ form.examples(class="form-control", style="min-height: 250px", id="examples_textarea") }}
+                <div class="form-text">All examples must be separated by the tag &lt;example&gt;,
+                    the input and output is separated by the tag &lt;data&gt;.<br>
+                    Example:<br><b>
+                        3 7<br>
+                        &lt;data&gt;<br>
+                        10<br>
+                        &lt;example&gt;<br>
+                        14 8<br>
+                        &lt;data&gt;<br>
+                        22</b>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <p>Add to examples:</p>
+                <p>
+                    <button type="button" class="btn btn-warning" onclick="add_data()">
+                        <big>&lt;data&gt;</big></button>
+                </p>
+                <p>
+                    <button type="button" class="btn btn-info" onclick="add_example()">
+                        <big>&lt;example&gt;</big></button>
+                </p>
+            </div>
+        </div>
+
+
+        <br>
+
+
+        <h6>{{ form.note.label.text }}</h6>
+        {{ form.note(class="form-control", style="min-height: 200px") }}<br>
+
+        <h6>{{ form.categories.label.text }}</h6>
+        {% for i in form.categories.choices %}
+        <div class="form-group form-check">
+            {% set id = form.categories['prefix_id'] + i[0] %}
+            <input class="form-check-input" type="checkbox" id="{{ id }}" name="{{ id }}">
+            <label class="form-check-label" for="{{ id }}">{{i[1]}}</label>
+        </div>
+        {% endfor %}<br>
+
 
         <h6>{{ form.file.label.text }}</h6>
-        {{ form.file(class="form-control", style="max-width: 50vw") }}</br>
+        {{ form.file(class="form-control", style="max-width: 30vw") }}</br>
 
         <h6>{{ form.time.label.text }}</h6>
-        {{ form.time(class="form-control", style="max-width: 50vw") }}</br>
+        {{ form.time(class="form-control", style="max-width: 30vw") }}</br>
 
         <h6>{{ form.memory.label.text }}</h6>
-        {{ form.memory(class="form-control", style="max-width: 50vw") }}</br>
+        {{ form.memory(class="form-control", style="max-width: 30vw") }}</br>
 
         {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
     </form>
 </main>
+<script>
+function add_example(){
+var all_text = document.getElementById("examples_textarea").value;
+if (all_text.length != 0 && all_text.slice(-1) != "\n") all_text += "\n";
+all_text += "<example>\n";
+document.getElementById("examples_textarea").value = all_text;
+}
+function add_data(){
+var all_text = document.getElementById("examples_textarea").value;
+if (all_text.length != 0 && all_text.slice(-1) != "\n") all_text += "\n";
+all_text += "<data>\n";
+document.getElementById("examples_textarea").value = all_text;
+}
 
+</script>
 </body>
 
 {% endblock %}

@@ -1,0 +1,41 @@
+{% extends "navbar.html" %}
+{% block content %}
+<head>
+<body>
+<main role="main" class="container">
+    <br>
+    {% for cat, msg in get_flashed_messages(True) %}
+    <div class="alert alert-{{ cat }}" role="alert">
+        {{ msg }}
+    </div>
+    {% endfor %}
+
+    {%- for i in sessions -%}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">{{ i.name }}{% if i.started %} <b>(Started)</b>{% endif %}</h5>
+            <p class="card-text">{{ i.description }}</p>
+            <p class="card-text">ID:<br>{{ i.str_id }}</p>
+            {% if not i.started %}
+            <p class="card-text">Duration:<br>{{ i.duration.strftime('%H:%M') }}</p>
+            {% else %}
+            <p class="card-text">Time left:<br>
+                <b><big>
+                    <span id="time_left{{ i.id }}"></span>
+                </big></b></p>
+            {% endif %}
+            <a href="/session/{{ i.id }}" class="btn btn-primary" style="min-width: 75px">Info</a>
+        </div>
+    </div>
+    <br>
+    {% else %}
+    Nothing :(
+    {% endfor %}
+
+</main>
+<script>
+var timer = { {%- for k, v in time_left.items() -%}{{k}}: {{v}},{% endfor %} };
+</script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+</body>
+{% endblock %}

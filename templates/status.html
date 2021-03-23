@@ -1,6 +1,5 @@
 {% extends "navbar.html" %}
 {% block content %}
-
 <head>
 <body>
 
@@ -24,12 +23,10 @@
     </table>
 </main>
 
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
 var rows_to_update = [{{ rows_to_update | join(', ') }}];
 var update_timeout = {{ update_timeout * 1000 }};
-
 </script>
 <script src="{{ url_for('static', filename='js/status.js') }}"></script>
 </body>

@@ -9,14 +9,14 @@
 <form class="form-signin" method="post">
     {{ form.hidden_tag() }}
 
-    <img class="mb-4" src="{{url_for('static', filename='img/bootstrap-solid.svg')}}" width="72" height="72">
+    <img class="mb-4" src="{{url_for('static', filename='img/icon.svg')}}" width="72" height="72">
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
 
-    {% if message %}
-    <div class="alert alert-danger" role="alert">
-        {{message}}
+    {% for cat, msg in get_flashed_messages(True) %}
+    <div class="alert alert-{{ cat }}" role="alert">
+        {{ msg }}
     </div>
-    {% endif %}
+    {% endfor %}
 
     {{ form.username(id="input_username", class="form-control",
     placeholder=form.username.label.text) }}

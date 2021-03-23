@@ -1,10 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "navbar.html" %}
+{% block content %}
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
 <body>
-$END$
+<main role="main" class="container">
+    <br>
+    {% for cat, msg in get_flashed_messages(True) %}
+    <div class="alert alert-{{ cat }}" role="alert">
+        {{ msg }}
+    </div>
+    {% endfor %}
+
+    <h4>{{ session.name }}{% if session.started %} <b>(Started)</b>{% endif %}</h4>
+    <p class="card-text">{{ session.description }}</p>
+    <p class="card-text">ID:
+        {% if session.join_action %}
+        {{ session.join_action_str_id }}
+        {% else %}
+        ---
+        {% endif %}</p>
+
+    {% if not session.started %}
+    <p class="card-text">Duration:<br>{{ session.duration.strftime('%H:%M') }}</p>
+    {% else %}
+    <p class="card-text">Time left:<br>
+        <b><big>
+            <span id="time_left{{ session.id }}"></span>
+        </big></b></p>
+    {% endif %}
+    <p class="card-text">Problems:<br>
+        {%- for j in session.problems -%}
+        <a href="/problem/{{ j.id }}">{{ j.name }}</a><br>
+        {% else %}
+        Nothing :(
+        {% endfor %}
+    </p>
+    <p class="card-text">Members:<br>
+        {%- for j in members[session.id] -%}
+        {{ j.username }}<br>
+        {% else %}
+        Nothing :(
+        {% endfor %}
+    </p>
+    {% if not session.started %}
+    <a href="/start_session/{{ session.id }}" class="btn btn-success">Start session</a>
+    {% else %}
+    <a href="/stop_session/{{ session.id }}" class="btn btn-danger">Stop session</a>
+    {% endif %}
+    <br><br>
+    <a href="/set_join_action_session/{{ session.id }}" class="btn btn-info">Reset ID</a>
+    <br>
+
+</main>
+<script>
+    var timer = { {{session.id}}: {{time_left}} };
+
+
+
+
+
+</script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 </body>
-</html>
+{% endblock %}

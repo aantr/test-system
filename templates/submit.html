@@ -1,19 +1,21 @@
 {% extends "navbar.html" %}
 {% block content %}
 
-<head>
-<body>
-
 <main role="main" class="container">
     </br>
     <h5>Problem: #{{ problem.id }} {{ problem.name }}</h5></br>
+    {% if session_id %}
+    <h6>From session: {{ session.name }}</h6></br>
+    {% endif %}
     <form action="" method="post" enctype="multipart/form-data">
         <div>{{ form.csrf_token }}</div>
-        {% if message %}
-        <div class="alert alert-danger" role="alert">
-            {{message}}
+
+        {% for cat, msg in get_flashed_messages(True) %}
+        <div class="alert alert-{{ cat }}" role="alert">
+            {{ msg }}
         </div>
-        {% endif %}
+        {% endfor %}
+
         <h6>{{ form.select.label.text }}</h6>
         <div style="max-width: 200px;">
             {{ form.select(class="form-select", aria_label="Default select example") }}
@@ -48,7 +50,5 @@
 
     </form>
 </main>
-
-</body>
 
 {% endblock %}

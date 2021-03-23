@@ -1,10 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{%- if task_text -%}
+<p style="white-space: pre-wrap;">{{ task_text }}</p>
+{% endif %}
+{%- if images -%}
+<br>
+{%- for i in images -%}
+<img src="{{ i }}" class="rounded img-fluid mx-auto d-block"
+     alt="Image was not found" style="max-width: 75vw;min-width: 25vw;">
+<br>
+{% endfor %}
+{% endif %}
+{%- if input_text -%}<p><b>Входные данные</b><br>{{ input_text }}</p>{% endif %}
+{%- if output_text -%}<p><b>Выходные данные</b><br>{{ output_text }}</p>{% endif %}{% if examples %}
+<p><b>Примеры</b><br></p>
+{%- for i in examples -%}
+<table class="table table-sm table-bordered">
+    <thead><tr><td>Входные данные</td></tr></thead>
+    <tbody>
+    <tr><td class="table-light">{{ i[0] }}</td></tr>
+    </tbody>
+    <thead><tr><td>Выходные данные</td></tr></thead>
+    <tbody>
+    <tr><td class="table-light">{{ i[1] }}</td></tr>
+    </tbody>
+</table>
+{% endfor %}
+{% endif %}
+{%- if note -%}
+<p style="white-space: pre-wrap;"><b>Примечание</b><br>{{ note }}</p>
+{% endif %}
