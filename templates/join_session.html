@@ -1,0 +1,28 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+<head>
+<body>
+
+<main role="main" class="container">
+    </br>
+    {% for cat, msg in get_flashed_messages(True) %}
+    <div class="alert alert-{{ cat }}" role="alert">
+        {{ msg }}
+    </div>
+    {% endfor %}
+    <form action="" method="post">
+        <div>{{ form.csrf_token }}</div>
+
+        <h6>{{ form.str_id.label.text }}</h6>
+        {{ form.str_id(class="form-control", style="max-width: 30vw") }}</br>
+
+        {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
+    </form>
+</main>
+<script>
+
+</script>
+</body>
+
+{% endblock %}
