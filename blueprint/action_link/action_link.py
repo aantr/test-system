@@ -3,11 +3,11 @@ from flask import Blueprint, flash, url_for
 import datetime
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
-import uuid
 from data import db_session
 from data.action import Action
 from data.user import User
 from forms.action_link import ActionLinkForm
+from utils.unique_code import get_code
 
 current_user: User
 action_bp = Blueprint('action_link', __name__,
@@ -34,7 +34,7 @@ def clear_all_actions():
 
 def add_action(db_sess, url, commit=True):
     action = Action()
-    action.str_id = uuid.uuid4().hex[:6].upper()
+    action.str_id = get_code().upper()
     action.url = url
     db_sess.add(action)
     if commit:

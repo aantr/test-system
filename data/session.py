@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 import sqlalchemy
 from sqlalchemy import orm
@@ -39,7 +39,8 @@ class Session(SqlAlchemyBase):
                                            nullable=True)
     join_action = orm.relation('Action')
 
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.now)
+    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
+                                     default=datetime.datetime.now)
 
     started = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
     start_date = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
@@ -50,3 +51,17 @@ class Session(SqlAlchemyBase):
 
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.id'))
     user = orm.relation('User')
+
+    def get_time_left(self):
+        return get_session_time_left(self)
+
+
+def get_session_time_left(session):
+    time_left = None
+    if session.started:
+        duration = datetime.datetime.combine(
+            datetime.date.min, session.duration) - datetime.datetime.min
+        delta = datetime.datetime.now() - session.start_date
+        left = duration - delta
+        time_left = left.total_seconds()
+    return time_left

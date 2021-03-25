@@ -1,22 +1,17 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Blueprint, current_app
+from flask import Blueprint
 import datetime
 from flask import url_for, flash
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
-import uuid
-
-from markupsafe import Markup
 
 from blueprint.action_link.action_link import add_action
 from data import db_session
 from data.problem import Problem
 from data.session import Session, SessionMember
-from data.solution import Solution
 from data.user import User
-from forms.action_link import ActionLinkForm
 from forms.submit_session import SubmitSessionForm
-from utils import get_message_from_form, get_session_joined, get_solution_row, get_duration_from_time
+from utils.utils import get_message_from_form, get_duration_from_time
 
 current_user: User
 session_bp = Blueprint('session', __name__,
@@ -69,6 +64,8 @@ def set_join_action_session(session_id):
     session = db_sess.query(Session).filter(Session.id == session_id).first()
     if not session:
         abort(404)
+    if session.user_id != current_user.id:
+        abort(401)
 
     session.join_action_str_id = add_action(
         db_sess, f'/workplace/join_session/{session_id}', commit=False)
@@ -83,6 +80,8 @@ def start_session(session_id):
     session = db_sess.query(Session).filter(Session.id == session_id).first()
     if not session:
         abort(404)
+    if session.user_id != current_user.id:
+        abort(401)
 
     members = [i.member for i in db_sess.query(SessionMember).
         filter(SessionMember.session_id == session_id).all()]
@@ -110,6 +109,8 @@ def stop_session(session_id):
     session = db_sess.query(Session).filter(Session.id == session_id).first()
     if not session:
         abort(404)
+    if session.user_id != current_user.id:
+        abort(401)
 
     if session.started:
         _stop_session(session.id, session=session, db_sess=db_sess)
@@ -164,17 +165,12 @@ def get_session(session_id):
         filter(Session.user_id == current_user.id).first()
     if not session:
         abort(404)
+    if session.user_id != current_user.id:
+        abort(401)
+
     check_session_timeout(db_sess, session)
 
-    time_left = None
-    members = None
-    if session.started:
-        duration = datetime.datetime.combine(
-            datetime.date.min, session.duration) - datetime.datetime.min
-        delta = datetime.datetime.now() - session.start_date
-        left = duration - delta
-        time_left = left.total_seconds()
-
+    time_left = session.get_time_left()
     members = [j.member for j in db_sess.query(SessionMember).
         filter(SessionMember.session_id == session.id).all()]
 

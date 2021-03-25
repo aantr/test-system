@@ -12,6 +12,15 @@
     </div>
     {% endfor %}
 
+        {% if not session.started %}
+    <p>Duration:<br>{{ session.duration.strftime('%H:%M') }}</p>
+    {% else %}
+    <p>Time left:<br>
+        <b><big>
+            <span id="time_left{{ session.id }}"></span>
+        </big></b></p>
+    {% endif %}
+
     <h5 align="center">Workplace{% if session.started %} <font color="green">(started)</font>
         {% else %} <font color="red">(not started)</font>{% endif %}</h5>
     <h4 align="center">{{ session.name }}</h4>
@@ -51,8 +60,9 @@
 
 </main>
 <script>
-
+    var timer = { {{session.id}}: {{session.get_time_left()}} };
 </script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 </body>
 
 {% endblock %}

@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_required
 import os
 import threading
 
+from blueprint.groups.groups import groups_bp
 from data import db_session
 from data.problem import Problem
 from data.problem_category import ProblemCategory
@@ -35,6 +36,8 @@ app.register_blueprint(solution)
 app.register_blueprint(login)
 app.register_blueprint(action_bp)
 app.register_blueprint(workplace_bp)
+app.register_blueprint(groups_bp)
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)

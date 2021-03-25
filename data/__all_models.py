@@ -9,3 +9,4 @@ from . import task
 from . import problem_category
 from . import session
 from . import action
+from . import group

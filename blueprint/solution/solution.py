@@ -16,11 +16,10 @@ from data.source_code import SourceCode
 from data.test_result import TestResult
 from forms.submit_solution import SubmitSolutionForm
 from program_testing import prog_lang
-from program_testing.message import get_message_solution
 
 from flask import Blueprint
 
-from utils import get_session_joined, get_solution_row
+from utils.utils import get_session_joined, get_solution_row
 
 solution = Blueprint('solution', __name__,
                      template_folder='templates',

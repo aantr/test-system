@@ -14,7 +14,7 @@ from data.problem_category import ProblemCategory
 from data.problem_tests import ProblemTests
 from data.task import Task
 from forms.submit_problem import SubmitProblemForm
-from utils import get_message_from_form
+from utils.utils import get_message_from_form
 
 problem = Blueprint('problem', __name__,
                     template_folder='templates',

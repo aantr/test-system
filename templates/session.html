@@ -15,9 +15,7 @@
     <p class="card-text">ID:
         {% if session.join_action %}
         {{ session.join_action_str_id }}
-        {% else %}
-        ---
-        {% endif %}</p>
+        {% else %} --- {% endif %}</p>
 
     {% if not session.started %}
     <p class="card-text">Duration:<br>{{ session.duration.strftime('%H:%M') }}</p>
@@ -53,11 +51,6 @@
 </main>
 <script>
     var timer = { {{session.id}}: {{time_left}} };
-
-
-
-
-
 </script>
 <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 </body>

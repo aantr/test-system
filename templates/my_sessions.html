@@ -15,7 +15,6 @@
         <div class="card-body">
             <h5 class="card-title">{{ i.name }}{% if i.started %} <b>(Started)</b>{% endif %}</h5>
             <p class="card-text">{{ i.description }}</p>
-            <p class="card-text">ID:<br>{{ i.str_id }}</p>
             {% if not i.started %}
             <p class="card-text">Duration:<br>{{ i.duration.strftime('%H:%M') }}</p>
             {% else %}

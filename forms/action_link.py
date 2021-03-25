@@ -5,4 +5,4 @@ from wtforms.validators import DataRequired
 
 class ActionLinkForm(FlaskForm):
     str_id = StringField('ID', validators=[DataRequired()])
-    submit = SubmitField('Join')
+    submit = SubmitField('Proceed')

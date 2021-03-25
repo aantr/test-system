@@ -43,3 +43,5 @@ def get_duration_from_time(time):
     duration = datetime.datetime.combine(
         datetime.date.min, time) - datetime.datetime.min
     return duration
+
+

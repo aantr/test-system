@@ -1,13 +1,12 @@
-from copy import copy, deepcopy
+from copy import deepcopy
 
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, \
-    SubmitField, TextAreaField, FileField, SelectField, IntegerField, \
-    MultipleFileField, SelectMultipleField, FieldList
+from wtforms import StringField, SubmitField, TextAreaField, FileField, IntegerField, \
+    MultipleFileField
 from wtforms.validators import DataRequired, NumberRange
 
-from forms.multiply_checkbox_field import MultiplyCheckboxField
+from forms.utils.multiply_checkbox_field import MultiplyCheckboxField
 from program_testing.test_program import TestProgram
 
 

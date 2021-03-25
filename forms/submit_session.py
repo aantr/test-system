@@ -1,12 +1,9 @@
-import datetime
-
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, \
-    SubmitField, TextAreaField, FileField, SelectField, TimeField
+from wtforms import StringField, SubmitField, TextAreaField, TimeField
 from wtforms.validators import DataRequired
 
-from forms.multiply_checkbox_field import MultiplyCheckboxField
+from forms.utils.multiply_checkbox_field import MultiplyCheckboxField
 
 
 class SubmitSessionForm(FlaskForm):

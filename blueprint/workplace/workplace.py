@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Blueprint, current_app
-from flask import url_for, flash
+from flask import url_for
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
 
@@ -11,7 +11,7 @@ from data import db_session
 from data.session import Session, SessionMember
 from data.solution import Solution
 from data.user import User
-from utils import get_session_joined, get_solution_row
+from utils.utils import get_session_joined, get_solution_row
 
 current_user: User
 workplace_bp = Blueprint('workplace', __name__,
@@ -30,7 +30,7 @@ def workplace_status():
 
     session = get_session_joined(db_sess)
     if not session:
-        return redirect(url_for('workplace.join_session'))
+        return redirect(url_for('action_link.action'))
     check_session_timeout(db_sess, session)
     if not session.started:
         return redirect(url_for('workplace.workplace_info'))
@@ -54,7 +54,7 @@ def workplace_info():
 
     session = get_session_joined(db_sess)
     if not session:
-        return redirect(url_for('workplace.join_session'))
+        return redirect(url_for('action_link.action'))
     check_session_timeout(db_sess, session)
 
     problem = session.problems
@@ -70,7 +70,7 @@ def workplace_problem():
     session = get_session_joined(db_sess)
     session: Session
     if not session:
-        return redirect(url_for('workplace.join_session'))
+        return redirect(url_for('action_link.action'))
     check_session_timeout(db_sess, session)
     if not session.started:
         return redirect(url_for('workplace.workplace_info'))
@@ -86,7 +86,7 @@ def workplace():
     return redirect(url_for('workplace.workplace_problem'))
 
 
-@workplace_bp.route('/workplace/join_session/<int:session_id>', methods=['GET', 'POST'])
+@workplace_bp.route('/workplace/join_session/<int:session_id>', methods=['GET'])
 @login_required
 def join_session(session_id):
     db_sess = db_session.create_session()
@@ -134,7 +134,7 @@ def workplace_results():
     session = get_session_joined(db_sess)
     session: Session
     if not session:
-        return redirect(url_for('workplace.join_session'))
+        return redirect(url_for('action_link.action'))
     check_session_timeout(db_sess, session)
     if not session.started:
         return redirect(url_for('workplace.workplace_info'))
@@ -157,4 +157,4 @@ def leave_session():
     joined_session_member = db_sess.query(SessionMember). \
         filter(SessionMember.member_id == current_user.id).delete()
     db_sess.commit()
-    return redirect(url_for('workplace.join_session'))
+    return redirect(url_for('action_link.action'))
