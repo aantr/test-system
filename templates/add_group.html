@@ -1,0 +1,43 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+<head>
+<body>
+
+<main role="main" class="container">
+    </br>
+    {% for cat, msg in get_flashed_messages(True) %}
+    <div class="alert alert-{{ cat }}" role="alert">
+        {{ msg }}
+    </div>
+    {% endfor %}
+    <form action="" method="post">
+        <div>{{ form.csrf_token }}</div>
+
+        <h6>{{ form.name.label.text }}</h6>
+        {{ form.name(class="form-control", style="max-width: 30vw") }}</br>
+
+        <h6>{{ form.description.label.text }}</h6>
+        {{ form.description(class="form-control", style="min-height: 200px") }}</br>
+
+        <h6>{{ form.time.label.text }}</h6>
+        {{ form.time(class="form-control", type="time") }}</br>
+
+        <h6>{{ form.problems.label.text }}</h6>
+        {% for i in form.problems.choices %}
+        <div class="form-group form-check">
+            {% set id = form.problems['prefix_id'] + i[0] %}
+            <input class="form-check-input" type="checkbox" id="{{ id }}" name="{{ id }}">
+            <label class="form-check-label" for="{{ id }}">{{i[1]}}</label>
+        </div>
+        {% endfor %}<br>
+
+        {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
+    </form>
+</main>
+<script>
+
+</script>
+</body>
+
+{% endblock %}
