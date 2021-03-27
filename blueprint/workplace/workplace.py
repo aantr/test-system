@@ -86,30 +86,6 @@ def workplace():
     return redirect(url_for('workplace.workplace_problem'))
 
 
-@workplace_bp.route('/workplace/join_session/<int:session_id>', methods=['GET'])
-@login_required
-def join_session(session_id):
-    db_sess = db_session.create_session()
-
-    joined_session_member = db_sess.query(SessionMember). \
-        filter(SessionMember.member_id == current_user.id).first()
-
-    if joined_session_member:
-        return redirect(url_for('workplace.workplace'))
-
-    session = db_sess.query(Session). \
-        filter(Session.id == session_id).first()
-    if not session:
-        abort(404)
-    else:
-        joined_session_member = SessionMember()
-        joined_session_member.member_id = current_user.id
-        joined_session_member.session_id = session.id
-        db_sess.add(joined_session_member)
-        db_sess.commit()
-    return redirect(url_for('workplace.workplace'))
-
-
 def get_result_row(db_sess, n, user, session, problem_ids):
     send = {}
     for i in problem_ids:

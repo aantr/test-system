@@ -7,6 +7,7 @@ from flask_login import login_required, current_user
 
 from blueprint.action_link.action_link import add_action
 from data import db_session
+from data.invite import Invite
 from data.problem import Problem
 from data.session import Session, SessionMember
 from data.user import User
@@ -68,7 +69,9 @@ def set_join_action_session(session_id):
         abort(401)
 
     session.join_action_str_id = add_action(
-        db_sess, f'/workplace/join_session/{session_id}', commit=False)
+        db_sess, f'/invite_join_session/{session_id}',
+        f'Send invite to join the session "{session.name}"',
+        commit=False)
     db_sess.commit()
     return redirect(url_for('session.get_session', session_id=session_id))
 
@@ -172,6 +175,71 @@ def get_session(session_id):
 
     time_left = session.get_time_left()
     members = [j.member for j in db_sess.query(SessionMember).
-        filter(SessionMember.session_id == session.id).all()]
+        filter(SessionMember.session_id == session_id).all()]
 
     return render_template('session.html', **locals())
+
+
+@session_bp.route('/add_session_member/<int:session_id>/<int:user_id>', methods=['GET'])
+@login_required
+def add_session_member(session_id, user_id):
+    db_sess = db_session.create_session()
+    session = db_sess.query(Session).filter(Session.id == session_id).first()
+    if session is None:
+        abort(404)
+    user = db_sess.query(User).filter(User.id == user_id).first()
+    if user is None:
+        abort(404)
+    if session.user_id != current_user.id:
+        abort(401)
+
+    joined_session_member = db_sess.query(SessionMember). \
+        filter(SessionMember.member_id == user_id). \
+        filter(SessionMember.session_id == session_id).first()
+
+    if joined_session_member:
+        flash(f'Already joined "{user.username}" to the session "{session.name}"', category='danger')
+        return redirect(url_for('invite.invites'))
+
+    session: Session
+    sm = SessionMember()
+    sm.session_id = session_id
+    sm.member_id = current_user.id
+    db_sess.add(sm)
+    db_sess.commit()
+    flash(f'Successfully joined "{user.username}" to the session "{session.name}"', category='success')
+    return redirect(url_for('invite.invites'))
+
+
+@session_bp.route('/invite_join_session/<int:session_id>', methods=['GET'])
+@login_required
+def invite_join_session(session_id):
+    db_sess = db_session.create_session()
+    session = db_sess.query(Session).filter(Session.id == session_id).first()
+    if session is None:
+        abort(404)
+    session: Session
+    url = 'action_link.action'
+
+    joined_session_member = db_sess.query(SessionMember). \
+        filter(SessionMember.member_id == current_user.id). \
+        filter(SessionMember.session_id == session_id).first()
+
+    if joined_session_member:
+        flash(f'Already joined to the session "{session.name}"', category='danger')
+        return redirect(url_for(url))
+
+    if db_sess.query(Invite).filter(Invite.user_from_id == current_user.id). \
+            filter(Invite.user_to_id == session.user_id).first():
+        flash(f'Already sent invite to the session "{session.name}"', category='danger')
+        return redirect(url_for(url))
+
+    invite = Invite()
+    invite.user_from_id = current_user.id
+    invite.user_to_id = session.user_id
+    invite.action = f'/add_session_member/{session_id}/{current_user.id}'
+    invite.description = f'Join me to your session "{session.name}"'
+    db_sess.add(invite)
+    db_sess.commit()
+    flash(f'Successfully sent invite to the session "{session.name}"', category='success')
+    return redirect(url_for(url))

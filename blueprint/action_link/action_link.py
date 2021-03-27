@@ -32,10 +32,11 @@ def clear_all_actions():
     db_sess.commit()
 
 
-def add_action(db_sess, url, commit=True):
+def add_action(db_sess, url, description, commit=True):
     action = Action()
     action.str_id = get_code().upper()
     action.url = url
+    action.description = description
     db_sess.add(action)
     if commit:
         db_sess.commit()
@@ -56,6 +57,7 @@ def action_link(str_id):
     action = db_sess.query(Action).filter(Action.str_id == str_id).first()
     if action is None:
         abort(404)
+    action: Action
     return redirect(action.url)
 
 

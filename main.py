@@ -5,6 +5,7 @@ import os
 import threading
 
 from blueprint.groups.groups import groups_bp
+from blueprint.invite.invite import invite_bp
 from data import db_session
 from data.problem import Problem
 from data.problem_category import ProblemCategory
@@ -37,6 +38,8 @@ app.register_blueprint(login)
 app.register_blueprint(action_bp)
 app.register_blueprint(workplace_bp)
 app.register_blueprint(groups_bp)
+app.register_blueprint(invite_bp)
+
 
 
 login_manager = LoginManager()
@@ -46,6 +49,7 @@ current_user: User
 recreate_db = 0
 
 if recreate_db:
+    print('Recreate db...')
     if os.path.exists(DB_PT):
         os.remove(DB_PT)
     db_session.global_init(DB_PT)

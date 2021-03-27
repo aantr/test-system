@@ -7,3 +7,4 @@ class Action(SqlAlchemyBase):
 
     str_id = sqlalchemy.Column(sqlalchemy.String, primary_key=True)
     url = sqlalchemy.Column(sqlalchemy.String)
+    description = sqlalchemy.Column(sqlalchemy.String)

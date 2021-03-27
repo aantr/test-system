@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 
 from blueprint.action_link.action_link import add_action
 from data.group import Group, GroupMember
+from data.invite import Invite
 from data.user import User
 from forms.submit_group import SubmitGroupForm
 
@@ -67,22 +68,26 @@ def get_group(group_id):
     return render_template('group.html', **locals())
 
 
-@groups_bp.route('/join_group/<int:group_id>', methods=['GET', 'POST'])
+@groups_bp.route('/add_group_member/<int:group_id>/<int:user_id>', methods=['GET'])
 @login_required
-def join_group(group_id):
+def add_group_member(group_id, user_id):
     db_sess = db_session.create_session()
-
     group = db_sess.query(Group).filter(Group.id == group_id).first()
     if group is None:
         abort(404)
+    user = db_sess.query(User).filter(User.id == user_id).first()
+    if user is None:
+        abort(404)
+    if group.user_id != current_user.id:
+        abort(401)
 
     joined_group_member = db_sess.query(GroupMember). \
-        filter(GroupMember.member_id == current_user.id). \
+        filter(GroupMember.member_id == user_id). \
         filter(GroupMember.group_id == group_id).first()
 
     if joined_group_member:
-        flash(f'Already joined to the group "{group.name}"', category='danger')
-        return redirect(url_for('action_link.action'))
+        flash(f'Already joined "{user.username}" to the group "{group.name}"', category='danger')
+        return redirect(url_for('invite.invites'))
 
     group: Group
     gm = GroupMember()
@@ -90,8 +95,42 @@ def join_group(group_id):
     gm.member_id = current_user.id
     db_sess.add(gm)
     db_sess.commit()
-    flash(f'Successfully joined to the group "{group.name}"', category='success')
-    return redirect(url_for('action_link.action'))
+    flash(f'Successfully joined "{user.username}" to the group "{group.name}"', category='success')
+    return redirect(url_for('invite.invites'))
+
+
+@groups_bp.route('/invite_join_group/<int:group_id>', methods=['GET'])
+@login_required
+def invite_join_group(group_id):
+    db_sess = db_session.create_session()
+    group = db_sess.query(Group).filter(Group.id == group_id).first()
+    if group is None:
+        abort(404)
+    group: Group
+    url = 'action_link.action'
+
+    joined_group_member = db_sess.query(GroupMember). \
+        filter(GroupMember.member_id == current_user.id). \
+        filter(GroupMember.group_id == group_id).first()
+
+    if joined_group_member:
+        flash(f'Already joined to the group "{group.name}"', category='danger')
+        return redirect(url_for(url))
+
+    if db_sess.query(Invite).filter(Invite.user_from_id == current_user.id). \
+            filter(Invite.user_to_id == group.user_id).first():
+        flash(f'Already sent invite to the group "{group.name}"', category='danger')
+        return redirect(url_for(url))
+
+    invite = Invite()
+    invite.user_from_id = current_user.id
+    invite.user_to_id = group.user_id
+    invite.action = f'/add_group_member/{group_id}/{current_user.id}'
+    invite.description = f'Join me to your group "{group.name}"'
+    db_sess.add(invite)
+    db_sess.commit()
+    flash(f'Successfully sent invite to the group "{group.name}"', category='success')
+    return redirect(url_for(url))
 
 
 @groups_bp.route('/set_join_action_group/<int:group_id>')
@@ -105,7 +144,9 @@ def set_join_action_group(group_id):
         abort(401)
     group: Group
     group.join_action_str_id = add_action(
-        db_sess, f'/join_group/{group_id}', commit=False)
+        db_sess, f'/invite_join_group/{group_id}',
+        f'Send invite to join the group "{group.name}"',
+        commit=False)
     db_sess.commit()
     print(group.join_action_str_id, group.join_action)
     return redirect(url_for('groups.get_group', group_id=group_id))

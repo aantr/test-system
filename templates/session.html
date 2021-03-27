@@ -33,7 +33,7 @@
         {% endfor %}
     </p>
     <p class="card-text">Members:<br>
-        {%- for j in members[session.id] -%}
+        {%- for j in members -%}
         {{ j.username }}<br>
         {% else %}
         Nothing :(
