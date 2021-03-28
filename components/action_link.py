@@ -1,5 +1,5 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Blueprint, flash, url_for
+from flask import flash, url_for
 import datetime
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
@@ -7,13 +7,12 @@ from data import db_session
 from data.action import Action
 from data.user import User
 from forms.action_link import ActionLinkForm
+from global_app import get_app
 from utils.unique_code import get_code
 
-current_user: User
-action_bp = Blueprint('action_link', __name__,
-                      template_folder='templates',
-                      static_folder='static')
+app = get_app()
 
+current_user: User
 scheduler = BackgroundScheduler(daemon=True)
 scheduler.start()
 
@@ -24,12 +23,6 @@ def _stop_action(str_id):
     if action is not None:
         db_sess.delete(action)
         db_sess.commit()
-
-
-def clear_all_actions():
-    db_sess = db_session.create_session()
-    db_sess.query(Action).delete()
-    db_sess.commit()
 
 
 def add_action(db_sess, url, description, commit=True):
@@ -50,7 +43,7 @@ def add_action(db_sess, url, description, commit=True):
     return action.str_id
 
 
-@action_bp.route('/action_link/<str_id>', methods=['GET'])
+@app.route('/action_link/<str_id>', methods=['GET'])
 @login_required
 def action_link(str_id):
     db_sess = db_session.create_session()
@@ -61,7 +54,7 @@ def action_link(str_id):
     return redirect(action.url)
 
 
-@action_bp.route('/action', methods=['GET', 'POST'])
+@app.route('/action', methods=['GET', 'POST'])
 @login_required
 def action():
     db_sess = db_session.create_session()
@@ -73,5 +66,5 @@ def action():
         if action is None:
             flash('Incorrect action ID', category='danger')
         else:
-            return redirect(url_for(f'action_link.action_link', str_id=action.str_id))
+            return redirect(url_for(f'action_link', str_id=action.str_id))
     return render_template('action_link.html', form=form)

@@ -36,18 +36,18 @@
                 <ul class="navbar-nav">
                     <li class="nav-item"><a
                             class="nav-link{% if session.started %} active{% else %} disabled{% endif %}"
-                            href="{{ url_for('workplace.workplace_problem') }}"
+                            href="{{ url_for('workplace_problem') }}"
                             role="button">Problems</a></li>
                     <li class="nav-item"><a
                             class="nav-link{% if session.started %} active{% else %} disabled{% endif %}"
-                            href="{{ url_for('workplace.workplace_status') }}"
+                            href="{{ url_for('workplace_status') }}"
                             role="button">Status</a></li>
                     <li class="nav-item"><a
                             class="nav-link{% if session.started %} active{% else %} disabled{% endif %}"
-                            href="{{ url_for('workplace.workplace_results') }}"
+                            href="{{ url_for('workplace_results') }}"
                             role="button">Results</a></li>
                     <li class="nav-item"><a class="nav-link active"
-                                            href="{{ url_for('workplace.workplace_info') }}"
+                                            href="{{ url_for('workplace_info') }}"
                                             role="button">Info</a></li>
                 </ul>
             </div>

@@ -5,6 +5,8 @@ from flask import Blueprint, request
 from flask import url_for, flash
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
+
+from global_app import get_app
 from program_testing import test_program as tp
 
 from data import db_session
@@ -16,12 +18,10 @@ from data.task import Task
 from forms.submit_problem import SubmitProblemForm
 from utils.utils import get_message_from_form
 
-problem = Blueprint('problem', __name__,
-                    template_folder='templates',
-                    static_folder='static')
+app = get_app()
 
 
-@problem.route('/add_problem', methods=['GET', 'POST'])
+@app.route('/add_problem', methods=['GET', 'POST'])
 @login_required
 def add_problem():
     db_sess = db_session.create_session()
@@ -85,7 +85,7 @@ def add_problem():
             problem, form.file.data.stream.read(), template)
         flash(f'Successfully added problem "{problem.name}"', category='success')
         db_sess.commit()
-        return redirect(url_for('problem.add_problem'))
+        return redirect(url_for('add_problem'))
     else:
         msg = get_message_from_form(form)
         if msg:
@@ -94,7 +94,7 @@ def add_problem():
     return render_template('add_problem.html', form=form)
 
 
-@problem.route('/problem/<int:problem_id>')
+@app.route('/problem/<int:problem_id>')
 @login_required
 def get_problem(problem_id):
     test_program = tp.get_test_program()
@@ -109,7 +109,7 @@ def get_problem(problem_id):
     return render_template('problem.html', **locals())
 
 
-@problem.route('/problemset', methods=['GET', 'POST'])
+@app.route('/problemset', methods=['GET', 'POST'])
 @login_required
 def problemset():
     db_sess = db_session.create_session()

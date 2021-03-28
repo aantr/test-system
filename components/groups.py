@@ -2,25 +2,20 @@ from flask import url_for, flash
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
 
-from blueprint.action_link.action_link import add_action
+from components.action_link import add_action
 from data.group import Group, GroupMember
 from data.invite import Invite
 from data.user import User
 from forms.submit_group import SubmitGroupForm
-
 from data import db_session
-
-from flask import Blueprint
-
+from global_app import get_app
 from utils.utils import get_message_from_form
 
 current_user: User
-groups_bp = Blueprint('groups', __name__,
-                      template_folder='templates',
-                      static_folder='static')
+app = get_app()
 
 
-@groups_bp.route('/groups', methods=['GET'])
+@app.route('/groups', methods=['GET'])
 @login_required
 def groups():
     db_sess = db_session.create_session()
@@ -29,7 +24,7 @@ def groups():
     return render_template('groups.html', **locals())
 
 
-@groups_bp.route('/add_group', methods=['GET', 'POST'])
+@app.route('/add_group', methods=['GET', 'POST'])
 @login_required
 def add_group():
     db_sess = db_session.create_session()
@@ -42,7 +37,7 @@ def add_group():
         db_sess.add(group)
         db_sess.commit()
         flash(f'Successfully added group "{group.name}"', category='success')
-        return redirect(url_for('groups.add_group'))
+        return redirect(url_for('add_group'))
     else:
         msg = get_message_from_form(form)
         if msg:
@@ -51,7 +46,7 @@ def add_group():
     return render_template('add_group.html', **locals())
 
 
-@groups_bp.route('/groups/<int:group_id>', methods=['GET', 'POST'])
+@app.route('/groups/<int:group_id>', methods=['GET', 'POST'])
 @login_required
 def get_group(group_id):
     db_sess = db_session.create_session()
@@ -68,7 +63,7 @@ def get_group(group_id):
     return render_template('group.html', **locals())
 
 
-@groups_bp.route('/add_group_member/<int:group_id>/<int:user_id>', methods=['GET'])
+@app.route('/add_group_member/<int:group_id>/<int:user_id>', methods=['GET'])
 @login_required
 def add_group_member(group_id, user_id):
     db_sess = db_session.create_session()
@@ -87,7 +82,7 @@ def add_group_member(group_id, user_id):
 
     if joined_group_member:
         flash(f'Already joined "{user.username}" to the group "{group.name}"', category='danger')
-        return redirect(url_for('invite.invites'))
+        return redirect(url_for('invites'))
 
     group: Group
     gm = GroupMember()
@@ -96,10 +91,10 @@ def add_group_member(group_id, user_id):
     db_sess.add(gm)
     db_sess.commit()
     flash(f'Successfully joined "{user.username}" to the group "{group.name}"', category='success')
-    return redirect(url_for('invite.invites'))
+    return redirect(url_for('invites'))
 
 
-@groups_bp.route('/invite_join_group/<int:group_id>', methods=['GET'])
+@app.route('/invite_join_group/<int:group_id>', methods=['GET'])
 @login_required
 def invite_join_group(group_id):
     db_sess = db_session.create_session()
@@ -107,7 +102,7 @@ def invite_join_group(group_id):
     if group is None:
         abort(404)
     group: Group
-    url = 'action_link.action'
+    url = 'action'
 
     joined_group_member = db_sess.query(GroupMember). \
         filter(GroupMember.member_id == current_user.id). \
@@ -133,7 +128,7 @@ def invite_join_group(group_id):
     return redirect(url_for(url))
 
 
-@groups_bp.route('/set_join_action_group/<int:group_id>')
+@app.route('/set_join_action_group/<int:group_id>')
 @login_required
 def set_join_action_group(group_id):
     db_sess = db_session.create_session()
@@ -149,4 +144,4 @@ def set_join_action_group(group_id):
         commit=False)
     db_sess.commit()
     print(group.join_action_str_id, group.join_action)
-    return redirect(url_for('groups.get_group', group_id=group_id))
+    return redirect(url_for('get_group', group_id=group_id))

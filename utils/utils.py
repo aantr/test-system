@@ -2,6 +2,8 @@ import datetime
 
 from flask_login import current_user
 
+from data import db_session
+from data.action import Action
 from data.session import SessionMember
 from program_testing import prog_lang
 from program_testing.message import get_message_solution
@@ -45,3 +47,7 @@ def get_duration_from_time(time):
     return duration
 
 
+def clear_all_actions():
+    db_sess = db_session.create_session()
+    db_sess.query(Action).delete()
+    db_sess.commit()

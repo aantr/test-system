@@ -6,6 +6,7 @@ from flask import render_template, request, \
 from flask_login import login_required, current_user
 
 from data.session import Session
+from global_app import get_app
 from program_testing import test_program as tp
 
 from data import db_session
@@ -16,14 +17,9 @@ from data.source_code import SourceCode
 from data.test_result import TestResult
 from forms.submit_solution import SubmitSolutionForm
 from program_testing import prog_lang
-
-from flask import Blueprint
-
 from utils.utils import get_session_joined, get_solution_row
 
-solution = Blueprint('solution', __name__,
-                     template_folder='templates',
-                     static_folder='static')
+app = get_app()
 
 
 def send_solution(problem_id, source, lang, session_id, db_sess):
@@ -54,7 +50,7 @@ def send_solution(problem_id, source, lang, session_id, db_sess):
     return solution
 
 
-@solution.route('/submit/<int:problem_id>', methods=['GET', 'POST'])
+@app.route('/submit/<int:problem_id>', methods=['GET', 'POST'])
 @login_required
 def submit(problem_id):
     languages = prog_lang.get_languages()
@@ -86,7 +82,7 @@ def submit(problem_id):
         session_id = None
 
     if not available:
-        return redirect(url_for('workplace.workplace_info'))
+        return redirect(url_for('workplace_info'))
 
     if form.validate_on_submit():
         if form.file.data:
@@ -99,18 +95,16 @@ def submit(problem_id):
 
         solution = send_solution(problem_id, source, form.select.data, session_id, db_sess)
         if session_id:
-            return redirect(url_for('workplace.workplace_status'))
+            return redirect(url_for('workplace_status'))
         return redirect('/status')
 
     return render_template('submit.html', **locals())
 
 
-@solution.route('/status')
+@app.route('/status')
 @login_required
 def status():
     db_sess = db_session.create_session()
-    # solution = sorted(filter(lambda x: x.session_id is None, current_user.solution),
-    #                   key=lambda x: x.sent_date, reverse=True)
     solution = db_sess.query(Solution).filter(Solution.user_id == current_user.id). \
         filter(Solution.session_id == None).order_by(Solution.sent_date.desc()).all()
     solution_rows = [[Markup(render_template(
@@ -121,7 +115,7 @@ def status():
                            update_timeout=current_app.config['UPDATE_STATUS_TIMEOUT'])
 
 
-@solution.route('/update')
+@app.route('/update')
 @login_required
 def update():
     db_sess = db_session.create_session()

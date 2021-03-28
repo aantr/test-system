@@ -1,15 +1,9 @@
-using System;
-using System.Text;
-namespace MyApplication
-{
-  class Program
-  {
-     static void Main()
-     {  Console.InputEncoding = Encoding.GetEncoding(1251);
-        Console.OutputEncoding = Encoding.GetEncoding(1251);
+import time
 
-        int[] nums = Array.ConvertAll(Console.ReadLine().Split(' '),s=>Convert.ToInt32(s));
-        Console.WriteLine((nums[0]+nums[1]).ToString());
-     }
-  }
-}
+# a = ['abc' for i in range(10 ** 10)]  # Memory limit
+# print(1 / 0)  #
+
+time.sleep(2)
+
+a, b = map(int, input().split())
+print(a + b)

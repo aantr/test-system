@@ -4,8 +4,6 @@ from flask_login import LoginManager, login_required
 import os
 import threading
 
-from blueprint.groups.groups import groups_bp
-from blueprint.invite.invite import invite_bp
 from data import db_session
 from data.problem import Problem
 from data.problem_category import ProblemCategory
@@ -13,13 +11,9 @@ from data.problem_tests import ProblemTests
 from data.task import Task
 from data.user import User
 import program_testing.prog_lang as prog_lang
+import global_app
 from program_testing import test_program as tp
-from blueprint.session.session import session_bp
-from blueprint.problem.problem import problem
-from blueprint.solution.solution import solution
-from blueprint.login.login import login
-from blueprint.action_link.action_link import action_bp, clear_all_actions
-from blueprint.workplace.workplace import workplace_bp
+from utils.utils import clear_all_actions
 
 SECRET_KEY = 'test_system_secret_key'
 DEBUG = False
@@ -28,19 +22,9 @@ CONFIG_LANG = os.path.abspath('config/test_program.json')
 UPDATE_STATUS_TIMEOUT = 0.5
 TEST_THREADS = 3
 
-app = Flask(__name__)
+global_app.global_init()
+app = global_app.get_app()
 app.config.from_object(__name__)
-
-app.register_blueprint(session_bp)
-app.register_blueprint(problem)
-app.register_blueprint(solution)
-app.register_blueprint(login)
-app.register_blueprint(action_bp)
-app.register_blueprint(workplace_bp)
-app.register_blueprint(groups_bp)
-app.register_blueprint(invite_bp)
-
-
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -58,7 +42,7 @@ if recreate_db:
     p = Problem()
     p.name = 'A + B'
     p.memory_limit = 2 ** 20 * 32
-    p.time_limit = 1
+    p.time_limit = 3
     p.task = Task()
     p.problem_tests = ProblemTests()
     db_sess.add(p)
@@ -106,7 +90,7 @@ def error404(error):
 
 @app.errorhandler(401)
 def error401(error):
-    return redirect('/login')
+    return render_template('error.html', code=401), 401
 
 
 @app.route('/')
@@ -124,6 +108,16 @@ def server_state():
     return render_template('server_state.html',
                            queue=queue, threads=threads)
 
+
+# Components
+import components.action_link
+import components.groups
+import components.invite
+import components.login
+import components.problem
+import components.session
+import components.solution
+import components.workplace
 
 if __name__ == '__main__':
     with open(app.config['CONFIG_LANG'], 'r') as f:

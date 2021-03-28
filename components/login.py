@@ -3,14 +3,13 @@ from flask_login import login_user, login_required, logout_user, current_user
 from data import db_session
 from data.user import User
 from forms.login import LoginForm
-from flask import Blueprint
 
-login = Blueprint('login', __name__,
-                  template_folder='templates',
-                  static_folder='static')
+from global_app import get_app
+
+app = get_app()
 
 
-@login.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login_():
     if current_user.is_authenticated:
         print(current_user.username)
@@ -26,7 +25,7 @@ def login_():
     return render_template('login.html', form=form)
 
 
-@login.route('/logout')
+@app.route('/logout')
 @login_required
 def logout():
     logout_user()

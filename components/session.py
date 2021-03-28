@@ -5,26 +5,25 @@ from flask import url_for, flash
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
 
-from blueprint.action_link.action_link import add_action
+from components.action_link import add_action
 from data import db_session
 from data.invite import Invite
 from data.problem import Problem
 from data.session import Session, SessionMember
 from data.user import User
 from forms.submit_session import SubmitSessionForm
+from global_app import get_app
 from utils.utils import get_message_from_form, get_duration_from_time
 
 current_user: User
-session_bp = Blueprint('session', __name__,
-                       template_folder='templates',
-                       static_folder='static')
+app = get_app()
 
 scheduler = BackgroundScheduler(daemon=True)
 scheduler.start()
 close_sessions_jobs = {}
 
 
-@session_bp.route('/add_session', methods=['GET', 'POST'])
+@app.route('/add_session', methods=['GET', 'POST'])
 @login_required
 def add_session():
     db_sess = db_session.create_session()
@@ -49,7 +48,7 @@ def add_session():
 
         flash(f'Successfully added session "{session.name}"', category='success')
         db_sess.commit()
-        return redirect(url_for('session.add_session'))
+        return redirect(url_for('add_session'))
     else:
         msg = get_message_from_form(form)
         if msg:
@@ -58,7 +57,7 @@ def add_session():
     return render_template('add_session.html', form=form)
 
 
-@session_bp.route('/set_join_action_session/<int:session_id>')
+@app.route('/set_join_action_session/<int:session_id>')
 @login_required
 def set_join_action_session(session_id):
     db_sess = db_session.create_session()
@@ -73,10 +72,10 @@ def set_join_action_session(session_id):
         f'Send invite to join the session "{session.name}"',
         commit=False)
     db_sess.commit()
-    return redirect(url_for('session.get_session', session_id=session_id))
+    return redirect(url_for('get_session', session_id=session_id))
 
 
-@session_bp.route('/start_session/<int:session_id>')
+@app.route('/start_session/<int:session_id>')
 @login_required
 def start_session(session_id):
     db_sess = db_session.create_session()
@@ -102,10 +101,10 @@ def start_session(session_id):
                                     run_date=now + duration)
             close_sessions_jobs[session_id] = job
 
-    return redirect(url_for('session.get_session', session_id=session_id))
+    return redirect(url_for('get_session', session_id=session_id))
 
 
-@session_bp.route('/stop_session/<int:session_id>')
+@app.route('/stop_session/<int:session_id>')
 @login_required
 def stop_session(session_id):
     db_sess = db_session.create_session()
@@ -121,7 +120,7 @@ def stop_session(session_id):
             close_sessions_jobs[session_id].remove()
             del close_sessions_jobs[session_id]
 
-    return redirect(url_for('session.get_session', session_id=session_id))
+    return redirect(url_for('get_session', session_id=session_id))
 
 
 def _stop_session(id, session=None, db_sess=None):
@@ -141,7 +140,7 @@ def check_session_timeout(db_sess, session):
             _stop_session(session.id, session, db_sess)
 
 
-@session_bp.route('/my_sessions')
+@app.route('/my_sessions')
 @login_required
 def my_sessions():
     db_sess = db_session.create_session()
@@ -160,7 +159,7 @@ def my_sessions():
     return render_template('my_sessions.html', **locals())
 
 
-@session_bp.route('/session/<int:session_id>')
+@app.route('/session/<int:session_id>')
 @login_required
 def get_session(session_id):
     db_sess = db_session.create_session()
@@ -180,7 +179,7 @@ def get_session(session_id):
     return render_template('session.html', **locals())
 
 
-@session_bp.route('/add_session_member/<int:session_id>/<int:user_id>', methods=['GET'])
+@app.route('/add_session_member/<int:session_id>/<int:user_id>', methods=['GET'])
 @login_required
 def add_session_member(session_id, user_id):
     db_sess = db_session.create_session()
@@ -199,7 +198,7 @@ def add_session_member(session_id, user_id):
 
     if joined_session_member:
         flash(f'Already joined "{user.username}" to the session "{session.name}"', category='danger')
-        return redirect(url_for('invite.invites'))
+        return redirect(url_for('invites'))
 
     session: Session
     sm = SessionMember()
@@ -208,10 +207,10 @@ def add_session_member(session_id, user_id):
     db_sess.add(sm)
     db_sess.commit()
     flash(f'Successfully joined "{user.username}" to the session "{session.name}"', category='success')
-    return redirect(url_for('invite.invites'))
+    return redirect(url_for('invites'))
 
 
-@session_bp.route('/invite_join_session/<int:session_id>', methods=['GET'])
+@app.route('/invite_join_session/<int:session_id>', methods=['GET'])
 @login_required
 def invite_join_session(session_id):
     db_sess = db_session.create_session()
@@ -219,7 +218,7 @@ def invite_join_session(session_id):
     if session is None:
         abort(404)
     session: Session
-    url = 'action_link.action'
+    url = 'action'
 
     joined_session_member = db_sess.query(SessionMember). \
         filter(SessionMember.member_id == current_user.id). \

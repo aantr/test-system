@@ -70,7 +70,9 @@ class TestProgram:
     def start(self, threads=1):
         if os.name == 'posix':
             print(f'[Test system] Unix system detected, '
-                  f'run all processes in uid: {run_as_user_uid_linux}')
+                  f'run all processes with preexec_fn.\n'
+                  f'Parameters\n'
+                  f'UID: {run_as_user_uid_linux}')
         print('[Test system] Clear source folder')
         folder = os.path.join(directory, 'source_solution')
         for filename in os.listdir(folder):
@@ -110,9 +112,12 @@ class TestProgram:
                     solution_id = self._get_from_queue(db_sess)
                 except IndexError as e:
                     if DEBUG:
-                        print('error', e)
+                        print('[Test system] Error in _thread from _get_from_queue: ', e)
                 else:
-                    self._run_testing(solution_id, db_sess, source_dir)
+                    try:
+                        self._run_testing(solution_id, db_sess, source_dir)
+                    except Exception as e:
+                        print('[Test system] Error in _thread from _run_testing: ', e)
 
     def _run_testing(self, solution_id, db_sess, source_dir):
         solution = self.read_solution(db_sess, solution_id)
@@ -394,14 +399,14 @@ class TestProgram:
             return proc
         elif system == 'posix':
             proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
-                         preexec_fn=TestProgram.set_user(run_as_user_uid_linux))
+                         preexec_fn=TestProgram.preexec_linux())
             return proc
-        raise ValueError(f'Unrecognized system: {platform.system()}')
+        raise ValueError(f'Unrecognized system: "{platform.system()}"')
 
     @staticmethod
-    def set_user(user_uid):
+    def preexec_linux():
         def decorated():
-            os.setuid(user_uid)
+            os.setuid(run_as_user_uid_linux)
 
         return decorated
 

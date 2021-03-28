@@ -5,3 +5,6 @@ import time
 
 a, b = map(int, input().split())
 print(a + b)
+
+for i in range(10 ** 6):
+    i ** 2
