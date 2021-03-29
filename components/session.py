@@ -183,7 +183,8 @@ def get_session(session_id):
 @login_required
 def add_session_member(session_id, user_id):
     db_sess = db_session.create_session()
-    session = db_sess.query(Session).filter(Session.id == session_id).first()
+    session = db_sess.query(Session).filter(Session.id == session_id).\
+        filter(Session.user_id == current_user.id).first()
     if session is None:
         abort(404)
     user = db_sess.query(User).filter(User.id == user_id).first()

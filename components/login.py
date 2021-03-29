@@ -12,7 +12,6 @@ app = get_app()
 @app.route('/login', methods=['GET', 'POST'])
 def login_():
     if current_user.is_authenticated:
-        print(current_user.username)
         return redirect('/')
     form = LoginForm()
     if form.validate_on_submit():

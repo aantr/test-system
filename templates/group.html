@@ -4,10 +4,8 @@
 <body>
 
 <main role="main" class="container">
-
     <br>
     <h5 align="center">Members</h5>
-
     <table class="table table-hover">
         <thead class="thead-light">
         <tr>
@@ -20,7 +18,6 @@
         <tr>
             <td>{{ i.id }}</td>
             <td>{{ i.username }}</td>
-
         </tr>
         {% endfor %}
         </tbody>
@@ -32,11 +29,8 @@
         {{ group.join_action_str_id }}
         {% else %} --- {% endif %}
     </p>
-
-    <p>
-        <a href="/set_join_action_group/{{ group.id }}" class="btn btn-info">Reset ID</a>
-
-    </p>
+    <p><a href="/set_join_action_group/{{ group.id }}" class="btn btn-info">Reset ID</a></p>
+    <p><a href="/select_users?return=/add_group_member?group_id={{ group_id }}" class="btn btn-warning">Add members</a></p>
 
 </main>
 </body>

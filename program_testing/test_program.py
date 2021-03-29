@@ -381,7 +381,6 @@ class TestProgram:
                         else:
                             return False
                     else:
-                        print(filename)
                         return False
         except zipfile.error as e:
             if DEBUG:

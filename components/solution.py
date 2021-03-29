@@ -139,5 +139,4 @@ def update():
             test_res = test_program.read_test_results(i)
             for j in test_res:
                 j: test_program.TestResult
-                print(j.time, j.memory, j.stdout, j.stderr)
     return json.dumps(solution_rows)

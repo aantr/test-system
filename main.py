@@ -1,6 +1,6 @@
 import json
-from flask import Flask, render_template, redirect
-from flask_login import LoginManager, login_required
+from flask import Flask, render_template, redirect, url_for
+from flask_login import LoginManager, login_required, current_user
 import os
 import threading
 
@@ -90,7 +90,9 @@ def error404(error):
 
 @app.errorhandler(401)
 def error401(error):
-    return render_template('error.html', code=401), 401
+    if current_user.is_authenticated:
+        return render_template('error.html', code=401), 401
+    return redirect(url_for('login_'))
 
 
 @app.route('/')
@@ -118,6 +120,7 @@ import components.problem
 import components.session
 import components.solution
 import components.workplace
+import components.select_users
 
 if __name__ == '__main__':
     with open(app.config['CONFIG_LANG'], 'r') as f:
