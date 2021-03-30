@@ -16,19 +16,22 @@ app = get_app()
 def select_user():
     db_sess = db_session.create_session()
     username = request.args.get('username', default='', type=str)
-    _return = request.args.get('return', default=None, type=str)
+    _return = request.args.get('return', default='', type=str)
     user_ids = request.args.get('user_ids', default='', type=str)
+    _user_ids = user_ids
     try:
-        user_ids = list(map(int, user_ids.split(',')))
+        _user_ids = _user_ids.split(',') if _user_ids else []
+        _user_ids = list(map(int, _user_ids))
     except ValueError:
         abort(404)
-    selected_users = db_sess.query(User).filter(User.id.in_(user_ids)).all()
-    if len(selected_users) != len(user_ids):
+    selected_users = db_sess.query(User).filter(User.id.in_(_user_ids)).all()
+    if len(selected_users) != len(_user_ids):
         abort(404)
     if not _return:
         abort(404)
 
     users = []
     if username:
-        users = db_sess.query(User).filter(User.username.like(f'%{username}%')).all()
+        users = db_sess.query(User).filter(User.username.like(f'%{username}%')).\
+            filter(User.id.notin_(_user_ids)).all()
     return render_template('select_users.html', **locals())

@@ -84,6 +84,8 @@ import components.solution
 import components.workplace
 import components.select_users
 import components.errors
+import components.index
+import components.system_state
 
 if __name__ == '__main__':
     with open(app.config['CONFIG_LANG'], 'r') as f:

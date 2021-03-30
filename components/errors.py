@@ -1,6 +1,6 @@
-from flask import url_for, flash, request
-from flask import render_template, redirect, abort
-from flask_login import login_required, current_user
+from flask import url_for
+from flask import render_template, redirect
+from flask_login import current_user
 from global_app import get_app
 
 app = get_app()
