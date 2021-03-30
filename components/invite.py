@@ -28,7 +28,7 @@ def accept_invite(invite_id):
     if not invite:
         abort(404)
     if invite.user_to_id != current_user.id:
-        abort(401)
+        abort(403)
     url = invite.action
     db_sess.query(Invite).filter(Invite.id == invite_id).delete()
     db_sess.commit()

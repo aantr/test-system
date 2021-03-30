@@ -55,7 +55,7 @@ def get_group(group_id):
     if group is None:
         abort(404)
     if group.user_id != current_user.id:
-        abort(401)
+        abort(403)
 
     members = [i.member for i in db_sess.query(GroupMember)
         .filter(GroupMember.group_id == group_id).all()]
@@ -77,9 +77,9 @@ def add_group_member():
     if group is None:
         abort(404)
     if group.user_id != current_user.id:
-        abort(401)
+        abort(403)
     users = db_sess.query(User).filter(User.id.in_(user_ids)).all()
-    if not users:
+    if len(users) != len(user_ids):
         abort(404)
 
     joined_group_member = db_sess.query(GroupMember). \
@@ -145,7 +145,7 @@ def set_join_action_group(group_id):
     if not group:
         abort(404)
     if group.user_id != current_user.id:
-        abort(401)
+        abort(403)
     group: Group
     group.join_action_str_id = add_action(
         db_sess, f'/invite_join_group/{group_id}',

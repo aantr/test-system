@@ -6,27 +6,52 @@
 <main role="main" class="container">
     <br>
     <p>
-        <input class="form-control" id="search_input">
+        <input class="form-control" id="search_input" style="max-width: 30vw">
     </p>
     <p>
         <button onclick="on_click()" class="btn btn-info">Search</button>
     </p>
-    <table class="table table-hover">
-        <thead class="thead-light">
-        <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Name</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for i in users %}
-        <tr>
-            <td>{{ i.id }}</td>
-            <td>{{ i.username }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-md-8">
+            <h5>Search:</h5>
+            <table class="table table-hover">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in users %}
+                <tr>
+                    <td>{{ i.id }}</td>
+                    <td>{{ i.username }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-6 col-md-4">
+            <h5>Selected:</h5>
+            <table class="table table-hover">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in selected_users %}
+                <tr>
+                    <td>{{ i.id }}</td>
+                    <td>{{ i.username }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 
 </main>
 <script>
@@ -40,6 +65,10 @@
     window.location = '/select_users?return=' + ret + '&username=' + value;
     }
     }
+
+
+
+
 </script>
 </body>
 {% endblock %}

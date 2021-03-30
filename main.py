@@ -25,9 +25,6 @@ TEST_THREADS = 3
 global_app.global_init()
 app = global_app.get_app()
 app.config.from_object(__name__)
-
-login_manager = LoginManager()
-login_manager.init_app(app)
 current_user: User
 
 recreate_db = 0
@@ -76,41 +73,6 @@ if recreate_db:
 
     db_sess.commit()
 
-
-@login_manager.user_loader
-def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
-
-
-@app.errorhandler(404)
-def error404(error):
-    return render_template('error.html', code=404), 404
-
-
-@app.errorhandler(401)
-def error401(error):
-    if current_user.is_authenticated:
-        return render_template('error.html', code=401), 401
-    return redirect(url_for('login_'))
-
-
-@app.route('/')
-@app.route('/index')
-@login_required
-def index():
-    return render_template('index.html')
-
-
-@app.route('/server_state')
-@login_required
-def server_state():
-    queue = test_program.get_queue_length()
-    threads = app.config['TEST_THREADS']
-    return render_template('server_state.html',
-                           queue=queue, threads=threads)
-
-
 # Components
 import components.action_link
 import components.groups
@@ -121,6 +83,7 @@ import components.session
 import components.solution
 import components.workplace
 import components.select_users
+import components.errors
 
 if __name__ == '__main__':
     with open(app.config['CONFIG_LANG'], 'r') as f:

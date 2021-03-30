@@ -1,5 +1,5 @@
 from flask import render_template, redirect, flash
-from flask_login import login_user, login_required, logout_user, current_user
+from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from data import db_session
 from data.user import User
 from forms.login import LoginForm
@@ -7,6 +7,15 @@ from forms.login import LoginForm
 from global_app import get_app
 
 app = get_app()
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
 
 
 @app.route('/login', methods=['GET', 'POST'])

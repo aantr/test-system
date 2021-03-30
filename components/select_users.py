@@ -17,6 +17,14 @@ def select_user():
     db_sess = db_session.create_session()
     username = request.args.get('username', default='', type=str)
     _return = request.args.get('return', default=None, type=str)
+    user_ids = request.args.get('user_ids', default='', type=str)
+    try:
+        user_ids = list(map(int, user_ids.split(',')))
+    except ValueError:
+        abort(404)
+    selected_users = db_sess.query(User).filter(User.id.in_(user_ids)).all()
+    if len(selected_users) != len(user_ids):
+        abort(404)
     if not _return:
         abort(404)
 

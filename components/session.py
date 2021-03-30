@@ -65,7 +65,7 @@ def set_join_action_session(session_id):
     if not session:
         abort(404)
     if session.user_id != current_user.id:
-        abort(401)
+        abort(403)
 
     session.join_action_str_id = add_action(
         db_sess, f'/invite_join_session/{session_id}',
@@ -83,7 +83,7 @@ def start_session(session_id):
     if not session:
         abort(404)
     if session.user_id != current_user.id:
-        abort(401)
+        abort(403)
 
     members = [i.member for i in db_sess.query(SessionMember).
         filter(SessionMember.session_id == session_id).all()]
@@ -112,7 +112,7 @@ def stop_session(session_id):
     if not session:
         abort(404)
     if session.user_id != current_user.id:
-        abort(401)
+        abort(403)
 
     if session.started:
         _stop_session(session.id, session=session, db_sess=db_sess)
@@ -168,7 +168,7 @@ def get_session(session_id):
     if not session:
         abort(404)
     if session.user_id != current_user.id:
-        abort(401)
+        abort(403)
 
     check_session_timeout(db_sess, session)
 
@@ -191,7 +191,7 @@ def add_session_member(session_id, user_id):
     if user is None:
         abort(404)
     if session.user_id != current_user.id:
-        abort(401)
+        abort(403)
 
     joined_session_member = db_sess.query(SessionMember). \
         filter(SessionMember.member_id == user_id). \
