@@ -27,7 +27,7 @@ app = global_app.get_app()
 app.config.from_object(__name__)
 current_user: User
 
-recreate_db = 0
+recreate_db = 1
 
 if recreate_db:
     print('Recreate db...')
@@ -46,16 +46,19 @@ if recreate_db:
 
     user = User()
     user.username = 'u1'
+    user.type = 30
     user.set_password('1234')
     db_sess.add(user)
 
     user = User()
     user.username = 'admin'
+    user.type = 10
     user.set_password('admin')
     db_sess.add(user)
 
     user = User()
     user.username = 'user'
+    user.type = 30
     user.set_password('user')
     db_sess.add(user)
 

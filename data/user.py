@@ -11,8 +11,10 @@ class User(SqlAlchemyBase, UserMixin):
     __tablename__ = 'user'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    username = sqlalchemy.Column(sqlalchemy.String, nullable=True, unique=True)
-    hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    username = sqlalchemy.Column(sqlalchemy.String, unique=True)
+    hashed_password = sqlalchemy.Column(sqlalchemy.String)
+    email = sqlalchemy.Column(sqlalchemy.String)
+    type = sqlalchemy.Column(sqlalchemy.Integer)
 
     solution = orm.relation('Solution', back_populates='user')
     problem = orm.relation('Problem', back_populates='user')
