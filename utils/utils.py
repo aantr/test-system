@@ -23,7 +23,6 @@ def get_session_joined(db_sess):
         filter(SessionMember.member_id == current_user.id).first()
     if not joined_session_member:
         return
-    joined_session_member
     return joined_session_member.session
 
 

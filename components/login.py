@@ -5,6 +5,7 @@ from data.user import User
 from forms.login import LoginForm
 
 from global_app import get_app
+from utils.utils import get_message_from_form
 
 app = get_app()
 
@@ -30,6 +31,10 @@ def login_():
             login_user(user)
             return redirect('/')
         flash('Incorrect username or password', category='danger')
+    else:
+        msg = get_message_from_form(form)
+        if msg:
+            flash(msg, category='danger')
     return render_template('login.html', form=form)
 
 

@@ -17,7 +17,7 @@ from data.source_code import SourceCode
 from data.test_result import TestResult
 from forms.submit_solution import SubmitSolutionForm
 from program_testing import prog_lang
-from utils.utils import get_session_joined, get_solution_row
+from utils.utils import get_session_joined, get_solution_row, get_message_from_form
 
 app = get_app()
 
@@ -97,6 +97,10 @@ def submit(problem_id):
         if session_id:
             return redirect(url_for('workplace_status'))
         return redirect('/status')
+    else:
+        msg = get_message_from_form(form)
+        if msg:
+            flash(msg, category='danger')
 
     return render_template('submit.html', **locals())
 

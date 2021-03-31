@@ -90,7 +90,7 @@ def add_group_member():
     if joined_group_member:
         flash(f'User "{joined_group_member.member.username}" already joined to the group "{group.name}"',
               category='danger')
-        return redirect(url_for('invites'))
+        return redirect(url_for('get_group', group_id=group_id))
 
     for i in user_ids:
         group: Group
@@ -100,7 +100,7 @@ def add_group_member():
         db_sess.add(gm)
     db_sess.commit()
     flash(f'Successfully joined {len(user_ids)} user(s) to the group "{group.name}"', category='success')
-    return redirect(url_for('invites'))
+    return redirect(url_for('get_group', group_id=group_id))
 
 
 @app.route('/invite_join_group/<int:group_id>', methods=['GET'])

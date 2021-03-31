@@ -5,15 +5,24 @@
 
 <main role="main" class="container">
     <br>
-    <p>
-        <input class="form-control" id="search_input" style="max-width: 30vw" value="{{ username }}">
-    </p>
-    <p>
-        <button onclick="on_click()" class="btn btn-info">Search</button>
-    </p>
+    {% for cat, msg in get_flashed_messages(True) %}
+    <div class="alert alert-{{ cat }}" role="alert">
+        {{ msg }}
+    </div>
+    {% endfor %}
+    <form action="" method="post">
+        <div>{{ form.csrf_token }}</div>
+
+        <h6>{{ form.search.label.text }}</h6>
+        <p>
+            {{ form.search(class="form-control", style="max-width: 30vw") }}</br>
+            {{ form.submit(type="submit", class="btn btn-secondary", style="min-width: 75px") }}
+        </p>
+
+    </form>
     <div class="row">
         <div class="col-md-8">
-            <h5>Search "{{ username }}":</h5>
+            <h5>Search "{{ search_field }}":</h5>
             <table class="table table-hover">
                 <thead class="thead-light">
                 <tr>
@@ -22,8 +31,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for i in users %}
-                <tr onclick="add_user({{ i.id }});">
+                {% for i in search_objects %}
+                <tr onclick="add_object({{ i.id }});">
                     <td>{{ i.id }}</td>
                     <td>{{ i.username }}</td>
                 </tr>
@@ -41,8 +50,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for i in selected_users %}
-                <tr onclick="remove_user({{ i.id }})">
+                {% for i in selected_search_objects %}
+                <tr onclick="remove_object({{ i.id }})">
                     <td>{{ i.id }}</td>
                     <td>{{ i.username }}</td>
                 </tr>
@@ -52,38 +61,34 @@
         </div>
     </div>
     <p>
-        <button onclick="submit()" class="btn btn-primary" style="min-width: 75px">Select</button>
+        <button onclick="submit()" class="btn btn-primary{% if not selected_search_objects %} disabled{% endif %}" style="min-width: 75px">Select</button>
     </p>
 
 </main>
 <script>
     var _return = "{{ _return }}";
     var user_ids = "{{ user_ids }}";
-    var username = "{{ username }}";
+    var search_field = "{{ search_field }}";
 
     var user_ids_list = user_ids.split(',');
     if (!user_ids_list[0]) user_ids_list.pop();
 
-    function on_click() {
-        var value = document.getElementById('search_input').value;
-        if (value) {
-            window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids + '&username=' + value;
-        }
-    }
-    function add_user(id) {
+    function add_object(id) {
         user_ids_list.push(id.toString());
-        window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids_list.join(',') + '&username=' + username;
+        window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids_list.join(',') + '&search=' + search_field;
     }
-    function remove_user(id) {
+    function remove_object(id) {
         const index = user_ids_list.indexOf(id.toString());
         if (index > -1) {
             user_ids_list.splice(index, 1);
         }
-        window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids_list.join(',') + '&username=' + username;
+        window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids_list.join(',') + '&search=' + search_field;
     }
     function submit() {
         window.location =  _return + '&user_ids=' + user_ids_list.join(',');
     }
+
+
 
 </script>
 </body>

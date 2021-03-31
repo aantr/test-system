@@ -5,6 +5,11 @@
 
 <main role="main" class="container">
     <br>
+    {% for cat, msg in get_flashed_messages(True) %}
+    <div class="alert alert-{{ cat }}" role="alert">
+        {{ msg }}
+    </div>
+    {% endfor %}
     <h5 align="center">Members</h5>
     <table class="table table-hover">
         <thead class="thead-light">
@@ -30,7 +35,8 @@
         {% else %} --- {% endif %}
     </p>
     <p><a href="/set_join_action_group/{{ group.id }}" class="btn btn-info">Reset ID</a></p>
-    <p><a href="/select_users?return=/add_group_member?group_id={{ group_id }}&user_ids=" class="btn btn-warning">Add members</a></p>
+    <p><a href="/select_users?return=/add_group_member?group_id={{ group_id }}&user_ids=" class="btn btn-warning">Add
+        members</a></p>
 
 </main>
 </body>

@@ -1,5 +1,5 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Blueprint
+from flask import Blueprint, request
 import datetime
 from flask import url_for, flash
 from flask import render_template, redirect, abort
@@ -179,36 +179,42 @@ def get_session(session_id):
     return render_template('session.html', **locals())
 
 
-@app.route('/add_session_member/<int:session_id>/<int:user_id>', methods=['GET'])
+@app.route('/add_session_member', methods=['GET'])
 @login_required
-def add_session_member(session_id, user_id):
+def add_session_member():
     db_sess = db_session.create_session()
-    session = db_sess.query(Session).filter(Session.id == session_id).\
-        filter(Session.user_id == current_user.id).first()
-    if session is None:
+    session_id = request.args.get('session_id', default='', type=str)
+    user_ids = request.args.get('user_ids', default='', type=str)
+    try:
+        user_ids = list(map(int, user_ids.split(',')))
+    except ValueError:
         abort(404)
-    user = db_sess.query(User).filter(User.id == user_id).first()
-    if user is None:
+    session = db_sess.query(Session).filter(Session.id == session_id).first()
+    if session is None:
         abort(404)
     if session.user_id != current_user.id:
         abort(403)
+    users = db_sess.query(User).filter(User.id.in_(user_ids)).all()
+    if len(users) != len(user_ids):
+        abort(404)
 
     joined_session_member = db_sess.query(SessionMember). \
-        filter(SessionMember.member_id == user_id). \
-        filter(SessionMember.session_id == session_id).first()
+        filter(SessionMember.member_id.in_(user_ids)).first()
 
     if joined_session_member:
-        flash(f'Already joined "{user.username}" to the session "{session.name}"', category='danger')
-        return redirect(url_for('invites'))
+        flash(f'User "{joined_session_member.member.username}" already joined to any session',
+              category='danger')
+        return redirect(url_for('get_session', session_id=session_id))
 
-    session: Session
-    sm = SessionMember()
-    sm.session_id = session_id
-    sm.member_id = current_user.id
-    db_sess.add(sm)
+    for i in user_ids:
+        session: Session
+        sm = SessionMember()
+        sm.session_id = session_id
+        sm.member_id = i
+        db_sess.add(sm)
     db_sess.commit()
-    flash(f'Successfully joined "{user.username}" to the session "{session.name}"', category='success')
-    return redirect(url_for('invites'))
+    flash(f'Successfully joined {len(user_ids)} user(s) to the session "{session.name}"', category='success')
+    return redirect(url_for('get_session', session_id=session_id))
 
 
 @app.route('/invite_join_session/<int:session_id>', methods=['GET'])
@@ -237,7 +243,7 @@ def invite_join_session(session_id):
     invite = Invite()
     invite.user_from_id = current_user.id
     invite.user_to_id = session.user_id
-    invite.action = f'/add_session_member/{session_id}/{current_user.id}'
+    invite.action = f'/add_session_member?session_id={session_id}&user_ids={current_user.id}'
     invite.description = f'Join me to your session "{session.name}"'
     db_sess.add(invite)
     db_sess.commit()

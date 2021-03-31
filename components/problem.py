@@ -39,7 +39,7 @@ def add_problem():
         problem.memory_limit = form.memory.data * 1024
         problem.problem_tests = ProblemTests()
         problem.task = Task()
-        problem.user.id = current_user.id
+        problem.user_id = current_user.id
         db_sess.add(problem)
         db_sess.flush()
 

@@ -9,6 +9,7 @@ from data.user import User
 from forms.action_link import ActionLinkForm
 from global_app import get_app
 from utils.unique_code import get_code
+from utils.utils import get_message_from_form
 
 app = get_app()
 
@@ -62,9 +63,13 @@ def action():
 
     if form.validate_on_submit():
         action = db_sess.query(Action).filter(
-            Action.str_id == form.str_id.data.upper()).first()
+            Action.str_id == form.str_id.data.upper().strip()).first()
         if action is None:
             flash('Incorrect action ID', category='danger')
         else:
             return redirect(url_for(f'action_link', str_id=action.str_id))
+    else:
+        msg = get_message_from_form(form)
+        if msg:
+            flash(msg, category='danger')
     return render_template('action_link.html', form=form)
