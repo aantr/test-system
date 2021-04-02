@@ -35,7 +35,7 @@ def login_():
         msg = get_message_from_form(form)
         if msg:
             flash(msg, category='danger')
-    return render_template('login.html', form=form)
+    return render_template('login.html', **locals())
 
 
 @app.route('/logout')

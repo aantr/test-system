@@ -16,13 +16,14 @@ from data.problem_category import ProblemCategory
 from data.problem_tests import ProblemTests
 from data.task import Task
 from forms.submit_problem import SubmitProblemForm
+from utils.permissions_required import student_required, teacher_required
 from utils.utils import get_message_from_form
 
 app = get_app()
 
 
 @app.route('/add_problem', methods=['GET', 'POST'])
-@login_required
+@teacher_required
 def add_problem():
     db_sess = db_session.create_session()
     form = SubmitProblemForm()
@@ -91,11 +92,11 @@ def add_problem():
         if msg:
             flash(msg, category='danger')
 
-    return render_template('add_problem.html', form=form)
+    return render_template('add_problem.html', **locals())
 
 
 @app.route('/problem/<int:problem_id>')
-@login_required
+@student_required
 def get_problem(problem_id):
     test_program = tp.get_test_program()
     args = request.args
@@ -110,7 +111,7 @@ def get_problem(problem_id):
 
 
 @app.route('/problemset', methods=['GET', 'POST'])
-@login_required
+@student_required
 def problemset():
     db_sess = db_session.create_session()
     problem = db_sess.query(Problem).all()

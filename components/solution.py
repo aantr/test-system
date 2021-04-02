@@ -17,6 +17,7 @@ from data.source_code import SourceCode
 from data.test_result import TestResult
 from forms.submit_solution import SubmitSolutionForm
 from program_testing import prog_lang
+from utils.permissions_required import student_required
 from utils.utils import get_session_joined, get_solution_row, get_message_from_form
 
 app = get_app()
@@ -51,7 +52,7 @@ def send_solution(problem_id, source, lang, session_id, db_sess):
 
 
 @app.route('/submit/<int:problem_id>', methods=['GET', 'POST'])
-@login_required
+@student_required
 def submit(problem_id):
     languages = prog_lang.get_languages()
     db_sess = db_session.create_session()
@@ -106,7 +107,7 @@ def submit(problem_id):
 
 
 @app.route('/status')
-@login_required
+@student_required
 def status():
     db_sess = db_session.create_session()
     solution = db_sess.query(Solution).filter(Solution.user_id == current_user.id). \
@@ -115,12 +116,12 @@ def status():
         'status_row.html',
         row=get_solution_row(i))), i.id] for i in solution]
     rows_to_update = [i.id for i in solution if not i.completed]
-    return render_template('status.html', **locals(),
-                           update_timeout=current_app.config['UPDATE_STATUS_TIMEOUT'])
+    update_timeout = current_app.config['UPDATE_STATUS_TIMEOUT']
+    return render_template('status.html', **locals())
 
 
 @app.route('/update')
-@login_required
+@student_required
 def update():
     db_sess = db_session.create_session()
     test_program = tp.get_test_program()

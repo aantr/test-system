@@ -10,6 +10,7 @@ from data.session import Session, SessionMember
 from data.solution import Solution
 from data.user import User
 from global_app import get_app
+from utils.permissions_required import student_required
 from utils.utils import get_session_joined, get_solution_row
 
 current_user: User
@@ -21,7 +22,7 @@ close_sessions_jobs = {}
 
 
 @app.route('/workplace/status', methods=['GET'])
-@login_required
+@student_required
 def workplace_status():
     db_sess = db_session.create_session()
 
@@ -38,12 +39,12 @@ def workplace_status():
         'status_row.html',
         row=get_solution_row(i))), i.id] for i in solution]
     rows_to_update = [i.id for i in solution if not i.completed]
-    return render_template('workplace_status.html', **locals(),
-                           update_timeout=current_app.config['UPDATE_STATUS_TIMEOUT'])
+    update_timeout = current_app.config['UPDATE_STATUS_TIMEOUT']
+    return render_template('workplace_status.html', **locals())
 
 
 @app.route('/workplace/info', methods=['GET'])
-@login_required
+@student_required
 def workplace_info():
     db_sess = db_session.create_session()
 
@@ -58,7 +59,7 @@ def workplace_info():
 
 
 @app.route('/workplace/problem', methods=['GET'])
-@login_required
+@student_required
 def workplace_problem():
     db_sess = db_session.create_session()
 
@@ -76,7 +77,7 @@ def workplace_problem():
 
 
 @app.route('/workplace', methods=['GET'])
-@login_required
+@student_required
 def workplace():
     return redirect(url_for('workplace_problem'))
 
@@ -98,7 +99,7 @@ def get_result_row(db_sess, n, user, session, problem_ids):
 
 
 @app.route('/workplace/results', methods=['GET'])
-@login_required
+@student_required
 def workplace_results():
     db_sess = db_session.create_session()
 
@@ -122,7 +123,7 @@ def workplace_results():
 
 
 @app.route('/leave_session')
-@login_required
+@student_required
 def leave_session():
     db_sess = db_session.create_session()
     joined_session_member = db_sess.query(SessionMember). \

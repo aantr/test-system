@@ -9,6 +9,7 @@ from data.user import User
 from forms.submit_group import SubmitGroupForm
 from data import db_session
 from global_app import get_app
+from utils.permissions_required import teacher_required, student_required
 from utils.utils import get_message_from_form
 
 current_user: User
@@ -16,7 +17,7 @@ app = get_app()
 
 
 @app.route('/groups', methods=['GET'])
-@login_required
+@teacher_required
 def groups():
     db_sess = db_session.create_session()
     groups = current_user.group
@@ -25,7 +26,7 @@ def groups():
 
 
 @app.route('/add_group', methods=['GET', 'POST'])
-@login_required
+@teacher_required
 def add_group():
     db_sess = db_session.create_session()
     form = SubmitGroupForm()
@@ -47,7 +48,7 @@ def add_group():
 
 
 @app.route('/groups/<int:group_id>', methods=['GET', 'POST'])
-@login_required
+@teacher_required
 def get_group(group_id):
     db_sess = db_session.create_session()
 
@@ -64,7 +65,7 @@ def get_group(group_id):
 
 
 @app.route('/add_group_member', methods=['GET'])
-@login_required
+@teacher_required
 def add_group_member():
     db_sess = db_session.create_session()
     group_id = request.args.get('group_id', default='', type=str)
@@ -104,7 +105,7 @@ def add_group_member():
 
 
 @app.route('/invite_join_group/<int:group_id>', methods=['GET'])
-@login_required
+@student_required
 def invite_join_group(group_id):
     db_sess = db_session.create_session()
     group = db_sess.query(Group).filter(Group.id == group_id).first()
@@ -138,7 +139,7 @@ def invite_join_group(group_id):
 
 
 @app.route('/set_join_action_group/<int:group_id>')
-@login_required
+@teacher_required
 def set_join_action_group(group_id):
     db_sess = db_session.create_session()
     group = db_sess.query(Group).filter(Group.id == group_id).first()

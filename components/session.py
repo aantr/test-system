@@ -13,6 +13,7 @@ from data.session import Session, SessionMember
 from data.user import User
 from forms.submit_session import SubmitSessionForm
 from global_app import get_app
+from utils.permissions_required import student_required, teacher_required
 from utils.utils import get_message_from_form, get_duration_from_time
 
 current_user: User
@@ -24,7 +25,7 @@ close_sessions_jobs = {}
 
 
 @app.route('/add_session', methods=['GET', 'POST'])
-@login_required
+@teacher_required
 def add_session():
     db_sess = db_session.create_session()
     form = SubmitSessionForm()
@@ -58,7 +59,7 @@ def add_session():
 
 
 @app.route('/set_join_action_session/<int:session_id>')
-@login_required
+@teacher_required
 def set_join_action_session(session_id):
     db_sess = db_session.create_session()
     session = db_sess.query(Session).filter(Session.id == session_id).first()
@@ -76,7 +77,7 @@ def set_join_action_session(session_id):
 
 
 @app.route('/start_session/<int:session_id>')
-@login_required
+@teacher_required
 def start_session(session_id):
     db_sess = db_session.create_session()
     session = db_sess.query(Session).filter(Session.id == session_id).first()
@@ -105,7 +106,7 @@ def start_session(session_id):
 
 
 @app.route('/stop_session/<int:session_id>')
-@login_required
+@teacher_required
 def stop_session(session_id):
     db_sess = db_session.create_session()
     session = db_sess.query(Session).filter(Session.id == session_id).first()
@@ -141,7 +142,7 @@ def check_session_timeout(db_sess, session):
 
 
 @app.route('/my_sessions')
-@login_required
+@teacher_required
 def my_sessions():
     db_sess = db_session.create_session()
     time_left = {}
@@ -160,7 +161,7 @@ def my_sessions():
 
 
 @app.route('/session/<int:session_id>')
-@login_required
+@teacher_required
 def get_session(session_id):
     db_sess = db_session.create_session()
     session = db_sess.query(Session).filter(Session.id == session_id). \
@@ -180,7 +181,7 @@ def get_session(session_id):
 
 
 @app.route('/add_session_member', methods=['GET'])
-@login_required
+@teacher_required
 def add_session_member():
     db_sess = db_session.create_session()
     session_id = request.args.get('session_id', default='', type=str)
@@ -218,7 +219,7 @@ def add_session_member():
 
 
 @app.route('/invite_join_session/<int:session_id>', methods=['GET'])
-@login_required
+@student_required
 def invite_join_session(session_id):
     db_sess = db_session.create_session()
     session = db_sess.query(Session).filter(Session.id == session_id).first()

@@ -8,13 +8,14 @@ from forms.login import LoginForm
 from forms.search_user import SearchUserForm
 
 from global_app import get_app
+from utils.permissions_required import student_required
 from utils.utils import get_message_from_form
 
 app = get_app()
 
 
 @app.route('/select_users', methods=['GET', 'POST'])
-@login_required
+@student_required
 def select_user():
     db_sess = db_session.create_session()
     form = SearchUserForm()

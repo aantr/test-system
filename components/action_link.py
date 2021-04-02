@@ -8,6 +8,7 @@ from data.action import Action
 from data.user import User
 from forms.action_link import ActionLinkForm
 from global_app import get_app
+from utils.permissions_required import student_required
 from utils.unique_code import get_code
 from utils.utils import get_message_from_form
 
@@ -45,7 +46,7 @@ def add_action(db_sess, url, description, commit=True):
 
 
 @app.route('/action_link/<str_id>', methods=['GET'])
-@login_required
+@student_required
 def action_link(str_id):
     db_sess = db_session.create_session()
     action = db_sess.query(Action).filter(Action.str_id == str_id).first()
@@ -56,7 +57,7 @@ def action_link(str_id):
 
 
 @app.route('/action', methods=['GET', 'POST'])
-@login_required
+@student_required
 def action():
     db_sess = db_session.create_session()
     form = ActionLinkForm()
@@ -72,4 +73,4 @@ def action():
         msg = get_message_from_form(form)
         if msg:
             flash(msg, category='danger')
-    return render_template('action_link.html', form=form)
+    return render_template('action_link.html', **locals())

@@ -45,21 +45,21 @@ if recreate_db:
     db_sess.add(p)
 
     user = User()
-    user.username = 'u1'
-    user.type = 30
-    user.set_password('1234')
-    db_sess.add(user)
-
-    user = User()
     user.username = 'admin'
     user.type = 10
     user.set_password('admin')
     db_sess.add(user)
 
     user = User()
-    user.username = 'user'
+    user.username = 'teacher'
+    user.type = 20
+    user.set_password('teacher')
+    db_sess.add(user)
+
+    user = User()
+    user.username = 'student'
     user.type = 30
-    user.set_password('user')
+    user.set_password('student')
     db_sess.add(user)
 
     cat = ProblemCategory()
