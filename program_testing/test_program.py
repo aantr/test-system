@@ -68,7 +68,7 @@ class TestProgram:
         self.write_solution(session, solution)
 
     def start(self, threads=1):
-        if os.name == 'posix':
+        if os.name == 'posix' and run_as_user_uid_linux is not None:
             print(f'[Test system] Unix system detected, '
                   f'run all processes with preexec_fn.\n'
                   f'Parameters\n'
@@ -435,7 +435,7 @@ class TestProgram:
         if system == 'nt':
             proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
             return proc
-        elif system == 'posix':
+        elif system == 'posix' and run_as_user_uid_linux is not None:
             proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
                          preexec_fn=TestProgram.preexec_linux())
             return proc
