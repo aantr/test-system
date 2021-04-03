@@ -432,10 +432,10 @@ class TestProgram:
     @staticmethod
     def create_process(cmd):
         system = os.name
-        if system == 'nt':
+        if system == 'nt' or run_as_user_uid_linux is None:
             proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
             return proc
-        elif system == 'posix' and run_as_user_uid_linux is not None:
+        elif system == 'posix':
             proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
                          preexec_fn=TestProgram.preexec_linux())
             return proc
