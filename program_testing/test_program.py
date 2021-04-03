@@ -20,7 +20,7 @@ directory = os.path.dirname(__file__)
 write_solution_timeout = 0.3
 check_proc_delay = 0.001
 languages = None
-DEBUG = False
+DEBUG = True
 
 run_as_user_uid_linux = None
 
