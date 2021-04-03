@@ -107,4 +107,5 @@ if __name__ == '__main__':
     thread.daemon = True
     thread.start()
 
-    app.run(port=80, host='localhost')
+    port = os.environ.get('PORT', 80)
+    app.run(host='0.0.0.0', port=port)
