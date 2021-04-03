@@ -4,14 +4,15 @@ program_testing_execution = [
     ['Running on test {[0] + 1}', 2]
 ]
 
-program_testing_verdict = [
-    ['All correct', 3],
-    ['Compile error', 5],
-    ['Runtime error on test {[0] + 1}', 4],
-    ['Time limit error on test {[0] + 1}', 4],
-    ['Memory limit error on test {[0] + 1}', 4],
-    ['Wrong answer on test {[0] + 1}', 6]
-]
+program_testing_verdict = {
+    0: ['All correct', 3],
+    1: ['Compile error', 5],
+    2: ['Runtime error on test {[0] + 1}', 4],
+    3: ['Time limit error on test {[0] + 1}', 4],
+    4: ['Memory limit error on test {[0] + 1}', 4],
+    5: ['Wrong answer on test {[0] + 1}', 6],
+    9: ['Server error', 5]
+}
 
 colors = ['text-secondary', 'text-dark', 'text-secondary',
           'text-success', 'text-danger', 'text-primary', 'text-danger']

@@ -114,12 +114,13 @@ class TestProgram:
                     solution_id = self._get_from_queue(db_sess)
                 except IndexError as e:
                     if DEBUG:
-                        print('[Test system] Error in _thread from _get_from_queue: ', e)
+                        print('[Test system] Error in _thread from _get_from_queue:', e)
                 else:
                     try:
                         self._run_testing(solution_id, db_sess, source_dir)
                     except Exception as e:
-                        print('[Test system] Error in _thread from _run_testing: ', e)
+                        if DEBUG:
+                            print('[Test system] Error in _thread from _run_testing:', e)
 
     def _run_testing(self, solution_id, db_sess, source_dir):
         solution = self.read_solution(db_sess, solution_id)
@@ -143,11 +144,19 @@ class TestProgram:
         path = os.path.join('files', 'source_code', f'{solution.source_code.id}.source')
         shutil.copy(path, source)
 
-        compile_result = lang.compile(os.path.abspath(source))
+        try:
+            compile_result = lang.compile(os.path.abspath(source))
+        except Exception as e:
+            error = f'[Test system] Abort testing (id={solution.id}), error in compile "{lang.name}"\n' \
+                    f'[Test system] Exception: {e}'
+            self.abort_testing(db_sess, solution, error, test_results)
+            return
+
         if not compile_result[0]:
             solution.success = 0
             solution.completed = 1
             solution.state = 11
+            solution.state_arg = None
 
             res = TestResult()
             res.stderr = compile_result[1].decode(lang.encoding)
@@ -171,9 +180,19 @@ class TestProgram:
             solution.state = 2
             solution.state_arg = i
 
-            proc = self.create_process(compile_result[1])
-            proc.stdin.write(stdin.encode(lang.encoding))
-            proc.stdin.close()
+            proc = None
+            try:
+                proc = self.create_process(compile_result[1])
+                proc.stdin.write(stdin.encode(lang.encoding))
+                proc.stdin.close()
+            except Exception as e:
+                if proc is not None:
+                    proc.kill()
+                error = f'[Test system] Abort testing (id={solution.id}), error in create_process\n' \
+                        f'[Test system] Exception: {e}'
+                self.abort_testing(db_sess, solution, error, test_results)
+                return
+
             start_time = self.get_start_time()
             run = True
             if DEBUG:
@@ -318,6 +337,20 @@ class TestProgram:
         if DEBUG:
             print(f'[Test system DEBUG] --- Time of writing solution ---: '
                   f'{TestProgram.get_delta_time(start):.7f}')
+
+    @staticmethod
+    def abort_testing(db_sess, solution, error: str, test_results):
+        solution.success = 0
+        solution.completed = 1
+        solution.state = 19
+        solution.state_arg = None
+
+        res = TestResult()
+        res.stderr = error
+        test_results.append(res)
+
+        TestProgram.write_test_results(solution, test_results)
+        TestProgram.write_solution(db_sess, solution)
 
     @staticmethod
     def read_solution(session, id):
