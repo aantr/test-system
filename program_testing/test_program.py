@@ -150,6 +150,8 @@ class TestProgram:
             error = f'[Test system] Abort testing (id={solution.id}), error in compile "{lang.name}"\n' \
                     f'[Test system] Exception: {e}'
             self.abort_testing(db_sess, solution, error, test_results)
+            if DEBUG:
+                print(error)
             return
 
         if not compile_result[0]:
@@ -191,6 +193,8 @@ class TestProgram:
                 error = f'[Test system] Abort testing (id={solution.id}), error in create_process\n' \
                         f'[Test system] Exception: {e}'
                 self.abort_testing(db_sess, solution, error, test_results)
+                if DEBUG:
+                    print(error)
                 return
 
             start_time = self.get_start_time()
