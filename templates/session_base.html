@@ -17,9 +17,7 @@
         </big></b></p>
     {% endif %}
 
-    <h5 align="center">Workplace{% if session.started %} <font color="green">(started)</font>
-        {% else %} <font color="red">(not started)</font>{% endif %}</h5>
-    <h4 align="center">{{ session.name }}</h4>
+    <h4 align="center">Session {{ session.name }}{% if session.started %} <b>(Started)</b>{% endif %}</h4>
 
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
         <div class="container-fluid">
@@ -31,26 +29,31 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a
-                            class="nav-link{% if session.started %} active{% else %} disabled{% endif %}"
-                            href="{{ url_for('workplace_problem') }}"
+                            class="nav-link active"
+                            href="{{ url_for('session_problems', session_id=session_id) }}"
                             role="button">Problems</a></li>
                     <li class="nav-item"><a
-                            class="nav-link{% if session.started %} active{% else %} disabled{% endif %}"
-                            href="{{ url_for('workplace_status') }}"
+                            class="nav-link active"
+                            href="{{ url_for('session_status', session_id=session_id) }}"
                             role="button">Status</a></li>
                     <li class="nav-item"><a
-                            class="nav-link{% if session.started %} active{% else %} disabled{% endif %}"
-                            href="{{ url_for('workplace_results') }}"
+                            class="nav-link active"
+                            href="{{ url_for('session_results', session_id=session_id) }}"
                             role="button">Results</a></li>
-                    <li class="nav-item"><a class="nav-link active"
-                                            href="{{ url_for('workplace_info') }}"
-                                            role="button">Info</a></li>
+                    <li class="nav-item"><a
+                            class="nav-link active"
+                            href="{{ url_for('session_members', session_id=session_id) }}"
+                            role="button">Members</a></li>
+                    <li class="nav-item"><a
+                            class="nav-link active"
+                            href="{{ url_for('session_info', session_id=session_id) }}"
+                            role="button">Info</a></li>
                 </ul>
             </div>
         </div>
     </nav>
     <br>
-    {% block workplace_content %}{% endblock %}
+    {% block session_content %}{% endblock %}
 </main>
 <script>
     var timer = { {{session.id}}: {{session.get_time_left()}} };

@@ -11,7 +11,9 @@ from data.solution import Solution
 from data.user import User
 from global_app import get_app
 from utils.permissions_required import student_required
-from utils.utils import get_session_joined, get_solution_row
+from utils.utils import get_session_joined
+from utils.solution_row import get_solution_row
+from utils.result_row import get_result_row, render_result_rows
 
 current_user: User
 app = get_app()
@@ -40,6 +42,7 @@ def workplace_status():
         row=get_solution_row(i))), i.id] for i in solution]
     rows_to_update = [i.id for i in solution if not i.completed]
     update_timeout = current_app.config['UPDATE_STATUS_TIMEOUT']
+    status_base = render_template('status_base.html', **locals())
     return render_template('workplace_status.html', **locals())
 
 
@@ -82,22 +85,6 @@ def workplace():
     return redirect(url_for('workplace_problem'))
 
 
-def get_result_row(db_sess, n, user, session, problem_ids):
-    send = {}
-    for i in problem_ids:
-        send[i] = [0, False]
-    solutions = db_sess.query(Solution).filter(Solution.session_id == session.id). \
-        filter(Solution.user_id == user.id).all()
-    for i in solutions:
-        send[i.problem_id][0] += 1
-        if i.success:
-            send[i.problem_id][1] = True
-    row = [[0, n + 1], [0, user.username]]
-    for i in problem_ids:
-        row.append([1, *send[i]])
-    return row
-
-
 @app.route('/workplace/results', methods=['GET'])
 @student_required
 def workplace_results():
@@ -111,14 +98,7 @@ def workplace_results():
     if not session.started:
         return redirect(url_for('workplace_info'))
 
-    problem_ids = [i.id for i in session.problems]
-    problems_names = [i.name for i in session.problems]
-    members = db_sess.query(SessionMember).filter(SessionMember.session_id == session.id).all()
-    members = [i.member for i in members]
-    result_rows = [render_template('result_row.html',
-                                   row=get_result_row(db_sess, n, i, session, problem_ids))
-                   for n, i in enumerate(members)]
-    results = render_template('session_results.html', **locals())
+    results = render_result_rows(db_sess, session)
     return render_template('workplace_results.html', **locals())
 
 

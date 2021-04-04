@@ -20,7 +20,7 @@ directory = os.path.dirname(__file__)
 write_solution_timeout = 0.3
 check_proc_delay = 0.001
 languages = None
-DEBUG = True
+DEBUG = False
 
 run_as_user_uid_linux = None
 
@@ -147,8 +147,8 @@ class TestProgram:
         try:
             compile_result = lang.compile(os.path.abspath(source))
         except Exception as e:
-            error = f'[Test system] Abort testing (id={solution.id}), error in compile "{lang.name}"\n' \
-                    f'[Test system] Exception: {e}'
+            error = f'[Test system] Error: abort testing (id={solution.id}) in compile language "{lang.name}", ' \
+                    f'exception: "{e}"'
             self.abort_testing(db_sess, solution, error, test_results)
             if DEBUG:
                 print(error)
@@ -190,8 +190,8 @@ class TestProgram:
             except Exception as e:
                 if proc is not None:
                     proc.kill()
-                error = f'[Test system] Abort testing (id={solution.id}), error in create_process\n' \
-                        f'[Test system] Exception: {e}'
+                error = f'[Test system] Error: abort testing (id={solution.id}) in create_process, ' \
+                        f'exception: "{e}"'
                 self.abort_testing(db_sess, solution, error, test_results)
                 if DEBUG:
                     print(error)
@@ -248,7 +248,7 @@ class TestProgram:
                     run = False
 
             if DEBUG:
-                print(f'[Test system DEBUG] Delta time of proc: {summary / count:.7f}')
+                print(f'[Test system] Delta time of proc: {summary / count:.7f}')
 
             proc.kill()
 
@@ -282,6 +282,13 @@ class TestProgram:
                             f'{str(solution.source_code.id)}.source')
         with open(path, 'wb') as f:
             f.write(source)
+
+    @staticmethod
+    def read_source_code(solution):
+        path = os.path.join('files', 'source_code',
+                            f'{str(solution.source_code.id)}.source')
+        with open(path, 'r') as f:
+            return f.read()
 
     @staticmethod
     def add_problem(problem, bytes_zip_tests, task):
@@ -327,23 +334,23 @@ class TestProgram:
         return res
 
     @staticmethod
-    def write_solution(session, solution, cols=None, commit=True):
+    def write_solution(db_sess, solution, cols=None, commit=True):
         if DEBUG:
             start = TestProgram.get_start_time()
         if cols is None:
             cols = Solution.__table__.columns.keys()
-        session.query(Solution).filter(Solution.id == solution.id).update(
+        db_sess.query(Solution).filter(Solution.id == solution.id).update(
             {column: getattr(Solution, column) for column in cols},
             synchronize_session=False
         )
         if commit:
-            session.commit()
+            db_sess.commit()
         if DEBUG:
-            print(f'[Test system DEBUG] --- Time of writing solution ---: '
+            print(f'[Test system] --- Time of writing solution ---: '
                   f'{TestProgram.get_delta_time(start):.7f}')
 
     @staticmethod
-    def abort_testing(db_sess, solution, error: str, test_results):
+    def abort_testing(db_sess, solution, error: str, test_results, commit=True):
         solution.success = 0
         solution.completed = 1
         solution.state = 19
@@ -354,26 +361,26 @@ class TestProgram:
         test_results.append(res)
 
         TestProgram.write_test_results(solution, test_results)
-        TestProgram.write_solution(db_sess, solution)
+        TestProgram.write_solution(db_sess, solution, commit=commit)
 
     @staticmethod
-    def read_solution(session, id):
-        return session.query(Solution).filter(Solution.id == id).first()
+    def read_solution(db_sess, id):
+        return db_sess.query(Solution).filter(Solution.id == id).first()
 
     @staticmethod
-    def write_problem(session, problem, cols=None, commit=True):
+    def write_problem(db_sess, problem, cols=None, commit=True):
         if cols is None:
             cols = Problem.__table__.columns.keys()
-        session.query(Problem).filter(Problem.id == problem.id).update(
+        db_sess.query(Problem).filter(Problem.id == problem.id).update(
             {column: getattr(Problem, column) for column in cols},
             synchronize_session=False
         )
         if commit:
-            session.commit()
+            db_sess.commit()
 
     @staticmethod
-    def read_problem(session, id):
-        return session.query(Problem).filter(Problem.id == id).first()
+    def read_problem(db_sess, id):
+        return db_sess.query(Problem).filter(Problem.id == id).first()
 
     @staticmethod
     def read_problem_task(problem):

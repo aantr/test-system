@@ -4,13 +4,14 @@ from wtforms import StringField, SubmitField, TextAreaField, TimeField
 from wtforms.validators import DataRequired
 
 from forms.utils.multiply_checkbox_field import MultiplyCheckboxField
+from utils.utils import get_duration_from_time
 
 
 class SubmitSessionForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[])
     problems = MultiplyCheckboxField('problem_checkbox', 'Problems')
-    time = TimeField('Duration', validators=[DataRequired()])
+    time = TimeField('Duration', validators=[DataRequired()], format='%H:%M:%S')
     submit = SubmitField('Add')
 
     def validate(self):
@@ -26,7 +27,7 @@ class SubmitSessionForm(FlaskForm):
             self.problems.errors.append('At least one task should be selected')
             return False
 
-        if self.time.data.hour * 60 + self.time.data.minute < 1:
+        if get_duration_from_time(self.time.data).total_seconds() < 60:
             self.time.errors.append('Duration must be at least 1 minute')
             return False
 

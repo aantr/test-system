@@ -17,8 +17,11 @@ from data.source_code import SourceCode
 from data.test_result import TestResult
 from forms.submit_solution import SubmitSolutionForm
 from program_testing import prog_lang
+from program_testing.prog_lang import get_languages
+from program_testing.test_program import TestProgram
 from utils.permissions_required import student_required
-from utils.utils import get_session_joined, get_solution_row, get_message_from_form
+from utils.utils import get_session_joined, get_message_from_form
+from utils.solution_row import get_solution_row
 
 app = get_app()
 
@@ -117,6 +120,7 @@ def status():
         row=get_solution_row(i))), i.id] for i in solution]
     rows_to_update = [i.id for i in solution if not i.completed]
     update_timeout = current_app.config['UPDATE_STATUS_TIMEOUT']
+    status_base = render_template('status_base.html', **locals())
     return render_template('status.html', **locals())
 
 
@@ -145,3 +149,17 @@ def update():
             for j in test_res:
                 j: test_program.TestResult
     return json.dumps(solution_rows)
+
+
+@app.route('/solution/<int:solution_id>')
+@student_required
+def get_solution(solution_id):
+    db_sess = db_session.create_session()
+    solution = db_sess.query(Solution).filter(Solution.id == solution_id).first()
+    if not solution:
+        abort(404)
+    if solution.user_id != current_user.id:
+        abort(403)
+    source = TestProgram.read_source_code(solution)
+    lang = get_languages()[solution.lang_code_name].name
+    return render_template('solution.html', **locals())

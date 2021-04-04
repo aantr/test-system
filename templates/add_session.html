@@ -21,7 +21,7 @@
         {{ form.description(class="form-control", style="min-height: 200px") }}</br>
 
         <h6>{{ form.time.label.text }}</h6>
-        {{ form.time(class="form-control", type="time") }}</br>
+        {{ form.time(class="form-control", type="time", step="1") }}</br>
 
         <h6>{{ form.problems.label.text }}</h6>
         {% for i in form.problems.choices %}

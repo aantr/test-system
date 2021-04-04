@@ -21,8 +21,6 @@ document.location.reload();
       var x = document.getElementById("time_left"+i);
       x.textContent = parseInt(timer[i]).toString().toHHMMSS();
       timer[i] -= 1;
-
-    console.log(i);
     }
 }
 updateTimer();

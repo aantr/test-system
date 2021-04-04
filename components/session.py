@@ -1,20 +1,24 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 import datetime
 from flask import url_for, flash
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
+from markupsafe import Markup
 
 from components.action_link import add_action
 from data import db_session
 from data.invite import Invite
 from data.problem import Problem
 from data.session import Session, SessionMember
+from data.solution import Solution
 from data.user import User
 from forms.submit_session import SubmitSessionForm
 from global_app import get_app
 from utils.permissions_required import student_required, teacher_required
 from utils.utils import get_message_from_form, get_duration_from_time
+from utils.solution_row import get_solution_row
+from utils.result_row import get_result_row, render_result_rows
 
 current_user: User
 app = get_app()
@@ -62,11 +66,7 @@ def add_session():
 @teacher_required
 def set_join_action_session(session_id):
     db_sess = db_session.create_session()
-    session = db_sess.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        abort(404)
-    if session.user_id != current_user.id:
-        abort(403)
+    session = get_session_by_id(db_sess, session_id)
 
     session.join_action_str_id = add_action(
         db_sess, f'/invite_join_session/{session_id}',
@@ -160,26 +160,6 @@ def my_sessions():
     return render_template('my_sessions.html', **locals())
 
 
-@app.route('/session/<int:session_id>')
-@teacher_required
-def get_session(session_id):
-    db_sess = db_session.create_session()
-    session = db_sess.query(Session).filter(Session.id == session_id). \
-        filter(Session.user_id == current_user.id).first()
-    if not session:
-        abort(404)
-    if session.user_id != current_user.id:
-        abort(403)
-
-    check_session_timeout(db_sess, session)
-
-    time_left = session.get_time_left()
-    members = [j.member for j in db_sess.query(SessionMember).
-        filter(SessionMember.session_id == session_id).all()]
-
-    return render_template('session.html', **locals())
-
-
 @app.route('/add_session_member', methods=['GET'])
 @teacher_required
 def add_session_member():
@@ -250,3 +230,76 @@ def invite_join_session(session_id):
     db_sess.commit()
     flash(f'Successfully sent invite to the session "{session.name}"', category='success')
     return redirect(url_for(url))
+
+
+def get_session_by_id(db_sess, id):
+    session = db_sess.query(Session).filter(Session.id == id). \
+        filter(Session.user_id == current_user.id).first()
+    if not session:
+        abort(404)
+    check_session_timeout(db_sess, session)
+    if session.user_id != current_user.id:
+        abort(403)
+    return session
+
+
+@app.route('/session/results/<int:session_id>')
+@teacher_required
+def session_results(session_id):
+    db_sess = db_session.create_session()
+    session = get_session_by_id(db_sess, session_id)
+    results = render_result_rows(db_sess, session)
+    return render_template('session_results.html', **locals())
+
+
+@app.route('/session/members/<int:session_id>')
+@teacher_required
+def session_members(session_id):
+    db_sess = db_session.create_session()
+    session = get_session_by_id(db_sess, session_id)
+    members = [j.member for j in db_sess.query(SessionMember).
+        filter(SessionMember.session_id == session_id).all()]
+    return render_template('session_members.html', **locals())
+
+
+@app.route('/session/problems/<int:session_id>')
+@teacher_required
+def session_problems(session_id):
+    db_sess = db_session.create_session()
+    session = get_session_by_id(db_sess, session_id)
+    problems = session.problems
+    return render_template('session_problems.html', **locals())
+
+
+@app.route('/session/status/<int:session_id>')
+@teacher_required
+def session_status(session_id):
+    db_sess = db_session.create_session()
+    session = get_session_by_id(db_sess, session_id)
+
+    solution = db_sess.query(Solution).filter(Solution.session_id == session.id). \
+        order_by(Solution.sent_date.desc()).all()
+    solution_rows = [[Markup(render_template(
+        'status_row.html',
+        row=get_solution_row(i))), i.id] for i in solution]
+    rows_to_update = [i.id for i in solution if not i.completed]
+    update_timeout = current_app.config['UPDATE_STATUS_TIMEOUT']
+    status_base = render_template('status_base.html', **locals())
+
+    return render_template('session_status.html', **locals())
+
+
+@app.route('/session/info/<int:session_id>')
+@teacher_required
+def session_info(session_id):
+    db_sess = db_session.create_session()
+    session = get_session_by_id(db_sess, session_id)
+    time_left = session.get_time_left()
+
+    return render_template('session_info.html', **locals())
+
+
+@app.route('/session/<int:session_id>')
+@teacher_required
+def get_session(session_id):
+    return redirect(url_for('session_info', session_id=session_id))

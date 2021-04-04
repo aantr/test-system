@@ -13,10 +13,9 @@ from data.user import User
 import program_testing.prog_lang as prog_lang
 import global_app
 from program_testing import test_program as tp
-from utils.utils import clear_all_actions
+from utils.init_db import init_db
 
 SECRET_KEY = 'test_system_secret_key'
-DEBUG = False
 DB_PT = os.path.abspath('db/test_system.db')
 CONFIG_LANG = os.path.abspath('config/test_program.json')
 UPDATE_STATUS_TIMEOUT = 0.5
@@ -27,13 +26,14 @@ app = global_app.get_app()
 app.config.from_object(__name__)
 current_user: User
 
-recreate_db = 1
+recreate_db = 0
 
 if recreate_db:
     print('Recreate db...')
     if os.path.exists(DB_PT):
         os.remove(DB_PT)
     db_session.global_init(DB_PT)
+
     db_sess = db_session.create_session()
 
     p = Problem()
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     languages = prog_lang.get_languages()
 
     db_session.global_init(app.config['DB_PT'])
-    clear_all_actions()
+    init_db()
 
     test_program = tp.get_test_program()
     thread = threading.Thread(target=test_program.start, args=(),

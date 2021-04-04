@@ -2,11 +2,7 @@ import datetime
 
 from flask_login import current_user
 
-from data import db_session
-from data.action import Action
 from data.session import SessionMember
-from program_testing import prog_lang
-from program_testing.message import get_message_solution
 
 
 def get_message_from_form(form):
@@ -26,27 +22,11 @@ def get_session_joined(db_sess):
     return joined_session_member.session
 
 
-def get_solution_row(solution):
-    languages = prog_lang.get_languages()
-    i = solution
-    solution_row = [x if type(
-        x) == tuple else (x, '') for x in [
-                        i.id, i.sent_date.strftime("%d %B %Y, %I:%M%p"),
-                        languages[i.lang_code_name].name,
-                        get_message_solution(i),
-                        f'{i.max_time:.3f}',
-                        f'{i.max_memory // 1024} Kb'
-                    ]]
-    return solution_row
-
-
 def get_duration_from_time(time):
     duration = datetime.datetime.combine(
         datetime.date.min, time) - datetime.datetime.min
     return duration
 
 
-def clear_all_actions():
-    db_sess = db_session.create_session()
-    db_sess.query(Action).delete()
-    db_sess.commit()
+def date_format():
+    return '%d %B %Y, %H:%M'
