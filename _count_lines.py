@@ -9,6 +9,6 @@ for i in files:
         counter += len(f.readlines())
 
 print('-' * 100)
-print(f'Lines in all "*.py" files in project directory: <<<---   {counter}   --->>>')
+print(f'Lines in {len(files)} "*.py" files: <<<---   {counter}   --->>>')
 print('-' * 100)
 input()

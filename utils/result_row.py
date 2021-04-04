@@ -10,13 +10,17 @@ def get_result_row(db_sess, user, session, problem_ids):
     for i in problem_ids:
         send[i] = [0, False, None]
     solutions = db_sess.query(Solution).filter(Solution.session_id == session.id). \
+        filter(Solution.completed == 1). \
         filter(Solution.user_id == user.id).order_by(Solution.sent_date).all()
+    total_success_attempts = 0
     for i in solutions:
         i: Solution
-        send[i.problem_id][0] += 1
+        if not send[i.problem_id][1]:
+            send[i.problem_id][0] += 1
         if i.success and not send[i.problem_id][1]:
             send[i.problem_id][1] = True
             send[i.problem_id][2] = i.sent_date
+            total_success_attempts += send[i.problem_id][0]
     row = [[0, 0], [0, user.username]]
     for i in problem_ids:
         row.append([1, *send[i]])
@@ -32,7 +36,7 @@ def get_result_row(db_sess, user, session, problem_ids):
     else:
         row.append([1, 0])
     row.append([0, total])
-    return row, last_correct_send
+    return row, last_correct_send, total_success_attempts
 
 
 def render_result_rows(db_sess, session):
@@ -41,7 +45,7 @@ def render_result_rows(db_sess, session):
     members = [j.member for j in db_sess.query(SessionMember).
         filter(SessionMember.session_id == session.id).all()]
     rows = [get_result_row(db_sess, i, session, problem_ids) for n, i in enumerate(members)]
-    rows = sorted(rows, key=lambda x: (-x[0][-1][1], x[1]))
+    rows = sorted(rows, key=lambda x: (-x[0][-1][1], x[2], x[1]))
     for n, i in enumerate(rows):
         i[0][0][1] = n + 1
     result_rows = [render_template('result_row.html',
