@@ -38,3 +38,9 @@ class Solution(SqlAlchemyBase):
 
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.id'))
     user = orm.relation('User')
+
+    def get_max_memory(self):
+        return f'{self.max_memory // 1024} Kb'
+
+    def get_max_time(self):
+        return f'{self.max_time:.3f} s'

@@ -3,15 +3,51 @@
 <main role="main" class="container">
     <br>
     <h4 align="center">Solution #{{ solution.id }}</h4>
-    <h6>Max time</h6>
-    <p>{{ solution.max_time }}</p>
-    <h6>Max memory</h6>
-    <p>{{ solution.max_memory }}</p>
-    <h6>Language</h6>
-    <p>{{ lang }}</p>
-    <h6>Source</h6>
-    <textarea class="form-control" disabled
-              style="min-height: 50vh; max-width: 50vw; font-family: 'Consolas'">{{ source }}</textarea>
+    <div class="row g-3">
+        <div class="col-md-7">
+            <h6>Max time</h6>
+            <p>{{ solution.get_max_time() }}</p>
+            <h6>Max memory</h6>
+            <p>{{ solution.get_max_memory() }}</p>
+            <h6>Language</h6>
+            <p>{{ lang }}</p>
+            <h6>Source</h6>
+            <textarea class="form-control" readonly
+                      style="min-height: 40vh; max-width: 50vw; font-family: 'Consolas'">{{ source }}</textarea>
+        </div>
+        <div class="col-md-5">
+            <h6>Protocol</h6>
+            {%- if solution.completed -%}
+            <p>{{ tests_success }} test(s) completed successfully</p>
+            <p></p>Verdict:
+            <div class="fw-bold {{ message_solution[1] }}">{{ message_solution[0] }}</div>
+            <p></p>
+            <h6>Input</h6>
+            <textarea class="form-control" readonly
+                      style="font-family: 'Consolas';min-height: 65px;max-height: 50vh;"
+                      onfocus="this.style.height = this.scrollHeight + 'px'"
+                      onblur="this.style.height = '65px';">
+                {%- if stdin -%}{{ stdin }}{% else %}---{% endif %}</textarea>
+            <p></p>
+            <h6>Output</h6>
+            <textarea class="form-control" readonly
+                      style="font-family: 'Consolas';min-height: 65px;max-height: 50vh;"
+                      onfocus="this.style.height = this.scrollHeight + 'px'"
+                      onblur="this.style.height = '65px';">
+                {%- if stdout -%}{{ stdout }}{% else %}---{% endif %}</textarea>
+            <p></p>
+            <h6>Error</h6>
+            <textarea class="form-control" readonly
+                      style="font-family: 'Consolas';min-height: 65px;max-height: 50vh;"
+                      onfocus="this.style.height = this.scrollHeight + 'px'"
+                      onblur="this.style.height = '65px';">
+                {%- if stderr -%}{{ stderr }}{% else %}---{% endif %}</textarea>
+            <p></p>
+            {% else %}
+            <p>Protocol is not available</p>
+            {% endif %}
+        </div>
+    </div>
 </main>
 {% endblock %}
 

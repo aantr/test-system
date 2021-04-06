@@ -287,7 +287,7 @@ class TestProgram:
     def read_source_code(solution):
         path = os.path.join('files', 'source_code',
                             f'{str(solution.source_code.id)}.source')
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             return f.read()
 
     @staticmethod

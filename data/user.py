@@ -26,3 +26,12 @@ class User(SqlAlchemyBase, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
+
+    def has_rights_student(self):
+        return self.type <= 30
+
+    def has_rights_teacher(self):
+        return self.type <= 20
+
+    def has_rights_admin(self):
+        return self.type <= 10

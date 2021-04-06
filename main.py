@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, send_from_directory
 from flask_login import LoginManager, login_required, current_user
 import os
 import threading
@@ -90,6 +90,13 @@ import components.errors
 import components.index
 import components.system_state
 
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'img/favicon.ico')
+
+
 if __name__ == '__main__':
     with open(app.config['CONFIG_LANG'], 'r') as f:
         data = json.load(f)
@@ -103,7 +110,9 @@ if __name__ == '__main__':
 
     test_program = tp.get_test_program()
     thread = threading.Thread(target=test_program.start, args=(),
+
                               kwargs={'threads': app.config['TEST_THREADS']})
+
     thread.daemon = True
     thread.start()
 

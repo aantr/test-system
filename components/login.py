@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import render_template, redirect, flash
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from data import db_session
@@ -28,7 +30,7 @@ def login_():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.username == form.username.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user)
+            login_user(user, remember=False, duration=timedelta(minutes=1))
             return redirect('/')
         flash('Incorrect username or password', category='danger')
     else:

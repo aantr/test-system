@@ -1,18 +1,19 @@
 from functools import wraps
-
-from flask import current_app, abort
-from flask_login import current_user, LoginManager, login_required
-
+from flask import abort
+from flask_login import current_user, login_required
 from data.user import User
 
 current_user: User
 
 
-def permissions_required(permissions):
+def permissions_required(permissions: str):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            if current_user.type > permissions:
+            d = {'student': current_user.has_rights_student,
+                 'teacher': current_user.has_rights_teacher,
+                 'admin': current_user.has_rights_admin}
+            if not d.get(permissions):
                 abort(403)
                 return
             return func(*args, **kwargs)
@@ -25,7 +26,7 @@ def permissions_required(permissions):
 def admin_required(func):
     @wraps(func)
     @login_required
-    @permissions_required(10)
+    @permissions_required('admin')
     def decorated(*args, **kwargs):
         return func(*args, **kwargs)
 
@@ -35,7 +36,7 @@ def admin_required(func):
 def teacher_required(func):
     @wraps(func)
     @login_required
-    @permissions_required(20)
+    @permissions_required('teacher')
     def decorated(*args, **kwargs):
         return func(*args, **kwargs)
 
@@ -45,7 +46,7 @@ def teacher_required(func):
 def student_required(func):
     @wraps(func)
     @login_required
-    @permissions_required(30)
+    @permissions_required('student')
     def decorated(*args, **kwargs):
         return func(*args, **kwargs)
 

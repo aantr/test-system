@@ -8,15 +8,15 @@ def get_solution_row(solution):
     languages = prog_lang.get_languages()
     solution: Solution
     i = solution
-    solution_row = []
+    solution_row = {'row': [], 'problem_id': i.problem_id}
     for x in [
-        i.id, i.user.username,
+        i.id, i.user.username, i.problem.name,
         i.sent_date.strftime(date_format()),
         languages[i.lang_code_name].name,
         get_message_solution(i),
-        f'{i.max_time:.3f}',
-        f'{i.max_memory // 1024} Kb'
+        i.get_max_time(),
+        i.get_max_memory()
     ]:
-        solution_row.append(x if type(
+        solution_row['row'].append(x if type(
             x) == tuple else (x, ''))
     return solution_row

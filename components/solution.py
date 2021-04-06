@@ -17,6 +17,7 @@ from data.source_code import SourceCode
 from data.test_result import TestResult
 from forms.submit_solution import SubmitSolutionForm
 from program_testing import prog_lang
+from program_testing.message import get_message_solution
 from program_testing.prog_lang import get_languages
 from program_testing.test_program import TestProgram
 from utils.permissions_required import student_required
@@ -162,4 +163,15 @@ def get_solution(solution_id):
         abort(403)
     source = TestProgram.read_source_code(solution)
     lang = get_languages()[solution.lang_code_name].name
+    if solution.completed:
+        tests = TestProgram.read_tests(solution.problem)
+        test_results = TestProgram.read_test_results(solution)
+        tests_success = len(test_results)
+        message_solution = get_message_solution(solution)
+        if not solution.success:
+            tests_success -= 1
+            stdin, correct = tests[len(test_results) - 1]
+            stdout = test_results[-1].stdout
+            stderr = test_results[-1].stderr
+
     return render_template('solution.html', **locals())

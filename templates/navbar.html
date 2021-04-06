@@ -20,15 +20,17 @@
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="/status">Status</a></li>
                 <li class="nav-item"><a class="nav-link" href="/problemset">Archive</a></li>
+                <li class="nav-item"><a class="nav-link" href="/workplace">Workplace</a></li>
+                <li class="nav-item"><a class="nav-link" href="/action">Action</a></li>
+                <li class="nav-item"><a class="nav-link" href="/invites">Invites</a></li>
+                {%- if current_user.has_rights_teacher() -%}
+                <li class="nav-item" style="border-right: 2px solid #bbb;margin-left: 15px;margin-right: 15px;"></li>
                 <li class="nav-item"><a class="nav-link" href="/add_problem">Add problem</a></li>
                 <li class="nav-item"><a class="nav-link" href="/add_session">Add session</a></li>
                 <li class="nav-item"><a class="nav-link" href="/my_sessions">Sessions</a></li>
-                <li class="nav-item"><a class="nav-link" href="/workplace">Workplace</a></li>
-                <li class="nav-item"><a class="nav-link" href="/action">Action</a></li>
                 <li class="nav-item"><a class="nav-link" href="/groups">Groups</a></li>
                 <li class="nav-item"><a class="nav-link" href="/add_group">Add group</a></li>
-                <li class="nav-item"><a class="nav-link" href="/invites">Invites</a></li>
-
+                {% endif %}
             </ul>
             <form class="d-flex">
                 <ul class="navbar-nav" style="margin-right: 25px">

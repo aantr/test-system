@@ -32,8 +32,6 @@ def workplace_status():
     if not session:
         return redirect(url_for('action'))
     check_session_timeout(db_sess, session)
-    if not session.started:
-        return redirect(url_for('workplace_info'))
 
     solution = db_sess.query(Solution).filter(Solution.user_id == current_user.id). \
         filter(Solution.session_id == session.id).order_by(Solution.sent_date.desc()).all()
@@ -95,8 +93,6 @@ def workplace_results():
     if not session:
         return redirect(url_for('action'))
     check_session_timeout(db_sess, session)
-    if not session.started:
-        return redirect(url_for('workplace_info'))
 
     results = render_result_rows(db_sess, session)
     return render_template('workplace_results.html', **locals())
