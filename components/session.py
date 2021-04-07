@@ -185,7 +185,7 @@ def add_session_member():
     if joined_session_member:
         flash(f'User "{joined_session_member.member.username}" already joined to any session',
               category='danger')
-        return redirect(url_for('get_session', session_id=session_id))
+        return redirect(url_for('session_members', session_id=session_id))
 
     for i in user_ids:
         session: Session
@@ -195,7 +195,7 @@ def add_session_member():
         db_sess.add(sm)
     db_sess.commit()
     flash(f'Successfully joined {len(user_ids)} user(s) to the session "{session.name}"', category='success')
-    return redirect(url_for('get_session', session_id=session_id))
+    return redirect(url_for('session_members', session_id=session_id))
 
 
 @app.route('/invite_join_session/<int:session_id>', methods=['GET'])
@@ -233,8 +233,7 @@ def invite_join_session(session_id):
 
 
 def get_session_by_id(db_sess, id):
-    session = db_sess.query(Session).filter(Session.id == id). \
-        filter(Session.user_id == current_user.id).first()
+    session = db_sess.query(Session).filter(Session.id == id).first()
     if not session:
         abort(404)
     check_session_timeout(db_sess, session)
@@ -259,6 +258,7 @@ def session_members(session_id):
     session = get_session_by_id(db_sess, session_id)
     members = [j.member for j in db_sess.query(SessionMember).
         filter(SessionMember.session_id == session_id).all()]
+    session_id = str(session_id)
     return render_template('session_members.html', **locals())
 
 
@@ -295,7 +295,6 @@ def session_info(session_id):
     db_sess = db_session.create_session()
     session = get_session_by_id(db_sess, session_id)
     time_left = session.get_time_left()
-
     return render_template('session_info.html', **locals())
 
 
@@ -303,3 +302,19 @@ def session_info(session_id):
 @teacher_required
 def get_session(session_id):
     return redirect(url_for('session_info', session_id=session_id))
+
+
+@app.route('/clear_members_session/<int:session_id>')
+@teacher_required
+def clear_members_session(session_id):
+    db_sess = db_session.create_session()
+    session = get_session_by_id(db_sess, session_id)
+    if session.started:
+        flash('Unable to remove member from a session during a started session',
+              category='danger')
+    else:
+        db_sess.query(SessionMember).\
+            filter(SessionMember.session_id == session_id).delete()
+        db_sess.commit()
+    return redirect(url_for('session_members', session_id=session_id))
+

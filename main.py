@@ -21,18 +21,17 @@ CONFIG_LANG = os.path.abspath('config/test_program.json')
 UPDATE_STATUS_TIMEOUT = 0.5
 TEST_THREADS = 3
 
-global_app.global_init()
+global_app.global_init(__name__)
 app = global_app.get_app()
 app.config.from_object(__name__)
 current_user: User
 
 recreate_db = 0
 
-if recreate_db:
+def on_recreate_db():
     print('Recreate db...')
     if os.path.exists(DB_PT):
         os.remove(DB_PT)
-    db_session.global_init(DB_PT)
 
     db_sess = db_session.create_session()
 
@@ -107,6 +106,8 @@ if __name__ == '__main__':
 
     db_session.global_init(app.config['DB_PT'])
     init_db()
+    if recreate_db:
+        on_recreate_db()
 
     test_program = tp.get_test_program()
     thread = threading.Thread(target=test_program.start, args=(),

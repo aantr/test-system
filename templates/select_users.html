@@ -32,10 +32,17 @@
                 </thead>
                 <tbody>
                 {% for i in search_objects %}
+                {% if i.id in selectable_search_ids %}
                 <tr onclick="add_object({{ i.id }});">
                     <td>{{ i.id }}</td>
                     <td>{{ i.username }}</td>
                 </tr>
+                {% else %}
+                <tr class="table-danger" aria-disabled="true">
+                    <td>{{ i.id }}</td>
+                    <td>{{ i.username }}</td>
+                </tr>
+                {% endif %}
                 {% endfor %}
                 </tbody>
             </table>
@@ -61,7 +68,9 @@
         </div>
     </div>
     <p>
-        <button onclick="submit()" class="btn btn-primary{% if not selected_search_objects %} disabled{% endif %}" style="min-width: 75px">Select</button>
+        <button onclick="submit()" class="btn btn-primary{% if not selected_search_objects %} disabled{% endif %}"
+                style="min-width: 75px">Select
+        </button>
     </p>
 
 </main>
@@ -69,24 +78,29 @@
     var _return = "{{ _return }}";
     var user_ids = "{{ user_ids }}";
     var search_field = "{{ search_field }}";
+    var group_id = "{{ group_id }}";
+    var session_id = "{{ session_id }}";
+
 
     var user_ids_list = user_ids.split(',');
     if (!user_ids_list[0]) user_ids_list.pop();
 
     function add_object(id) {
         user_ids_list.push(id.toString());
-        window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids_list.join(',') + '&search=' + search_field;
+        window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids_list.join(',') + '&search=' + search_field + '&group_id=' + group_id + '&session_id=' + session_id;
     }
     function remove_object(id) {
         const index = user_ids_list.indexOf(id.toString());
         if (index > -1) {
             user_ids_list.splice(index, 1);
         }
-        window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids_list.join(',') + '&search=' + search_field;
+        window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids_list.join(',') + '&search=' + search_field + '&group_id=' + group_id + '&session_id=' + session_id;
     }
     function submit() {
         window.location =  _return + '&user_ids=' + user_ids_list.join(',');
     }
+
+
 
 
 

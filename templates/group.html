@@ -35,8 +35,8 @@
         {% else %} --- {% endif %}
     </p>
     <p><a href="/set_join_action_group/{{ group.id }}" class="btn btn-info">Reset ID</a></p>
-    <p><a href="/select_users?return=/add_group_member?group_id={{ group_id }}&user_ids=" class="btn btn-warning">Add
-        members</a></p>
+    <p><a href="{{ url_for('select_user', return='/add_group_member?group_id='+group_id, group_id=group_id) }}"
+          class="btn btn-warning">Add members</a></p>
 
 </main>
 </body>

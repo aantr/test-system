@@ -1,6 +1,17 @@
 {% extends "session_base.html" %}
 {% block session_content %}
+<div class="row g-3">
+    <div class="col-md-2">
+        <p><a href="{{ url_for('select_user', return='/add_session_member?session_id='+session_id, no_session=1) }}"
+              class="btn btn-warning">Add members</a></p>
+    </div>
+    <div class="col-md-2">
+        <p><a href="/clear_members_session/{{ session_id }}"
+              class="btn btn-danger">Clear members</a></p>
+    </div>
+</div>
 <table class="table table-hover">
+
     <thead class="thead-light">
     <tr>
         <th scope="col">Id</th>

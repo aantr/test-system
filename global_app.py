@@ -3,10 +3,10 @@ from flask import Flask
 app = None
 
 
-def global_init():
+def global_init(name):
     global app
 
-    app = Flask(__name__)
+    app = Flask(name)
 
 
 def get_app():

@@ -60,7 +60,7 @@ def get_group(group_id):
 
     members = [i.member for i in db_sess.query(GroupMember)
         .filter(GroupMember.group_id == group_id).all()]
-
+    group_id = str(group_id)
     return render_template('group.html', **locals())
 
 
