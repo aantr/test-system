@@ -8,6 +8,7 @@ from markupsafe import Markup
 
 from components.action_link import add_action
 from data import db_session
+from data.group import Group, GroupMember
 from data.invite import Invite
 from data.problem import Problem
 from data.session import Session, SessionMember
@@ -164,7 +165,7 @@ def my_sessions():
 @teacher_required
 def add_session_member():
     db_sess = db_session.create_session()
-    session_id = request.args.get('session_id', default='', type=str)
+    session_id = request.args.get('session_id', default='', type=int)
     user_ids = request.args.get('user_ids', default='', type=str)
     try:
         user_ids = list(map(int, user_ids.split(',')))
@@ -195,6 +196,35 @@ def add_session_member():
         db_sess.add(sm)
     db_sess.commit()
     flash(f'Successfully joined {len(user_ids)} user(s) to the session "{session.name}"', category='success')
+    return redirect(url_for('session_members', session_id=session_id))
+
+
+@app.route('/load_session_member_group', methods=['GET'])
+@teacher_required
+def load_session_member_group():
+    db_sess = db_session.create_session()
+    session_id = request.args.get('session_id', default='', type=int)
+    group_id = request.args.get('group_id', default='', type=int)
+    session = db_sess.query(Session).filter(Session.id == session_id).first()
+    if session is None:
+        abort(404)
+    if session.user_id != current_user.id:
+        abort(403)
+    group: Group = db_sess.query(Group).filter(Group.id == group_id).first()
+    if group is None:
+        abort(404)
+    if group.user_id != current_user.id:
+        abort(403)
+    db_sess.query(SessionMember).filter(SessionMember.session_id == session_id).delete()
+    db_sess.flush()
+    member_ids = db_sess.query(GroupMember.member_id).filter(GroupMember.group_id == group_id).all()
+    for i in member_ids:
+        member = SessionMember()
+        member.member_id = i[0]
+        member.session_id = session_id
+        db_sess.add(member)
+    db_sess.commit()
+    flash(f'Successfully loaded session members from group "{group.name}"', category='success')
     return redirect(url_for('session_members', session_id=session_id))
 
 
@@ -313,8 +343,8 @@ def clear_members_session(session_id):
         flash('Unable to remove member from a session during a started session',
               category='danger')
     else:
-        db_sess.query(SessionMember).\
+        db_sess.query(SessionMember). \
             filter(SessionMember.session_id == session_id).delete()
         db_sess.commit()
+    flash('Successfully deleted all session members', category='success')
     return redirect(url_for('session_members', session_id=session_id))
-

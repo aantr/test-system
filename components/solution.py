@@ -6,6 +6,7 @@ from flask import render_template, request, \
 from flask_login import login_required, current_user
 
 from data.session import Session
+from data.user import User
 from global_app import get_app
 from program_testing import test_program as tp
 
@@ -25,6 +26,7 @@ from utils.utils import get_session_joined, get_message_from_form
 from utils.solution_row import get_solution_row
 
 app = get_app()
+current_user: User
 
 
 def send_solution(problem_id, source, lang, session_id, db_sess):
@@ -159,7 +161,7 @@ def get_solution(solution_id):
     solution = db_sess.query(Solution).filter(Solution.id == solution_id).first()
     if not solution:
         abort(404)
-    if solution.user_id != current_user.id:
+    if solution.user_id != current_user.id and not current_user.has_rights_teacher():
         abort(403)
     source = TestProgram.read_source_code(solution)
     lang = get_languages()[solution.lang_code_name].name
@@ -170,8 +172,9 @@ def get_solution(solution_id):
         message_solution = get_message_solution(solution)
         if not solution.success:
             tests_success -= 1
-            stdin, correct = tests[len(test_results) - 1]
-            stdout = test_results[-1].stdout
-            stderr = test_results[-1].stderr
+            if current_user.has_rights_teacher():
+                stdin, correct = tests[len(test_results) - 1]
+                stdout = test_results[-1].stdout
+                stderr = test_results[-1].stderr
 
     return render_template('solution.html', **locals())

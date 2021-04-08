@@ -6,6 +6,10 @@
               class="btn btn-warning">Add members</a></p>
     </div>
     <div class="col-md-2">
+        <p><a href="{{ url_for('select_group', return='/load_session_member_group?session_id='+session_id) }}"
+              class="btn btn-primary">From group</a></p>
+    </div>
+    <div class="col-md-2">
         <p><a href="/clear_members_session/{{ session_id }}"
               class="btn btn-danger">Clear members</a></p>
     </div>

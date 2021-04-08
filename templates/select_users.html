@@ -80,11 +80,8 @@
     var search_field = "{{ search_field }}";
     var group_id = "{{ group_id }}";
     var session_id = "{{ session_id }}";
-
-
     var user_ids_list = user_ids.split(',');
     if (!user_ids_list[0]) user_ids_list.pop();
-
     function add_object(id) {
         user_ids_list.push(id.toString());
         window.location = '/select_users?return=' + _return + '&user_ids=' + user_ids_list.join(',') + '&search=' + search_field + '&group_id=' + group_id + '&session_id=' + session_id;
@@ -99,6 +96,7 @@
     function submit() {
         window.location =  _return + '&user_ids=' + user_ids_list.join(',');
     }
+
 
 
 

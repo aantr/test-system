@@ -85,6 +85,7 @@ import components.session
 import components.solution
 import components.workplace
 import components.select_users
+import components.select_group
 import components.errors
 import components.index
 import components.system_state
