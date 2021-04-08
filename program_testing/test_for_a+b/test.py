@@ -1,6 +1,7 @@
 import time
 
 # Cумма чисел a и b
-time.sleep(20)
+for i in range(10 ** 7):
+    12 ** 2
 a, b = map(int, input().split())
 print(a + b)

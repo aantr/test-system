@@ -131,26 +131,17 @@ def status():
 @student_required
 def update():
     db_sess = db_session.create_session()
-    test_program = tp.get_test_program()
-
     solution_ids = request.args.get('rows_to_update', default=None, type=str)
     if solution_ids is None:
         return ''
     solution_ids = json.loads(solution_ids)
-
     solution = db_sess.query(Solution).filter(Solution.id.in_(
-        solution_ids)).order_by(Solution.id).all()
+        solution_ids)).all()
     if not solution or len(solution) != len(solution_ids):
         return ''
-
     solution_rows = {i.id: [render_template('status_row.html',
                                             row=get_solution_row(i)),
                             i.completed] for i in solution}
-    for i in solution:
-        if i.completed:
-            test_res = test_program.read_test_results(i)
-            for j in test_res:
-                j: test_program.TestResult
     return json.dumps(solution_rows)
 
 
