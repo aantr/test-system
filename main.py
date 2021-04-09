@@ -26,13 +26,15 @@ app = global_app.get_app()
 app.config.from_object(__name__)
 current_user: User
 
-recreate_db = 0
+recreate_db = 1
+
 
 def on_recreate_db():
     print('Recreate db...')
     if os.path.exists(DB_PT):
         os.remove(DB_PT)
 
+    db_session.global_init(app.config['DB_PT'])
     db_sess = db_session.create_session()
 
     p = Problem()
@@ -75,6 +77,7 @@ def on_recreate_db():
 
     db_sess.commit()
 
+
 # Components
 import components.action_link
 import components.groups
@@ -89,12 +92,14 @@ import components.select_group
 import components.errors
 import components.index
 import components.system_state
+import components.register
 
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'img/favicon.ico')
+    return send_from_directory(
+        os.path.join(app.root_path, 'static'),
+        'img/favicon.ico')
 
 
 if __name__ == '__main__':
@@ -105,14 +110,13 @@ if __name__ == '__main__':
 
     languages = prog_lang.get_languages()
 
-    db_session.global_init(app.config['DB_PT'])
-    init_db()
     if recreate_db:
         on_recreate_db()
+    db_session.global_init(app.config['DB_PT'])
+    init_db()
 
     test_program = tp.get_test_program()
     thread = threading.Thread(target=test_program.start, args=(),
-
                               kwargs={'threads': app.config['TEST_THREADS']})
 
     thread.daemon = True
