@@ -1,3 +1,0 @@
-# Cумма чисел a и b
-a, b = map(int, input().split())
-print(a + b)

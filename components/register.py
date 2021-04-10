@@ -12,10 +12,12 @@ from forms.register import RegisterForm
 
 from global_app import get_app
 from utils.utils import get_message_from_form
+from utils.send_mail import send_mail
 
 app = get_app()
 ts = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-salt = 'email-confirm-key'
+from_ = 'a@a.com'
+subject = 'Confirm email'
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -41,21 +43,19 @@ def register():
         user.email = form.email.data
         db_sess.add(user)
         db_sess.commit()
-        subject = 'Confirm your email'
-        print('ok')
-
-        token = ts.dumps(form.email.data, salt=salt)
-
+        token = ts.dumps(form.email.data, salt=app.config['MAIL_CONFIRM_SECRET_KEY'])
         confirm_url = url_for(
             'confirm_email',
             token=token,
             _external=True)
-
+        text = 'Text'
         html = render_template(
             'confirm_email.html',
             confirm_url=confirm_url)
-        # send_email(user.email, subject, html)
-        return render_template(url_for())
+        send_mail(from_, form.email.data, subject, text, html)
+
+        flash('Successfully signed up, please confirm your email', category='success')
+        return redirect(url_for('login_'))
     else:
         msg = get_message_from_form(form)
         if msg:
@@ -66,7 +66,7 @@ def register():
 @app.route('/confirm/<token>')
 def confirm_email(token):
     try:
-        email = ts.loads(token, salt=salt, max_age=86400)
+        email = ts.loads(token, salt=app.config['MAIL_CONFIRM_SECRET_KEY'], max_age=86400)
     except Exception:
         abort(404)
         return

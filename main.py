@@ -14,8 +14,10 @@ import program_testing.prog_lang as prog_lang
 import global_app
 from program_testing import test_program as tp
 from utils.init_db import init_db
+import socket
 
 SECRET_KEY = 'test_system_secret_key'
+MAIL_CONFIRM_SECRET_KEY = 'confirm_mail_secret_key'
 DB_PT = os.path.abspath('db/test_system.db')
 CONFIG_LANG = os.path.abspath('config/test_program.json')
 UPDATE_STATUS_TIMEOUT = 0.5
@@ -26,7 +28,7 @@ app = global_app.get_app()
 app.config.from_object(__name__)
 current_user: User
 
-recreate_db = 1
+recreate_db = 0
 
 
 def on_recreate_db():
@@ -47,21 +49,25 @@ def on_recreate_db():
 
     user = User()
     user.username = 'admin'
+    user.confirmed_email = True
     user.type = 10
-    user.set_password('admin')
+    user.set_password('123210')
     db_sess.add(user)
 
     user = User()
     user.username = 'teacher'
     user.type = 20
-    user.set_password('teacher')
+    user.confirmed_email = True
+    user.set_password('teacher123')
     db_sess.add(user)
 
-    user = User()
-    user.username = 'student'
-    user.type = 30
-    user.set_password('student')
-    db_sess.add(user)
+    for i in range(30):
+        user = User()
+        user.username = f'student{i}'
+        user.type = 30
+        user.set_password(f'student{i}')
+        user.confirmed_email = True
+        db_sess.add(user)
 
     cat = ProblemCategory()
     cat.name = 'Массивы'
@@ -121,6 +127,10 @@ if __name__ == '__main__':
 
     thread.daemon = True
     thread.start()
+
+    h_name = socket.gethostname()
+    ip_address = socket.gethostbyname(h_name)
+    print(ip_address)
 
     port = int(os.environ.get('PORT', 80))
     app.run(host='0.0.0.0', port=port)

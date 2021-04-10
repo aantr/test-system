@@ -29,7 +29,7 @@ def login_():
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.username == form.username.data).first()
-        if not (user and user.check_password(form.password.data)):
+        if not user or not user.check_password(form.password.data):
             flash('Incorrect username or password', category='danger')
         elif not user.confirmed_email:
             flash('Email not confirmed', category='danger')
