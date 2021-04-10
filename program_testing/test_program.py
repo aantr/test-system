@@ -1,15 +1,14 @@
 import json
 import os
-import platform
 import shutil
 import threading
 import time
 import zipfile
-from subprocess import Popen, PIPE
 from zipfile import ZipFile
 import psutil
 
 from program_testing import prog_lang
+from program_testing.create_process import create_process
 from program_testing.prog_lang import ProgLang
 from data import db_session
 from data.problem import Problem
@@ -19,7 +18,7 @@ from io import BytesIO
 directory = os.path.dirname(__file__)
 write_solution_timeout = 0.3
 check_proc_delay = 0.001
-languages = None
+languages: list = None
 DEBUG = False
 
 run_as_user_uid_linux = None
@@ -69,10 +68,7 @@ class TestProgram:
 
     def start(self, threads=1):
         if os.name == 'posix' and run_as_user_uid_linux is not None:
-            print(f'[Test system] Unix system detected, '
-                  f'run all processes with preexec_fn.\n'
-                  f'Parameters\n'
-                  f'UID: {run_as_user_uid_linux}')
+            print(f'[Test system] Unix system detected')
         print('[Test system] Clear source folder')
         folder = os.path.join(directory, 'source_solution')
         for filename in os.listdir(folder):
@@ -184,7 +180,9 @@ class TestProgram:
 
             proc = None
             try:
-                proc = self.create_process(compile_result[1])
+                proc = create_process(compile_result[1],
+                                      run_as_user_uid_linux,
+                                      [compile_result[1][-1]])
                 proc.stdin.write(stdin.encode(lang.encoding))
                 proc.stdin.close()
             except Exception as e:
@@ -435,25 +433,6 @@ class TestProgram:
         if s1:
             return False
         return True
-
-    @staticmethod
-    def create_process(cmd):
-        system = os.name
-        if system == 'nt' or run_as_user_uid_linux is None:
-            proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
-            return proc
-        elif system == 'posix':
-            proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
-                         preexec_fn=TestProgram.preexec_linux())
-            return proc
-        raise ValueError(f'Unrecognized system: "{platform.system()}"')
-
-    @staticmethod
-    def preexec_linux():
-        def decorated():
-            os.setuid(run_as_user_uid_linux)
-
-        return decorated
 
     @staticmethod
     def get_memory(pid):

@@ -3,6 +3,7 @@ from flask import Flask, render_template, redirect, url_for, send_from_directory
 from flask_login import LoginManager, login_required, current_user
 import os
 import threading
+import socket
 
 from data import db_session
 from data.problem import Problem
@@ -14,7 +15,6 @@ import program_testing.prog_lang as prog_lang
 import global_app
 from program_testing import test_program as tp
 from utils.init_db import init_db
-import socket
 
 SECRET_KEY = 'test_system_secret_key'
 MAIL_CONFIRM_SECRET_KEY = 'confirm_mail_secret_key'
