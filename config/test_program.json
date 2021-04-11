@@ -1,6 +1,6 @@
 {
   "encoding": "cp866",
-  "run_as_user_linux": 1000,
+  "run_as_user_linux": 1001,
   "languages": {
     "python": [
       "python3"

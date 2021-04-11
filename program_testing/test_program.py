@@ -8,7 +8,7 @@ from zipfile import ZipFile
 import psutil
 
 from program_testing import prog_lang
-from program_testing.create_process import create_process
+from program_testing.create_process import create_process, init_user
 from program_testing.prog_lang import ProgLang
 from data import db_session
 from data.problem import Problem
@@ -32,6 +32,7 @@ def init(config):
     run_as_user_uid_linux = config['run_as_user_linux']
     languages = prog_lang.get_languages()
     test_program = TestProgram()
+    init_user(run_as_user_uid_linux)
 
 
 def get_test_program():
@@ -181,8 +182,7 @@ class TestProgram:
             proc = None
             try:
                 proc = create_process(compile_result[1],
-                                      run_as_user_uid_linux,
-                                      [compile_result[1][-1]])
+                                      run_as_user_uid_linux)
                 proc.stdin.write(stdin.encode(lang.encoding))
                 proc.stdin.close()
             except Exception as e:

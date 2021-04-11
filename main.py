@@ -14,6 +14,7 @@ from data.user import User
 import program_testing.prog_lang as prog_lang
 import global_app
 from program_testing import test_program as tp
+from program_testing.test_program import TestProgram
 from utils.init_db import init_db
 
 SECRET_KEY = 'test_system_secret_key'
@@ -121,7 +122,7 @@ if __name__ == '__main__':
     db_session.global_init(app.config['DB_PT'])
     init_db()
 
-    test_program = tp.get_test_program()
+    test_program: TestProgram = tp.get_test_program()
     thread = threading.Thread(target=test_program.start, args=(),
                               kwargs={'threads': app.config['TEST_THREADS']})
 
