@@ -4,11 +4,12 @@ import shutil
 import threading
 import time
 import zipfile
+from subprocess import check_output
 from zipfile import ZipFile
 import psutil
 
 from program_testing import prog_lang
-from program_testing.create_process import create_process, init_user
+from program_testing.create_process import create_process, get_source_solution
 from program_testing.prog_lang import ProgLang
 from data import db_session
 from data.problem import Problem
@@ -18,8 +19,9 @@ from io import BytesIO
 directory = os.path.dirname(__file__)
 write_solution_timeout = 0.3
 check_proc_delay = 0.001
-languages: list = None
+languages: list = ...
 DEBUG = False
+source_solution: str = ...
 
 run_as_user_uid_linux = None
 
@@ -28,11 +30,14 @@ test_program = None
 
 def init(config):
     global run_as_user_uid_linux, \
-        languages, test_program
+        languages, test_program, source_solution
     run_as_user_uid_linux = config['run_as_user_linux']
+    if run_as_user_uid_linux is not None:
+        source_solution = get_source_solution(run_as_user_uid_linux)
+    else:
+        source_solution = os.path.join(directory, 'source_solution')
     languages = prog_lang.get_languages()
     test_program = TestProgram()
-    init_user(run_as_user_uid_linux)
 
 
 def get_test_program():
@@ -70,24 +75,12 @@ class TestProgram:
     def start(self, threads=1):
         if os.name == 'posix' and run_as_user_uid_linux is not None:
             print(f'[Test system] Unix system detected')
-        print('[Test system] Clear source folder')
-        folder = os.path.join(directory, 'source_solution')
-        for filename in os.listdir(folder):
-            if filename == '.source_solution':
-                continue
-            file_path = os.path.join(folder, filename)
-            try:
-                if os.path.isfile(file_path) or os.path.islink(file_path):
-                    os.unlink(file_path)
-                elif os.path.isdir(file_path):
-                    shutil.rmtree(file_path)
-            except Exception as e:
-                print('[Test system] Failed to delete %s. Reason: %s' % (file_path, e))
 
-        for i in range(threads):
-            thread_name = f'thread_{i + 1}'
-            source_dir = os.path.join(folder, thread_name)
-            os.mkdir(source_dir)
+        threads_folders = [f'thread_{i + 1}' for i in range(threads)]
+        for thread_name in threads_folders:
+            source_dir = os.path.join(source_solution, thread_name)
+            if not os.path.exists(source_dir):
+                os.mkdir(source_dir)
             t = threading.Thread(target=self._thread, args=(source_dir,))
             t.daemon = True
             t.start()
@@ -116,8 +109,7 @@ class TestProgram:
                     try:
                         self._run_testing(solution_id, db_sess, source_dir)
                     except Exception as e:
-                        if DEBUG:
-                            print('[Test system] Error in _thread from _run_testing:', e)
+                        print('[Test system] Error in _thread from _run_testing:', e)
 
     def _run_testing(self, solution_id, db_sess, source_dir):
         solution = self.read_solution(db_sess, solution_id)
@@ -147,6 +139,8 @@ class TestProgram:
             error = f'[Test system] Error: abort testing (id={solution.id}) in compile language "{lang.name}", ' \
                     f'exception: "{e}"'
             self.abort_testing(db_sess, solution, error, test_results)
+            self.clear_folder(source_dir)
+
             if DEBUG:
                 print(error)
             return
@@ -163,6 +157,7 @@ class TestProgram:
 
             self.write_test_results(solution, test_results)
             self.write_solution(db_sess, solution)
+            self.clear_folder(source_dir)
             return
 
         write_solution_start = self.get_start_time()
@@ -182,7 +177,8 @@ class TestProgram:
             proc = None
             try:
                 proc = create_process(compile_result[1],
-                                      run_as_user_uid_linux)
+                                      run_as_user_uid_linux,
+                                      source_dir)
                 proc.stdin.write(stdin.encode(lang.encoding))
                 proc.stdin.close()
             except Exception as e:
@@ -191,6 +187,7 @@ class TestProgram:
                 error = f'[Test system] Error: abort testing (id={solution.id}) in create_process, ' \
                         f'exception: "{e}"'
                 self.abort_testing(db_sess, solution, error, test_results)
+                self.clear_folder(source_dir)
                 if DEBUG:
                     print(error)
                 return
@@ -270,6 +267,7 @@ class TestProgram:
         solution.max_memory = max_memory
         self.write_test_results(solution, test_results)
         self.write_solution(db_sess, solution)
+        self.clear_folder(source_dir)
 
     def get_queue_length(self):
         return len(self.queue)
@@ -447,3 +445,17 @@ class TestProgram:
     @staticmethod
     def get_delta_time(start):
         return time.time() - start
+
+    @staticmethod
+    def clear_folder(folder, whitelist=()):
+        for filename in os.listdir(folder):
+            if filename in whitelist:
+                continue
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('[Test system] Failed to delete %s. Reason: %s' % (file_path, e))

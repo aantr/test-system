@@ -15,23 +15,36 @@ for i in check_output([b'ls', path]).split(b'\n'):
 whitelist = ['bash']
 
 
-def create_process(cmd: list, uid):
+def get_source_solution(uid):
+    u_name = pwd.getpwuid(uid).pw_name
+    cmd = ['getent', 'passwd', f'{u_name}']
+    home = check_output(cmd).decode().split(':')[5]
+    source_solution_path = os.path.join(home, 'source_solution')
+    if not os.path.exists(source_solution_path):
+        os.mkdir(source_solution_path)
+    cmd = ['chown', '-R', f'{u_name}:{u_name}', source_solution_path]
+    call(cmd)
+    return source_solution_path
+
+
+def create_process(cmd: list, uid, private_folder):
     system = os.name
     if system == 'nt':
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
         return proc
     elif system == 'posix':
-        firejail = ['firejail', '--noprofile', '--net=none', '--noroot',
-                    '--disable-mnt', '--nosound', '--novideo']
-        firejail = []
+        firejail = ['firejail', '--noprofile', '--net=none', f'--private={private_folder}',
+                    f'--whitelist={private_folder}', '--disable-mnt', '--nosound', '--novideo']
+        for i in range(len(cmd)):
+            cmd[i] = cmd[i].replace(os.path.join(private_folder, ''), '')
         cmd = firejail + cmd
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
-                     preexec_fn=preexec_linux(uid))
+                     preexec_fn=preexec(uid))
         return proc
     raise ValueError(f'Unrecognized system: "{system}"')
 
 
-def preexec_linux(uid):
+def preexec(uid):
     def decorated():
         os.setuid(uid)
 
@@ -44,7 +57,9 @@ def init_user(uid):
     languages = get_languages()
     u_name = pwd.getpwuid(uid).pw_name
     setfacl = check_output(['which', 'setfacl']).strip()
-    print(f'[Test system] Init user {u_name}')
+    ans = input(f'[Test system] Init user {u_name} (y/n)? ')
+    if ans.strip().lower() != 'y':
+        return
     _whitelist = set()
     for i in whitelist:
         path = check_output(['which', i]).strip()
@@ -68,3 +83,5 @@ def init_user(uid):
         rights = 'r-x'
         cmd = [setfacl, '-m', f'u:{u_name}:' + rights, path]
         call(cmd)
+
+    print(f'[Test system] Done')

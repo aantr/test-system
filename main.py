@@ -1,4 +1,7 @@
+import argparse
 import json
+import time
+
 from flask import Flask, render_template, redirect, url_for, send_from_directory
 from flask_login import LoginManager, login_required, current_user
 import os
@@ -14,6 +17,7 @@ from data.user import User
 import program_testing.prog_lang as prog_lang
 import global_app
 from program_testing import test_program as tp
+from program_testing.create_process import init_user
 from program_testing.test_program import TestProgram
 from utils.init_db import init_db
 
@@ -110,12 +114,20 @@ def favicon():
 
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--init_user', action='store_true')
+    args = parser.parse_args()
+
     with open(app.config['CONFIG_LANG'], 'r') as f:
         data = json.load(f)
     prog_lang.init(data)
-    tp.init(data)
 
-    languages = prog_lang.get_languages()
+    if args.init_user:
+        init_user(data['run_as_user_linux'])
+        exit()
+
+    tp.init(data)
 
     if recreate_db:
         on_recreate_db()
@@ -133,5 +145,6 @@ if __name__ == '__main__':
     ip_address = socket.gethostbyname(h_name)
     print(ip_address)
 
+    time.sleep(0.5)
     port = int(os.environ.get('PORT', 80))
     app.run(host='0.0.0.0', port=port)
