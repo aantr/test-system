@@ -6,7 +6,7 @@ from flask import url_for, flash
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
 
-from global_app import get_app
+from global_app import get_app, get_dir
 from program_testing import test_program as tp
 
 from data import db_session
@@ -60,7 +60,7 @@ def add_problem():
             db_sess.flush()
             images.append(f'{base}{image.id}.{image.extension}')
 
-            with open(os.path.join('static', 'files', 'images',
+            with open(os.path.join(get_dir(), 'static', 'files', 'images',
                                    f'{image.id}.{image.extension}'), 'wb') as f:
                 f.write(i.stream.read())
 

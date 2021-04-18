@@ -5,8 +5,9 @@
       <sourceFolder url="file://$MODULE_DIR$/test_code" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/aa26" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/ts-venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.7" jdkType="Python SDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">

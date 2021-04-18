@@ -8,6 +8,7 @@ from subprocess import check_output
 from zipfile import ZipFile
 import psutil
 
+from global_app import get_dir
 from program_testing import prog_lang
 from program_testing.create_process import create_process, get_source_solution
 from program_testing.prog_lang import ProgLang
@@ -130,7 +131,7 @@ class TestProgram:
         lang: ProgLang = languages[solution.lang_code_name]
         name = 'solution.' + lang.extension
         source = os.path.join(source_dir, name)
-        path = os.path.join('files', 'source_code', f'{solution.source_code.id}.source')
+        path = os.path.join(get_dir(), 'files', 'source_code', f'{solution.source_code.id}.source')
         shutil.copy(path, source)
 
         try:
@@ -274,22 +275,22 @@ class TestProgram:
 
     @staticmethod
     def add_solution(source, solution):
-        path = os.path.join('files', 'source_code',
+        path = os.path.join(get_dir(), 'files', 'source_code',
                             f'{str(solution.source_code.id)}.source')
         with open(path, 'wb') as f:
             f.write(source)
 
     @staticmethod
     def read_source_code(solution):
-        path = os.path.join('files', 'source_code',
+        path = os.path.join(get_dir(), 'files', 'source_code',
                             f'{str(solution.source_code.id)}.source')
         with open(path, 'r', encoding='utf8') as f:
             return f.read()
 
     @staticmethod
     def add_problem(problem, bytes_zip_tests, task):
-        path_task = os.path.join('files', 'task', f'{problem.task.id}.html')
-        dir_tests = os.path.join('files', 'tests', f'{problem.problem_tests.id}')
+        path_task = os.path.join(get_dir(), 'files', 'task', f'{problem.task.id}.html')
+        dir_tests = os.path.join(get_dir(), 'files', 'tests', f'{problem.problem_tests.id}')
 
         with open(path_task, 'w', encoding='utf-8') as f:
             f.write(task)
@@ -306,7 +307,7 @@ class TestProgram:
 
     @staticmethod
     def write_test_results(solution, test_results: list):
-        path = os.path.join('files', 'test_result',
+        path = os.path.join(get_dir(), 'files', 'test_result',
                             f'{str(solution.test_result.id)}.json')
         with open(path, 'w') as f:
             json.dump([[x[1] for x in sorted(res.__dict__.items())]
@@ -314,7 +315,7 @@ class TestProgram:
 
     @staticmethod
     def read_test_results(solution) -> list:
-        path = os.path.join('files', 'test_result',
+        path = os.path.join(get_dir(), 'files', 'test_result',
                             f'{str(solution.test_result.id)}.json')
         res = []
         try:
@@ -380,13 +381,13 @@ class TestProgram:
 
     @staticmethod
     def read_problem_task(problem):
-        task = os.path.join('files', 'task', f'{problem.task.id}.html')
+        task = os.path.join(get_dir(), 'files', 'task', f'{problem.task.id}.html')
         with open(task, 'r', encoding='utf-8') as f:
             return f.read()
 
     @staticmethod
     def read_tests(problem, n=None):
-        path = os.path.join('files', 'tests', f'{problem.id}')
+        path = os.path.join(get_dir(), 'files', 'tests', f'{problem.id}')
         res = []
         k = 0
         for root, dirs, files in os.walk(path):

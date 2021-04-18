@@ -12,7 +12,7 @@ for i in check_output([b'ls', path]).split(b'\n'):
             forbidden_path.append(check_output([b'which', i]).strip())
         except Exception:
             continue
-whitelist = ['bash']
+whitelist = ['firejail', 'bash', 'ls']
 
 
 def get_source_solution(uid):
@@ -33,11 +33,11 @@ def create_process(cmd: list, uid, private_folder):
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
         return proc
     elif system == 'posix':
-        firejail = ['firejail', '--noprofile', '--net=none', f'--private={private_folder}',
-                    f'--whitelist={private_folder}', '--disable-mnt', '--nosound', '--novideo']
-        for i in range(len(cmd)):
-            cmd[i] = cmd[i].replace(os.path.join(private_folder, ''), '')
+        firejail = ['firejail', '--noprofile', '--net=none', '--nosound', '--novideo', '--quiet']
+        # for i in range(len(cmd)):
+        #     cmd[i] = cmd[i].replace(os.path.join(private_folder, ''), '')
         cmd = firejail + cmd
+        print(' '.join(cmd))
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
                      preexec_fn=preexec(uid))
         return proc

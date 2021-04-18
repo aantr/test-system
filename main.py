@@ -21,16 +21,18 @@ from program_testing.create_process import init_user
 from program_testing.test_program import TestProgram
 from utils.init_db import init_db
 
+directory = os.path.dirname(__file__)
 SECRET_KEY = 'test_system_secret_key'
 MAIL_CONFIRM_SECRET_KEY = 'confirm_mail_secret_key'
-DB_PT = os.path.abspath('db/test_system.db')
-CONFIG_LANG = os.path.abspath('config/test_program.json')
+DB_PT = os.path.join(directory, 'db/test_system.db')
+CONFIG_LANG = os.path.join(directory, 'config/test_program.json')
 UPDATE_STATUS_TIMEOUT = 0.5
 TEST_THREADS = 3
 
-global_app.global_init(__name__)
+global_app.global_init(__name__, directory)
 app = global_app.get_app()
 app.config.from_object(__name__)
+app.dir = directory
 current_user: User
 
 recreate_db = 0
@@ -113,8 +115,7 @@ def favicon():
         'img/favicon.ico')
 
 
-if __name__ == '__main__':
-
+def init():
     parser = argparse.ArgumentParser()
     parser.add_argument('--init_user', action='store_true')
     args = parser.parse_args()
@@ -140,11 +141,18 @@ if __name__ == '__main__':
 
     thread.daemon = True
     thread.start()
+    time.sleep(0.1)
 
+
+def main():
     h_name = socket.gethostname()
     ip_address = socket.gethostbyname(h_name)
     print(ip_address)
 
-    time.sleep(0.5)
-    port = int(os.environ.get('PORT', 80))
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='localhost', port=port)
+
+
+init()
+if __name__ == '__main__':
+    main()
