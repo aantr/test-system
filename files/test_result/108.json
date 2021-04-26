@@ -1,0 +1,1 @@
+[[2490368, "Parent pid 38433, child pid 38434\nChild process initialized in 13.23 ms\n\nParent is shutting down, bye...", "\u001b]0;firejail ls -l \u0007total 8\ndrwxr-xr-x  2 root root 4096 Apr 17 09:13 html\ndrwxrwxrwx 16 1000 1000 4096 Apr 18 04:00 test-system", 0.04778242111206055]]

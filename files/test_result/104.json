@@ -1,0 +1,1 @@
+[[2576384, "Parent pid 22898, child pid 22899\nChild process initialized in 14.98 ms\npython3: can't open file 'solution.py': [Errno 2] No such file or directory\n\nParent is shutting down, bye...", "\u001b]0;firejail python3 solution.py \u0007", 0.05765485763549805]]
