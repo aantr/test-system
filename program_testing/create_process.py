@@ -1,18 +1,12 @@
 import os
-import pwd
+
+try:
+    import pwd
+except ImportError:
+    pass
 from subprocess import PIPE, Popen, check_output, call, CalledProcessError
 
 from program_testing.prog_lang import get_languages
-
-forbidden_path = []
-path = os.path.split(check_output(['which', 'ls']).strip())[0]
-for i in check_output([b'ls', path]).split(b'\n'):
-    if i:
-        try:
-            forbidden_path.append(check_output([b'which', i]).strip())
-        except Exception:
-            continue
-whitelist = ['firejail', 'bash', 'ls']
 
 
 def get_source_solution(uid):
@@ -29,10 +23,7 @@ def get_source_solution(uid):
 
 def create_process(cmd: list, uid, private_folder):
     system = os.name
-    if system == 'nt':
-        proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
-        return proc
-    elif system == 'posix':
+    if system == 'posix':
         firejail = ['firejail', '--noprofile', '--net=none', '--nosound', '--novideo', '--quiet']
         # for i in range(len(cmd)):
         #     cmd[i] = cmd[i].replace(os.path.join(private_folder, ''), '')
@@ -41,7 +32,8 @@ def create_process(cmd: list, uid, private_folder):
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
                      preexec_fn=preexec(uid))
         return proc
-    raise ValueError(f'Unrecognized system: "{system}"')
+    proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
+    return proc
 
 
 def preexec(uid):
@@ -54,6 +46,17 @@ def preexec(uid):
 def init_user(uid):
     if not uid or os.name != 'posix':
         return
+
+    forbidden_path = []
+    path = os.path.split(check_output(['which', 'ls']).strip())[0]
+    for i in check_output([b'ls', path]).split(b'\n'):
+        if i:
+            try:
+                forbidden_path.append(check_output([b'which', i]).strip())
+            except Exception:
+                continue
+    whitelist = ['bash']
+
     languages = get_languages()
     u_name = pwd.getpwuid(uid).pw_name
     setfacl = check_output(['which', 'setfacl']).strip()
