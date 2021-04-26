@@ -1,9 +1,9 @@
 {
   "encoding": "cp866",
-  "run_as_user_linux": 1001,
+  "run_as_user_linux": null,
   "languages": {
     "python": [
-      "python3"
+      "python"
     ],
     "pascalabc.net": [
       "C:\\Program Files (x86)\\PascalABC.NET\\pabcnetcclear.exe"

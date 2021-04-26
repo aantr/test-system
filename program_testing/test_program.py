@@ -4,7 +4,6 @@ import shutil
 import threading
 import time
 import zipfile
-from subprocess import check_output
 from zipfile import ZipFile
 import psutil
 
@@ -33,7 +32,7 @@ def init(config):
     global run_as_user_uid_linux, \
         languages, test_program, source_solution
     run_as_user_uid_linux = config['run_as_user_linux']
-    if run_as_user_uid_linux is not None:
+    if os.name == 'posix' and run_as_user_uid_linux is not None:
         source_solution = get_source_solution(run_as_user_uid_linux)
     else:
         source_solution = os.path.join(directory, 'source_solution')
