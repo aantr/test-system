@@ -4,6 +4,6 @@ import sys
 import logging
 
 logging.basicConfig(stream=sys.stderr)
-path = os.path.split(os.path.abspath(__file__))[0]
+path = os.path.split(os.path.abspath(__file__))[0] + '/'
 sys.path.insert(0, path)
 from main import app as application
