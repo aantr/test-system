@@ -17,7 +17,7 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
     confirmed_email = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
 
-    type = sqlalchemy.Column(sqlalchemy.Integer)
+    type = sqlalchemy.Column(sqlalchemy.Integer, nullable=False, default=30)
 
     solution = orm.relation('Solution', back_populates='user')
     problem = orm.relation('Problem', back_populates='user')

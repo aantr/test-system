@@ -22,8 +22,13 @@ from program_testing.test_program import TestProgram
 from utils.init_db import init_db
 
 directory = os.path.dirname(__file__)
-SECRET_KEY = 'test_system_secret_key'
-MAIL_CONFIRM_SECRET_KEY = 'confirm_mail_secret_key'
+SECRET_KEY = 'test_system_secret_key_lkzdt,'
+MAIL_CONFIRM_SECRET_KEY = 'test_system_confirm_mail_secret_key_lkzdt,'
+MAIL_HOST = 'smtp.gmail.com'
+MAIL_PORT = 465
+MAIL_LOGIN = ...
+MAIL_PASSWORD = ...
+
 DB_PT = os.path.join(directory, 'db/test_system.db')
 CONFIG_LANG = os.path.join(directory, 'config/test_program.json')
 UPDATE_STATUS_TIMEOUT = 0.5
