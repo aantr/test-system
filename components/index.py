@@ -11,3 +11,8 @@ app = get_app()
 @student_required
 def index():
     return render_template('index.html')
+
+
+@app.route('/are_u_ok')
+def are_u_ok():
+    return 'ok'
