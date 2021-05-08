@@ -1,0 +1,9 @@
+{% extends "navbar.html" %}
+{% block content %}
+<main role="main" class="container">
+    <h5 align="center">Profile user "{{ user.username.capitalize() }}"</h5>
+    <h6>Statistic</h6>
+    <p>Solutions: {{ statistic['solutions'] }}<br>
+        Success solutions: {{ statistic['success_solutions'] }}</p>
+</main>
+{% endblock %}

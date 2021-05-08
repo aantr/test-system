@@ -1,7 +1,11 @@
 {%- for j in row['row'] -%}{%- if loop.first -%}
 <th>{{ j[0] }}</th>{% else %}
 {%- if loop.index == 3 -%}
+{%- if not session_id -%}
 <td><a href="/problem/{{ row['problem_id'] }}">{{ j[0] }}</a></td>
+{% else %}
+<td><a href="/problem/{{ row['problem_id'] }}?session_id={{ session_id }}">{{ j[0] }}</a></td>
+{% endif %}
 {% else %}
 <td><div class="{%- if j[1] -%}fw-bold {{ j[1] }}{% endif %}">{{ j[0] }}</div></td>
 {% endif %}{% endif %}{% endfor %}

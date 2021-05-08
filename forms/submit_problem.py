@@ -2,12 +2,16 @@ from copy import deepcopy
 
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, FileField, IntegerField, \
+from wtforms import SubmitField, TextAreaField, FileField, IntegerField, \
     MultipleFileField
 from wtforms.validators import DataRequired, NumberRange
 
+from data.image import Image
+from data.problem_tests import ProblemTests
 from forms.utils.multiply_checkbox_field import MultiplyCheckboxField
+from forms.utils.string_field import StringField
 from program_testing.test_program import TestProgram
+from utils.utils import allowed_file
 
 
 class SubmitProblemForm(FlaskForm):
@@ -38,7 +42,12 @@ class SubmitProblemForm(FlaskForm):
 
         if not FlaskForm.validate(self):
             return False
-        if not TestProgram.check_tests_zip(deepcopy(self.file.data.stream).read()):
+        for i in self.images.data:
+            if i.filename and not allowed_file(i.filename, Image.get_extensions()):
+                self.images.errors.append('Incorrect image format')
+                return False
+        if not allowed_file(self.file.data.filename, ProblemTests.get_extensions()) or \
+                not TestProgram.check_tests_zip(deepcopy(self.file.data.stream).read()):
             self.file.errors.append('Incorrect zip archive format')
             return False
         examples = self.examples.data.strip().split(self.example_split_tag)

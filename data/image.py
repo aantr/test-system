@@ -8,3 +8,7 @@ class Image(SqlAlchemyBase):
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     extension = sqlalchemy.Column(sqlalchemy.String)
+
+    @staticmethod
+    def get_extensions():
+        return {'png', 'jpg', 'jpeg', 'gif', 'bmp'}

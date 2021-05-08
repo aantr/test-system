@@ -1,13 +1,6 @@
 {% extends "navbar.html" %}
 {% block content %}
 <main role="main" class="container">
-    </br>
-    {% for cat, msg in get_flashed_messages(True) %}
-    <div class="alert alert-{{ cat }}" role="alert">
-        {{ msg }}
-    </div>
-    {% endfor %}
-
     {% if not session.started %}
     <p>Duration:<br>{{ session.duration.strftime('%H:%M:%S') }}</p>
     {% else %}

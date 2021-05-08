@@ -10,7 +10,11 @@ for i in files:
     if os.path.samefile(i, __file__):
         continue
     with open(i, encoding='utf-8') as f:
-        counter += len(f.readlines())
+        lines = f.readlines()
+        counter += len(lines)
+        for i in lines:
+            if not i.strip():
+                counter -= 1
 
 print('-' * 100)
 print(f'Lines in {len(files)} "*.py" files: <<<---   {counter}   --->>>')

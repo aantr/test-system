@@ -5,12 +5,6 @@
 <body>
 
 <main role="main" class="container">
-    </br>
-    {% for cat, msg in get_flashed_messages(True) %}
-    <div class="alert alert-{{ cat }}" role="alert">
-        {{ msg }}
-    </div>
-    {% endfor %}
     <form action="" method="post" enctype="multipart/form-data">
         <div>{{ form.csrf_token }}</div>
 
@@ -80,10 +74,10 @@
         {{ form.file(class="form-control", style="max-width: 30vw") }}</br>
 
         <h6>{{ form.time.label.text }}</h6>
-        {{ form.time(class="form-control", style="max-width: 30vw") }}</br>
+        {{ form.time(class="form-control", type="number", style="max-width: 30vw") }}</br>
 
         <h6>{{ form.memory.label.text }}</h6>
-        {{ form.memory(class="form-control", style="max-width: 30vw") }}</br>
+        {{ form.memory(class="form-control", type="number", style="max-width: 30vw") }}</br>
         <p>
             {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
         </p>
@@ -102,6 +96,7 @@ if (all_text.length != 0 && all_text.slice(-1) != "\n") all_text += "\n";
 all_text += "<data>\n";
 document.getElementById("examples_textarea").value = all_text;
 }
+
 
 
 </script>

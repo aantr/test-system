@@ -1,1 +1,0 @@
-[[9330688, "Traceback (most recent call last):\r\n  File \"C:\\Users\\Admin\\Desktop\\YandexLyceum\\Test system\\test-system\\program_testing\\source_solution\\thread_3\\solution.py\", line 2, in <module>\r\n    print('/'.join([a + 1, b, c]))\r\nTypeError: sequence item 0: expected str instance, int found", null, 0.059999942779541016]]

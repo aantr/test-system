@@ -22,8 +22,8 @@ from program_testing.test_program import TestProgram
 from utils.init_db import init_db
 
 directory = os.path.dirname(__file__)
-SECRET_KEY = 'test_system_secret_key_lkzdt,'
-MAIL_CONFIRM_SECRET_KEY = 'test_system_confirm_mail_secret_key_lkzdt,'
+SECRET_KEY = 'test_system_secret_key_lkzdt,356h356h356h'
+MAIL_CONFIRM_SECRET_KEY = 'test_system_confirm_mail_secret_key_lkzdtrhryyerbn,'
 MAIL_HOST = 'smtp.gmail.com'
 MAIL_PORT = 465
 MAIL_LOGIN = ...
@@ -37,7 +37,6 @@ TEST_THREADS = 3
 global_app.global_init(__name__, directory)
 app = global_app.get_app()
 app.config.from_object(__name__)
-app.dir = directory
 current_user: User
 
 recreate_db = 0
@@ -111,13 +110,7 @@ import components.errors
 import components.index
 import components.system_state
 import components.register
-
-
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(
-        os.path.join(app.root_path, 'static'),
-        'img/favicon.ico')
+import components.profile
 
 
 def init():

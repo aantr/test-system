@@ -3,13 +3,6 @@
 <head>
 <body>
 <main role="main" class="container">
-    <br>
-    {% for cat, msg in get_flashed_messages(True) %}
-    <div class="alert alert-{{ cat }}" role="alert">
-        {{ msg }}
-    </div>
-    {% endfor %}
-
     {%- for i in sessions -%}
     <div class="card" style="width: 18rem;">
         <div class="card-body">

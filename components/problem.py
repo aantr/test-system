@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, request
+from flask import request
 
 from flask import url_for, flash
 from flask import render_template, redirect, abort
@@ -49,7 +49,7 @@ def add_problem():
 
         images = []
         for i in sorted(form.images.data, key=lambda x: x.filename):
-            images_extensions = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
+            images_extensions = Image.get_extensions()
             if not i.filename or len(i.filename) <= 1 or os.path.splitext(i.filename)[1][1:] \
                     not in images_extensions:
                 continue

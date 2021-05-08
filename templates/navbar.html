@@ -2,10 +2,9 @@
 
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
     <div class="container-fluid">
         <img class="navbar-brand" src="{{ url_for('static', filename='img/icon.svg') }}"
-             width="48" height="48" style="margin-left: 16px;">
+             width="32" style="margin-left: 16px;">
         <a class="navbar-brand" href="#">Test system</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -35,11 +34,18 @@
             <form class="d-flex">
                 <ul class="navbar-nav" style="margin-right: 25px">
                     <li class="nav-item"><a class="nav-link" href="/server_state">Server state</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                    <li class="nav-item"><b><a class="nav-link" href="/profile/{{ current_user.id }}">{{ current_user.username.capitalize() }}</a></b></li>
                 </ul>
             </form>
         </div>
     </div>
 </nav>
+<div class="container">
+    <p>{% for cat, msg in get_flashed_messages(True) %}
+    <div class="alert alert-{{ cat }}" role="alert">
+        {{ msg }}
+    </div>
+    {% endfor %}
+</div>
 {% block content %}{% endblock %}
 </body>

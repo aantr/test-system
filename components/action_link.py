@@ -38,7 +38,7 @@ def add_action(db_sess, url, description, commit=True):
     else:
         db_sess.flush()
 
-    duration = datetime.timedelta(seconds=60)
+    duration = datetime.timedelta(minutes=60)
     job = scheduler.add_job(_stop_action, 'date', args=[action.str_id],
                             run_date=datetime.datetime.now() + duration)
 

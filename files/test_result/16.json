@@ -1,1 +1,0 @@
-[[9310208, "Traceback (most recent call last):\r\n  File \"C:\\Users\\Admin\\Desktop\\YandexLyceum\\Test system\\test-system\\program_testing\\source_solution\\thread_1\\solution.py\", line 1, in <module>\r\n    print(int(input())+int(input()))\r\nValueError: invalid literal for int() with base 10: '1 2'", null, 0.10000038146972656]]

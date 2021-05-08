@@ -2,7 +2,7 @@ from flask import render_template
 
 from data.session import SessionMember
 from data.solution import Solution
-from utils.utils import date_format
+from utils.utils import datetime_format
 
 
 def get_result_row(db_sess, user, session, problem_ids):
@@ -32,7 +32,7 @@ def get_result_row(db_sess, user, session, problem_ids):
             if last_correct_send is None or send[i][2] > last_correct_send:
                 last_correct_send = send[i][2]
     if last_correct_send:
-        row.append([0, last_correct_send.strftime(date_format())])
+        row.append([0, last_correct_send.strftime(datetime_format())])
     else:
         row.append([1, 0])
     row.append([0, total])

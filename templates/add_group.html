@@ -5,12 +5,6 @@
 <body>
 
 <main role="main" class="container">
-    </br>
-    {% for cat, msg in get_flashed_messages(True) %}
-    <div class="alert alert-{{ cat }}" role="alert">
-        {{ msg }}
-    </div>
-    {% endfor %}
     <form action="" method="post">
         <div>{{ form.csrf_token }}</div>
 

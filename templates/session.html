@@ -3,13 +3,6 @@
 <head>
 <body>
 <main role="main" class="container">
-    <br>
-    {% for cat, msg in get_flashed_messages(True) %}
-    <div class="alert alert-{{ cat }}" role="alert">
-        {{ msg }}
-    </div>
-    {% endfor %}
-
     <h4 align="center">Session {{ session.name }}{% if session.started %} <b>(Started)</b>{% endif %}</h4>
 
     <p class="card-text">{{ session.description }}</p>

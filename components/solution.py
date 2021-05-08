@@ -154,7 +154,10 @@ def get_solution(solution_id):
         abort(404)
     if solution.user_id != current_user.id and not current_user.has_rights_teacher():
         abort(403)
-    source = TestProgram.read_source_code(solution)
+    try:
+        source = TestProgram.read_source_code(solution)
+    except UnicodeDecodeError:
+        source = 'Failed to load source code'
     lang = get_languages()[solution.lang_code_name].name
     if solution.completed:
         tests = TestProgram.read_tests(solution.problem)

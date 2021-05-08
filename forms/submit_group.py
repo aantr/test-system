@@ -1,9 +1,9 @@
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, TimeField
+from wtforms import SubmitField, TextAreaField, TimeField
 from wtforms.validators import DataRequired
 
-from forms.utils.multiply_checkbox_field import MultiplyCheckboxField
+from forms.utils.string_field import StringField
 
 
 class SubmitGroupForm(FlaskForm):

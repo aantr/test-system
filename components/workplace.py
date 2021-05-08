@@ -37,7 +37,7 @@ def workplace_status():
         filter(Solution.session_id == session.id).order_by(Solution.sent_date.desc()).all()
     solution_rows = [[Markup(render_template(
         'status_row.html',
-        row=get_solution_row(i))), i.id] for i in solution]
+        row=get_solution_row(i), session_id=session.id)), i.id] for i in solution]
     rows_to_update = [i.id for i in solution if not i.completed]
     update_timeout = current_app.config['UPDATE_STATUS_TIMEOUT']
     status_base = render_template('status_base.html', **locals())

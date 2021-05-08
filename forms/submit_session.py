@@ -1,10 +1,11 @@
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField
+from wtforms import SubmitField, TextAreaField
 from wtforms.fields.html5 import TimeField
 from wtforms.validators import DataRequired, InputRequired
 
 from forms.utils.multiply_checkbox_field import MultiplyCheckboxField
+from forms.utils.string_field import StringField
 from utils.utils import get_duration_from_time
 
 
@@ -12,8 +13,6 @@ class SubmitSessionForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[])
     problems = MultiplyCheckboxField('problem_checkbox', 'Problems')
-    # time = TimeField('Duration (HH:MM:SS)', validators=[DataRequired()],
-    #                  format='%H:%M:%S', render_kw={'step': '1'})
     time = TimeField('Duration (HH:MM)', validators=[DataRequired()],
                      format='%H:%M')
     submit = SubmitField('Add')

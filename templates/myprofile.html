@@ -1,0 +1,10 @@
+{% extends "navbar.html" %}
+{% block content %}
+<main role="main" class="container">
+    <h5 align="center">My profile</h5>
+    <h6>Statistic</h6>
+    <p>Solutions: {{ statistic['solutions'] }}<br>
+        Success solutions: {{ statistic['success_solutions'] }}</p>
+    <a href="{{url_for('logout')}}" class="btn btn-danger">Logout</a>
+</main>
+{% endblock %}

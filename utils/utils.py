@@ -28,5 +28,10 @@ def get_duration_from_time(time):
     return duration
 
 
-def date_format():
+def allowed_file(filename, ALLOWED_EXTENSIONS):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def datetime_format():
     return '%d %B %Y, %H:%M'
