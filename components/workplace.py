@@ -30,7 +30,7 @@ def workplace_status():
 
     session = get_session_joined(db_sess)
     if not session:
-        return redirect(url_for('action'))
+        return redirect(url_for('workplace'))
     check_session_timeout(db_sess, session)
 
     solution = db_sess.query(Solution).filter(Solution.user_id == current_user.id). \
@@ -51,7 +51,7 @@ def workplace_info():
 
     session = get_session_joined(db_sess)
     if not session:
-        return redirect(url_for('action'))
+        return redirect(url_for('workplace'))
     check_session_timeout(db_sess, session)
 
     problem = session.problems
@@ -63,11 +63,10 @@ def workplace_info():
 @student_required
 def workplace_problem():
     db_sess = db_session.create_session()
-
     session = get_session_joined(db_sess)
     session: Session
     if not session:
-        return redirect(url_for('action'))
+        return redirect(url_for('workplace'))
     check_session_timeout(db_sess, session)
     if not session.started:
         return redirect(url_for('workplace_info'))
@@ -80,6 +79,11 @@ def workplace_problem():
 @app.route('/workplace', methods=['GET'])
 @student_required
 def workplace():
+    db_sess = db_session.create_session()
+    session = get_session_joined(db_sess)
+    session: Session
+    if not session:
+        return render_template('workplace_inactive.html')
     return redirect(url_for('workplace_problem'))
 
 
@@ -91,7 +95,7 @@ def workplace_results():
     session = get_session_joined(db_sess)
     session: Session
     if not session:
-        return redirect(url_for('action'))
+        return redirect(url_for('workplace'))
     check_session_timeout(db_sess, session)
 
     results = render_result_rows(db_sess, session)
@@ -105,4 +109,4 @@ def leave_session():
     joined_session_member = db_sess.query(SessionMember). \
         filter(SessionMember.member_id == current_user.id).delete()
     db_sess.commit()
-    return redirect(url_for('action'))
+    return redirect(url_for('workplace'))

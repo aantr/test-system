@@ -1,14 +1,19 @@
 {% extends "navbar.html" %}
-{% set active_page = "action" %}
+{% set active_page = "add_category" %}
 {% block content %}
+<head>
 <body>
 <main role="main" class="container">
     <form action="" method="post">
         <div>{{ form.csrf_token }}</div>
-        <h6>{{ form.str_id.label.text }}</h6>
-        {{ form.str_id(class="form-control", style="max-width: 30vw") }}</br>
+
+        <h6>{{ form.name.label.text }}</h6>
+        <p>{{ form.name(class="form-control", style="min-width: 75px") }}</p>
+
         {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
     </form>
 </main>
+<script>
+</script>
 </body>
 {% endblock %}

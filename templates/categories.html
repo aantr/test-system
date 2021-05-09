@@ -1,0 +1,23 @@
+{% extends "navbar.html" %}
+{% set active_page = "categories" %}
+{% block content %}
+<head>
+<body>
+<main role="main" class="container">
+    <table class="table table-hover table-sm">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for i in students %}
+        <tr onclick="window.location = '/categories/{{ i.id }}';">
+            <td>{{ i.name }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</main>
+</body>
+{% endblock %}

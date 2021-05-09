@@ -110,9 +110,17 @@ def get_problem(problem_id):
     return render_template('problem.html', **locals())
 
 
-@app.route('/problemset', methods=['GET', 'POST'])
+@app.route('/problemset', methods=['GET'])
 @student_required
 def problemset():
     db_sess = db_session.create_session()
     problem = db_sess.query(Problem).all()
+    return render_template('problemset.html', **locals())
+
+
+@app.route('/my_problems', methods=['GET'])
+@teacher_required
+def my_problems():
+    db_sess = db_session.create_session()
+    problem = db_sess.query(Problem).filter(Problem.user_id == current_user.id).all()
     return render_template('problemset.html', **locals())

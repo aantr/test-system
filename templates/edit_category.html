@@ -1,0 +1,47 @@
+{% extends "navbar.html" %}
+{% block content %}
+
+<head>
+<body>
+
+<main role="main" class="container">
+    <form action="" method="post">
+        <div>{{ form.csrf_token }}</div>
+        <h6>{{ form.name.label.text }}</h6>
+        <p>{{ form.name(class="form-control", style="min-width: 75px") }}</p>
+        {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
+    </form>
+    <p></p>
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog"
+         aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to delete some object, this procedure is irreversible.</p>
+                    <p>Do you want to proceed?</p>
+                    <p class="debug-url"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a class="btn btn-danger"
+       data-href="{{url_for('delete_category', id=category.id)}}"
+       data-toggle="modal"
+       data-target="#confirm-delete">Delete</a>
+</main>
+<script>
+$('#confirm-delete').on('show.bs.modal', function(e) {
+$(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});
+</script>
+</body>
+
+{% endblock %}

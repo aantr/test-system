@@ -50,14 +50,6 @@ def on_recreate_db():
     db_session.global_init(app.config['DB_PT'])
     db_sess = db_session.create_session()
 
-    p = Problem()
-    p.name = 'A + B'
-    p.memory_limit = 2 ** 20 * 32
-    p.time_limit = 3
-    p.task = Task()
-    p.problem_tests = ProblemTests()
-    db_sess.add(p)
-
     user = User()
     user.username = 'admin'
     user.confirmed_email = True
@@ -111,6 +103,7 @@ import components.index
 import components.system_state
 import components.register
 import components.profile
+import components.categories
 
 
 def init():
