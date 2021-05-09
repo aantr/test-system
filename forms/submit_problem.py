@@ -46,10 +46,13 @@ class SubmitProblemForm(FlaskForm):
             if i.filename and not allowed_file(i.filename, Image.get_extensions()):
                 self.images.errors.append('Incorrect image format')
                 return False
-        if not allowed_file(self.file.data.filename, ProblemTests.get_extensions()) or \
-                not TestProgram.check_tests_zip(deepcopy(self.file.data.stream).read()):
+        if not allowed_file(self.file.data.filename, ProblemTests.get_extensions()):
             self.file.errors.append('Incorrect zip archive format')
             return False
+        if not TestProgram.check_tests_zip(deepcopy(self.file.data.stream).read()):
+            self.file.errors.append('Incorrect zip archive format')
+            return False
+
         examples = self.examples.data.strip().split(self.example_split_tag)
         for i in examples:
             if not self.examples.data.strip():

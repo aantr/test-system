@@ -26,8 +26,8 @@ SECRET_KEY = 'test_system_secret_key_lkzdt,356h356h356h'
 MAIL_CONFIRM_SECRET_KEY = 'test_system_confirm_mail_secret_key_lkzdtrhryyerbn,'
 MAIL_HOST = 'smtp.gmail.com'
 MAIL_PORT = 465
-MAIL_LOGIN = ...
-MAIL_PASSWORD = ...
+MAIL_LOGIN = 'xgamestudio8@gmail.com'
+MAIL_PASSWORD = 'Qwerty09_18'
 
 DB_PT = os.path.join(directory, 'db/test_system.db')
 CONFIG_LANG = os.path.join(directory, 'config/test_program.json')

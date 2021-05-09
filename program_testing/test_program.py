@@ -409,7 +409,7 @@ class TestProgram:
         try:
             with ZipFile(BytesIO(bytes)) as z:
                 files = z.namelist()
-                for name in files:
+                for name in sorted(files):
                     filename = os.path.split(name)[1]
                     if not filename:
                         continue
@@ -421,6 +421,7 @@ class TestProgram:
                         if path_w in s1:
                             s1.remove(path_w)
                         else:
+                            print(1)
                             return False
                     else:
                         return False

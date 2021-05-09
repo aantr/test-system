@@ -1,3 +1,4 @@
+import os
 from datetime import timedelta
 
 from flask import render_template, redirect, flash, url_for
@@ -11,7 +12,7 @@ from data import db_session
 from data.user import User
 from forms.register import RegisterForm
 
-from global_app import get_app
+from global_app import get_app, get_dir
 from utils.utils import get_message_from_form
 from utils.send_mail import send_mail
 
@@ -57,8 +58,9 @@ def register():
         text = ''
         html = render_template(
             'confirm_email.html',
-            confirm_url=confirm_url)
-        print(html)
+            name=user.username,
+            confirm_url=confirm_url
+        )
         send_mail(from_, form.email.data, subject, text, html)
 
         flash('Successfully signed up, please confirm your email', category='success')
