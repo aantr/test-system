@@ -1,2 +1,3 @@
 /ignore
 _count_lines.py
+__pycache__
