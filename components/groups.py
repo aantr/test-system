@@ -1,11 +1,13 @@
 from flask import url_for, flash, request
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
+from sqlalchemy import func
 
 from components.action_link import add_action
 from data.group import Group, GroupMember
 from data.invite import Invite
 from data.user import User
+from forms.egit_group import EditGroupForm
 from forms.submit_group import SubmitGroupForm
 from data import db_session
 from global_app import get_app
@@ -30,15 +32,18 @@ def groups():
 def add_group():
     db_sess = db_session.create_session()
     form = SubmitGroupForm()
-
     if form.validate_on_submit():
+        if db_sess.query(Group).filter(
+                func.lower(Group.name) == func.lower(form.name.data)).first():
+            flash('Group with such name already exists', category='danger')
+            return render_template('add_group.html', **locals())
         group = Group()
         group.user_id = current_user.id
         group.name = form.name.data
         db_sess.add(group)
         db_sess.commit()
         flash(f'Successfully added group "{group.name}"', category='success')
-        return redirect(url_for('add_group'))
+        return redirect(url_for('groups'))
     else:
         msg = get_message_from_form(form)
         if msg:
@@ -51,17 +56,32 @@ def add_group():
 @teacher_required
 def get_group(group_id):
     db_sess = db_session.create_session()
-
     group = db_sess.query(Group).filter(Group.id == group_id).first()
     if group is None:
         abort(404)
     if group.user_id != current_user.id:
         abort(403)
-
     members = [i.member for i in db_sess.query(GroupMember)
         .filter(GroupMember.group_id == group_id).all()]
     group_id = str(group_id)
-    return render_template('group.html', **locals())
+    form = EditGroupForm(
+        name=group.name
+    )
+    if form.validate_on_submit():
+        if db_sess.query(Group).filter(
+                func.lower(Group.name) == func.lower(form.name.data)). \
+                filter(Group.id != group.id).first():
+            flash('Group with such name already exists', category='danger')
+            return render_template('edit_group.html', **locals())
+        group.name = form.name.data
+        db_sess.commit()
+        flash(f'Successfully edited group "{group.name}"', category='success')
+        return redirect(url_for('groups'))
+    else:
+        msg = get_message_from_form(form)
+        if msg:
+            flash(msg, category='danger')
+    return render_template('edit_group.html', **locals())
 
 
 @app.route('/add_group_member', methods=['GET'])
@@ -154,3 +174,16 @@ def set_join_action_group(group_id):
         commit=False)
     db_sess.commit()
     return redirect(url_for('get_group', group_id=group_id))
+
+
+@app.route('/delete_group/<int:id>', methods=['GET'])
+@teacher_required
+def delete_group(id):
+    db_sess = db_session.create_session()
+    group = db_sess.query(Group).filter(Group.id == id).first()
+    if not group:
+        abort(404)
+    db_sess.delete(group)
+    db_sess.commit()
+    flash(f'Successfully deleted group "{group.name}"', category='success')
+    return redirect(url_for('groups'))

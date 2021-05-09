@@ -74,7 +74,6 @@ def add_category():
                 func.lower(ProblemCategory.name) == func.lower(form.name.data)).first():
             flash('Category with such name already exists', category='danger')
             return render_template('add_category.html', **locals())
-
         category = ProblemCategory()
         category.name = form.name.data
         db_sess.add(category)

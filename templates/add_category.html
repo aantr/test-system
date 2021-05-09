@@ -6,10 +6,8 @@
 <main role="main" class="container">
     <form action="" method="post">
         <div>{{ form.csrf_token }}</div>
-
         <h6>{{ form.name.label.text }}</h6>
-        <p>{{ form.name(class="form-control", style="min-width: 75px") }}</p>
-
+        <p>{{ form.name(class="form-control", style="max-width: 30vw") }}</p>
         {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
     </form>
 </main>

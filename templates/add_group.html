@@ -1,23 +1,14 @@
 {% extends "navbar.html" %}
 {% set active_page = "add_group" %}
 {% block content %}
-
-<head>
 <body>
-
 <main role="main" class="container">
     <form action="" method="post">
         <div>{{ form.csrf_token }}</div>
-
         <h6>{{ form.name.label.text }}</h6>
         {{ form.name(class="form-control", style="max-width: 30vw") }}</br>
-
         {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
     </form>
 </main>
-<script>
-
-</script>
 </body>
-
 {% endblock %}
