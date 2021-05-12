@@ -183,6 +183,7 @@ def delete_group(id):
     group = db_sess.query(Group).filter(Group.id == id).first()
     if not group:
         abort(404)
+    db_sess.query(GroupMember).filter(GroupMember.group_id == id).delete()
     db_sess.delete(group)
     db_sess.commit()
     flash(f'Successfully deleted group "{group.name}"', category='success')

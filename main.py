@@ -2,17 +2,12 @@ import argparse
 import json
 import time
 
-from flask import Flask, render_template, redirect, url_for, send_from_directory
-from flask_login import LoginManager, login_required, current_user
 import os
 import threading
 import socket
 
 from data import db_session
-from data.problem import Problem
 from data.problem_category import ProblemCategory
-from data.problem_tests import ProblemTests
-from data.task import Task
 from data.user import User
 import program_testing.prog_lang as prog_lang
 import global_app
@@ -20,15 +15,15 @@ from program_testing import test_program as tp
 from program_testing.create_process import init_user
 from program_testing.test_program import TestProgram
 from utils.init_db import init_db
+from utils.send_mail import test_email
 
 directory = os.path.dirname(__file__)
 SECRET_KEY = 'test_system_secret_key_lkzdt,356h356h356h'
 MAIL_CONFIRM_SECRET_KEY = 'test_system_confirm_mail_secret_key_lkzdtrhryyerbn,'
 MAIL_HOST = 'smtp.gmail.com'
 MAIL_PORT = 465
-MAIL_LOGIN = 'xgamestudio8@gmail.com'
-MAIL_PASSWORD = 'Qwerty09_18'
-
+MAIL_LOGIN = ...
+MAIL_PASSWORD = ...
 DB_PT = os.path.join(directory, 'db/test_system.db')
 CONFIG_LANG = os.path.join(directory, 'config/test_program.json')
 UPDATE_STATUS_TIMEOUT = 0.5
@@ -114,7 +109,9 @@ def init():
     with open(app.config['CONFIG_LANG'], 'r') as f:
         data = json.load(f)
     prog_lang.init(data)
-
+    app.config['MAIL_LOGIN'] = data['mail_login']
+    app.config['MAIL_PASSWORD'] = data['mail_password']
+    test_email()
     if args.init_user:
         init_user(data['run_as_user_linux'])
         exit()
@@ -138,7 +135,7 @@ def init():
 def main():
     h_name = socket.gethostname()
     ip_address = socket.gethostbyname(h_name)
-    print(ip_address)
+    print('Local ip:', ip_address)
 
     port = int(os.environ.get('PORT', 8080))
     app.run(host='localhost', port=port)

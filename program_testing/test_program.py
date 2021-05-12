@@ -287,12 +287,8 @@ class TestProgram:
             return f.read()
 
     @staticmethod
-    def add_problem(problem, bytes_zip_tests, task):
-        path_task = os.path.join(get_dir(), 'files', 'task', f'{problem.task.id}.html')
+    def add_problem(problem, bytes_zip_tests):
         dir_tests = os.path.join(get_dir(), 'files', 'tests', f'{problem.problem_tests.id}')
-
-        with open(path_task, 'w', encoding='utf-8') as f:
-            f.write(task)
         try:
             os.mkdir(dir_tests)
         except FileExistsError:

@@ -8,10 +8,10 @@
     </tr>
     </thead>
     <tbody>
-    {%- for i in problems -%}
-    <tr>
-        <td>{{i.id}}</td>
-        <td>{{i.name}}</td>
+    {% for i in problems %}
+    <tr onclick="window.location = '/problem/{{ i.id }}?session_id={{ session.id }}';">
+        <th scope="row">{{ i.id }}</th>
+        <td>{{ i.name }}</td>
     </tr>
     {% endfor %}
     </tbody>

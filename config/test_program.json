@@ -21,5 +21,7 @@
       "javac",
       "java"
     ]
-  }
+  },
+  "mail_login": null,
+  "mail_password": null
 }

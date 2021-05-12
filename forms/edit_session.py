@@ -9,13 +9,13 @@ from forms.utils.string_field import StringField
 from utils.utils import get_duration_from_time
 
 
-class SubmitSessionForm(FlaskForm):
+class EditSessionForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[])
     problems = MultiplyCheckboxField('problem_checkbox', 'Problems')
     time = TimeField('Duration (HH:MM)', validators=[DataRequired()],
                      format='%H:%M')
-    submit = SubmitField('Add')
+    submit = SubmitField('Save')
 
     def validate(self):
         self.problems.checked = []

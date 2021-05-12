@@ -41,6 +41,10 @@
                             class="nav-link active"
                             href="{{ url_for('session_info', session_id=session_id) }}"
                             role="button">Info</a></li>
+                    <li class="nav-item"><a
+                            class="nav-link active"
+                            href="{{ url_for('edit_session', session_id=session_id) }}"
+                            role="button"><b>Edit</b></a></li>
                 </ul>
             </div>
         </div>
@@ -49,7 +53,11 @@
     {% block session_content %}{% endblock %}
 </main>
 <script>
+{% if session.started %}
     var timer = { {{session.id}}: {{session.get_time_left()}} };
+{% else %}
+    var timer = {};
+{% endif %}
 
 </script>
 <script src="{{ url_for('static', filename='js/timer.js') }}"></script>

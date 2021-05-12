@@ -21,12 +21,15 @@ class Problem(SqlAlchemyBase):
                                          sqlalchemy.ForeignKey('problem_tests.id'))
     problem_tests = orm.relation('ProblemTests')
 
-    task_id = sqlalchemy.Column(sqlalchemy.Integer,
-                                sqlalchemy.ForeignKey('task.id'))
-    task = orm.relation('Task')
+    task_text = sqlalchemy.Column(sqlalchemy.Text)
+    images_ids = sqlalchemy.Column(sqlalchemy.String)
+    input_text = sqlalchemy.Column(sqlalchemy.Text)
+    output_text = sqlalchemy.Column(sqlalchemy.Text)
+    examples = sqlalchemy.Column(sqlalchemy.Text)
+    note = sqlalchemy.Column(sqlalchemy.Text)
 
-    time_limit = sqlalchemy.Column(sqlalchemy.Float, nullable=True)
-    memory_limit = sqlalchemy.Column(sqlalchemy.BigInteger, nullable=True)
+    time_limit = sqlalchemy.Column(sqlalchemy.Float)
+    memory_limit = sqlalchemy.Column(sqlalchemy.BigInteger)
 
     solution = orm.relation('Solution', back_populates='problem')
 
@@ -36,3 +39,9 @@ class Problem(SqlAlchemyBase):
 
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.id'))
     user = orm.relation('User')
+
+    def get_time_limit(self):
+        return f'{self.time_limit} s'
+
+    def get_memory_limit(self):
+        return f'{self.memory_limit // 1024} Kb'

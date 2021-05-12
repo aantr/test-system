@@ -16,15 +16,25 @@
                            href="/submit/{{ problem.id }}{%- for k, v in args.items() -%}?{{ k }}={{ v }}{% endfor %}"
                            role="button">Submit</a>
                     </li>
+                    {% if edit %}
+                    <li class="nav-item">
+                        <a class="nav-link active"
+                           href="/edit_problem/{{ problem.id }}"
+                           role="button"><b>Edit</b></a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
     <br>
-    <h4 align="center">#{{ problem.id }} {{ problem.name }}</h4>
-    <div align="center">Time limit: {{ problem.time_limit }}</div>
-    <div align="center">Memory limit: {{ problem.memory_limit }}</div>
+    <h5 align="center">#{{ problem.id }} <b>{{ problem.name }}</b></h5>
+    <div align="center">Time limit: {{ problem.get_time_limit() }}</div>
+    <div align="center">Memory limit: {{ problem.get_memory_limit() }}</div>
+    {% if categories -%}
+    <div>Categories: <b>{{ categories }}</b></div>
+    {% endif %}
     <br>
     {{ task | safe }}
 </main>

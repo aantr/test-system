@@ -18,8 +18,6 @@ from utils.send_mail import send_mail
 
 app = get_app()
 ts = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-from_ = 'a@a.com'
-subject = 'Confirm email'
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -61,7 +59,7 @@ def register():
             name=user.username,
             confirm_url=confirm_url
         )
-        send_mail(from_, form.email.data, subject, text, html)
+        send_mail(app.config['MAIL_LOGIN'], form.email.data, 'Confirm email', text, html)
 
         flash('Successfully signed up, please confirm your email', category='success')
         return redirect(url_for('login_'))

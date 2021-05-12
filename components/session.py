@@ -14,6 +14,7 @@ from data.problem import Problem
 from data.session import Session, SessionMember
 from data.solution import Solution
 from data.user import User
+from forms.edit_session import EditSessionForm
 from forms.submit_session import SubmitSessionForm
 from global_app import get_app
 from utils.permissions_required import student_required, teacher_required
@@ -29,6 +30,16 @@ scheduler.start()
 close_sessions_jobs = {}
 
 
+def get_session_by_id(db_sess, id):
+    session = db_sess.query(Session).filter(Session.id == id).first()
+    if not session:
+        abort(404)
+    check_session_timeout(db_sess, session)
+    if session.user_id != current_user.id:
+        abort(403)
+    return session
+
+
 @app.route('/add_session', methods=['GET', 'POST'])
 @teacher_required
 def add_session():
@@ -39,7 +50,6 @@ def add_session():
     form.problems.choices = [(str(k), v.name) for k, v in problems.items()]
 
     if form.validate_on_submit():
-
         session = Session()
         session.name = form.name.data
         session.description = form.description.data
@@ -48,7 +58,6 @@ def add_session():
 
         db_sess.add(session)
         db_sess.flush()
-
         for i in form.problems.checked:
             session.problems.append(problems[i])
 
@@ -61,6 +70,46 @@ def add_session():
             flash(msg, category='danger')
 
     return render_template('add_session.html', form=form)
+
+
+@app.route('/edit_session/<int:session_id>', methods=['GET', 'POST'])
+@teacher_required
+def edit_session(session_id):
+    db_sess = db_session.create_session()
+    session = get_session_by_id(db_sess, session_id)
+    if session.started:
+        flash('Cannot edit started session, please stop it before editing', category='danger')
+        return redirect(url_for('get_session', session_id=session_id))
+
+    args = ['name', 'description']
+    form = EditSessionForm(
+        time=session.duration,
+        **{i: session.__getattribute__(i) for i in args}
+    )
+    for i in session.problems:
+        form.problems.checked.append(str(i.id))
+    problems = {str(i.id): i for i in db_sess.query(Problem).all()}
+    form.problems.choices = [(str(k), v.name) for k, v in problems.items()]
+
+    if form.validate_on_submit():
+        session.name = form.name.data
+        session.description = form.description.data
+        session.duration = form.time.data
+        session.problems.clear()
+        for i in form.problems.checked:
+            session.problems.append(problems[i])
+        db_sess.add(session)
+        db_sess.flush()
+
+        flash(f'Successfully edited session "{session.name}"', category='success')
+        db_sess.commit()
+        return redirect(url_for('get_session', session_id=session_id))
+    else:
+        msg = get_message_from_form(form)
+        if msg:
+            flash(msg, category='danger')
+
+    return render_template('edit_session.html', form=form)
 
 
 @app.route('/set_join_action_session/<int:session_id>')
@@ -81,11 +130,7 @@ def set_join_action_session(session_id):
 @teacher_required
 def start_session(session_id):
     db_sess = db_session.create_session()
-    session = db_sess.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        abort(404)
-    if session.user_id != current_user.id:
-        abort(403)
+    session = get_session_by_id(db_sess, session_id)
 
     members = [i.member for i in db_sess.query(SessionMember).
         filter(SessionMember.session_id == session_id).all()]
@@ -110,11 +155,7 @@ def start_session(session_id):
 @teacher_required
 def stop_session(session_id):
     db_sess = db_session.create_session()
-    session = db_sess.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        abort(404)
-    if session.user_id != current_user.id:
-        abort(403)
+    session = get_session_by_id(db_sess, session_id)
 
     if session.started:
         _stop_session(session.id, session=session, db_sess=db_sess)
@@ -171,11 +212,7 @@ def add_session_member():
         user_ids = list(map(int, user_ids.split(',')))
     except ValueError:
         abort(404)
-    session = db_sess.query(Session).filter(Session.id == session_id).first()
-    if session is None:
-        abort(404)
-    if session.user_id != current_user.id:
-        abort(403)
+    session = get_session_by_id(db_sess, session_id)
     users = db_sess.query(User).filter(User.id.in_(user_ids)).all()
     if len(users) != len(user_ids):
         abort(404)
@@ -262,14 +299,19 @@ def invite_join_session(session_id):
     return redirect(url_for(url))
 
 
-def get_session_by_id(db_sess, id):
-    session = db_sess.query(Session).filter(Session.id == id).first()
-    if not session:
-        abort(404)
-    check_session_timeout(db_sess, session)
-    if session.user_id != current_user.id:
-        abort(403)
-    return session
+@app.route('/delete_session/<int:session_id>', methods=['GET'])
+@teacher_required
+def delete_session(session_id):
+    db_sess = db_session.create_session()
+    session = get_session_by_id(db_sess, session_id)
+    if session.started:
+        flash('Cannot delete started session, please stop it before deleting', category='danger')
+        return redirect(url_for('get_session', session_id=session_id))
+    db_sess.query(SessionMember).filter(SessionMember.session_id == session_id).delete()
+    db_sess.delete(session)
+    db_sess.commit()
+    flash(f'Successfully deleted session "{session.name}"', category='success')
+    return redirect(url_for('my_sessions'))
 
 
 @app.route('/session/results/<int:session_id>')

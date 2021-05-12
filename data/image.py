@@ -12,3 +12,6 @@ class Image(SqlAlchemyBase):
     @staticmethod
     def get_extensions():
         return {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
+
+    def get_name(self):
+        return f'{self.id}.{self.extension}'
