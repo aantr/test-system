@@ -11,7 +11,7 @@
 {% endif %}
 {%- if input_text -%}<p><b>Входные данные</b><br>{{ input_text }}</p>{% endif %}
 {%- if output_text -%}<p><b>Выходные данные</b><br>{{ output_text }}</p>{% endif %}{% if examples %}
-<p><b>Примеры</b><br></p>
+{%- if examples -%}<p><b>Примеры</b><br></p>{% endif %}
 {%- for i in examples -%}
 <table class="table table-sm table-bordered">
     <thead><tr><td>Входные данные</td></tr></thead>

@@ -17,6 +17,8 @@
 
         <h6>{{ form.images.label.text }}</h6>
         {{ form.images(class="form-control", style="max-width: 30vw", id="file-im") }}<br>
+        <p><a href="{{ url_for('download_problem_images', id=problem.id) }}"
+              class="btn btn-primary{% if not problem.images_ids %} disabled{% endif %}">Download</a></p>
 
         <h6>{{ form.input_text.label.text }}</h6>
         {{ form.input_text(class="form-control", style="min-height: 200px") }}<br>
@@ -67,6 +69,8 @@
         {% endfor %}<br>
         <h6>{{ form.file.label.text }}</h6>
         {{ form.file(class="form-control", style="max-width: 30vw") }}</br>
+        <p><a href="{{ url_for('download_problem_tests', id=problem.id) }}"
+              class="btn btn-primary">Download</a></p>
         <h6>{{ form.time.label.text }}</h6>
         {{ form.time(class="form-control", type="number", style="max-width: 30vw") }}</br>
         <h6>{{ form.memory.label.text }}</h6>
@@ -89,6 +93,7 @@ if (all_text.length != 0 && all_text.slice(-1) != "\n") all_text += "\n";
 all_text += "<data>\n";
 document.getElementById("examples_textarea").value = all_text;
 }
+
 
 
 

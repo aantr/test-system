@@ -292,7 +292,7 @@ class TestProgram:
         try:
             os.mkdir(dir_tests)
         except FileExistsError:
-            shutil.rmtree(dir_tests)
+            shutil.rmtree(dir_tests, ignore_errors=True)
             os.mkdir(dir_tests)
         temp_filename = os.path.join(dir_tests, 'temp.zip')
         with open(temp_filename, 'wb') as f:
@@ -382,7 +382,7 @@ class TestProgram:
 
     @staticmethod
     def read_tests(problem, n=None):
-        path = os.path.join(get_dir(), 'files', 'tests', f'{problem.id}')
+        path = os.path.join(get_dir(), 'files', 'tests', f'{problem.problem_tests_id}')
         res = []
         k = 0
         for root, dirs, files in os.walk(path):

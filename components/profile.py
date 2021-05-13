@@ -16,23 +16,34 @@ current_user: User
 def profile(id):
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.id == id).first()
-    statistic = get_statistic(user)
     if not user:
         abort(404)
     if not current_user.has_rights_teacher() and current_user.id != id:
         abort(403)
+    colors = ['#f77', '#fa7', '#7af', '#77f']
+    statistic = {
+        'submits': 0,
+        'success_solutions': 0,
+        'submitted_problems': 0,
+        'solved_problems': 0,
+    }
+    solutions = {}
+    for i in user.solution:
+        i: Solution
+        statistic['submits'] += 1
+        if i.success:
+            statistic['success_solutions'] += 1
+        if i.problem_id not in solutions:
+            solutions[i.problem_id] = 0
+            statistic['submitted_problems'] += 1
+        if not solutions[i.problem_id]:
+            if i.success:
+                solutions[i.problem_id] = 1
+                statistic['solved_problems'] += 1
+    data = [(k.replace('_', ' ').capitalize(), v) for k, v in statistic.items()]
+    labels = [row[0] for row in data]
+    values = [row[1] for row in data]
+
     if current_user.id == id:
         return render_template('myprofile.html', **locals())
     return render_template('profile.html', **locals())
-
-
-def get_statistic(user):
-    statistic = {
-        'solutions': len(user.solution),
-        'success_solutions': 0
-    }
-    for i in user.solution:
-        i: Solution
-        if i.success:
-            statistic['success_solutions'] += 1
-    return statistic

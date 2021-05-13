@@ -21,8 +21,8 @@ class Group(SqlAlchemyBase):
 
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.id'))
     user = orm.relation('User')
-
     join_action_str_id = sqlalchemy.Column(sqlalchemy.String,
                                            sqlalchemy.ForeignKey('action.str_id'),
                                            nullable=True)
     join_action = orm.relation('Action')
+

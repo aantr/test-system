@@ -1,12 +1,14 @@
 import os
+import shutil
 
-from flask import request
+from flask import request, send_from_directory
 
 from flask import url_for, flash
 from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
 from wtforms.validators import DataRequired
 
+from data.solution import Solution
 from forms.edit_problem import EditProblemForm
 from global_app import get_app, get_dir
 from program_testing import test_program as tp
@@ -115,6 +117,8 @@ def edit_problem(id):
             problem.categories.append(categories[i])
         db_sess.flush()
         if form.file.data:
+            dir_tests = os.path.join(get_dir(), 'files', 'tests', f'{problem.problem_tests.id}')
+            shutil.rmtree(dir_tests, ignore_errors=True)
             db_sess.delete(problem.problem_tests)
             problem.problem_tests = ProblemTests()
             db_sess.flush()
@@ -126,6 +130,8 @@ def edit_problem(id):
                 ids = []
             images = db_sess.query(Image).filter(Image.id.in_(ids)).all()
             for i in images:
+                os.remove(os.path.join(get_dir(), 'static', 'files', 'images',
+                                       i.get_name()))
                 db_sess.delete(i)
             ids = []
             for i in sorted(form.images.data, key=lambda x: x.filename):
@@ -176,6 +182,8 @@ def get_problem(id):
     for i in problem.examples.split(SubmitProblemForm.example_split_tag):
         ex_data = [j.strip('\n') for j in i.strip('\n').split(SubmitProblemForm.example_data_tag)]
         examples.append(ex_data)
+    if not problem.examples:
+        examples = []
     categories = [i.name for i in problem.categories]
     categories = ', '.join(categories)
     task = render_template('task.html',
@@ -187,7 +195,60 @@ def get_problem(id):
                            output_text=problem.output_text,
                            categories=categories)
     edit = problem.user_id == current_user.id
+    success_solution = db_sess.query(Solution).filter(Solution.problem_id == id). \
+        filter(Solution.user_id == current_user.id).filter(Solution.success == 1). \
+        filter(Solution.session_id == args.get('session_id')).first()
     return render_template('problem.html', **locals())
+
+
+@app.route('/download_problem_images/<int:id>', methods=['GET'])
+@teacher_required
+def download_problem_images(id):
+    db_sess = db_session.create_session()
+    problem = db_sess.query(Problem).filter(Problem.id == id).first()
+    if not problem:
+        abort(404)
+    if problem.user_id != current_user.id:
+        abort(403)
+    if problem.images_ids:
+        ids = list(map(int, problem.images_ids.split(',')))
+    else:
+        ids = []
+    images = db_sess.query(Image).filter(Image.id.in_(ids))
+    images_path = []
+    base = os.path.join(get_dir(), 'static', 'files', 'images')
+    for image in images:
+        images_path.append(os.path.join(base, image.get_name()))
+    filename = f'temp_{problem.id}'
+    base = os.path.join(get_dir(), 'files', 'temp')
+    if not os.path.exists(os.path.join(base, filename)):
+        os.mkdir(os.path.join(base, filename))
+    for i in images_path:
+        shutil.copyfile(i, os.path.join(base, filename, os.path.split(i)[1]))
+    shutil.make_archive(os.path.join(base, filename), 'zip', os.path.join(base, filename))
+    shutil.rmtree(os.path.join(base, filename))
+    return send_from_directory(
+        directory=base, filename=f'{filename}.zip',
+        as_attachment=True, attachment_filename=f'images_{problem.id}.zip')
+
+
+@app.route('/download_problem_tests/<int:id>', methods=['GET'])
+@teacher_required
+def download_problem_tests(id):
+    db_sess = db_session.create_session()
+    problem = db_sess.query(Problem).filter(Problem.id == id).first()
+    if not problem:
+        abort(404)
+    if problem.user_id != current_user.id:
+        abort(403)
+    filename = f'temp_{problem.id}'
+    base = os.path.join(get_dir(), 'files', 'temp')
+    shutil.make_archive(os.path.join(base, filename), 'zip',
+                        os.path.join(get_dir(), 'files', 'tests',
+                                     str(problem.problem_tests_id)))
+    return send_from_directory(
+        directory=base, filename=f'{filename}.zip',
+        as_attachment=True, attachment_filename=f'tests_{problem.id}.zip')
 
 
 @app.route('/problemset', methods=['GET'])

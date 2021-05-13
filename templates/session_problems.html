@@ -4,6 +4,7 @@
     <thead class="thead-light">
     <tr>
         <th scope="col">Id</th>
+        <th scope="col">Author</th>
         <th scope="col">Name</th>
     </tr>
     </thead>
@@ -11,6 +12,7 @@
     {% for i in problems %}
     <tr onclick="window.location = '/problem/{{ i.id }}?session_id={{ session.id }}';">
         <th scope="row">{{ i.id }}</th>
+        <td>{{ i.user.username }}</td>
         <td>{{ i.name }}</td>
     </tr>
     {% endfor %}

@@ -45,7 +45,7 @@
         </thead>
         <tbody>
         {% for i in members %}
-        <tr>
+        <tr onclick="window.location = '{{ url_for('profile', id=i.id) }}';">
             <td>{{ i.id }}</td>
             <td>{{ i.username }}</td>
         </tr>
@@ -67,6 +67,7 @@
 $('#confirm-delete').on('show.bs.modal', function(e) {
 $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
 });
+
 </script>
 </body>
 
