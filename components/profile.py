@@ -20,6 +20,7 @@ def profile(id):
         abort(404)
     if not current_user.has_rights_teacher() and current_user.id != id:
         abort(403)
+    label = 'Profile statistic'
     colors = ['#f77', '#fa7', '#7af', '#77f']
     statistic = {
         'submits': 0,

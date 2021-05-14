@@ -75,16 +75,20 @@ def submit(problem_id):
     session = get_session_joined(db_sess)
     session: Session
     session_id = None
-    if not from_problemset and session and session.started:
+    if not from_problemset and session and \
+            (session.started or session.user_id == current_user.id):
         problems_ids = [i.id for i in session.problems]
         if problem_id in problems_ids:
             session_id = session.id
     available = True
-    if session_id is None and from_session_id is not None:
+    if session and session_id is None and from_session_id is not None and \
+            session.user_id != current_user.id:
         available = False
-    if session_id is not None and from_session_id is not None \
-            and from_session_id != session_id:
+    if session and session_id is not None and from_session_id is not None \
+            and from_session_id != session_id and \
+            session.user_id != current_user.id:
         available = False
+
     if from_session_id != session_id:
         session_id = None
 

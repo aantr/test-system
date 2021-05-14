@@ -1,5 +1,25 @@
 {% extends "session_base.html" %}
 {% block session_content %}
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Confirm clear</h4>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>You are about to delete some object, this procedure is irreversible.</p>
+                <p>Do you want to proceed?</p>
+                <p class="debug-url"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger btn-ok">Delete all</a>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row g-3">
     <div class="col-md-2">
         <p><a href="{{ url_for('select_user', return='/add_session_member?session_id='+session_id, no_session=1) }}"
@@ -10,8 +30,11 @@
               class="btn btn-primary">From group</a></p>
     </div>
     <div class="col-md-2">
-        <p><a href="/clear_members_session/{{ session_id }}"
-              class="btn btn-danger">Clear members</a></p>
+        <p><a class="btn btn-danger"
+              data-href="/clear_members_session/{{ session_id }}"
+              data-toggle="modal"
+              data-target="#confirm-delete">Clear members</a>
+        </p>
     </div>
 </div>
 <table class="table table-hover">
@@ -30,5 +53,9 @@
     {% endfor %}
     </tbody>
 </table>
-
+<script>
+$('#confirm-delete').on('show.bs.modal', function(e) {
+$(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});
+</script>
 {% endblock %}

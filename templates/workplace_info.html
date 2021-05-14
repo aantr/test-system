@@ -1,8 +1,34 @@
 {% extends "workplace_base.html" %}
 {% block workplace_content %}
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Confirm leave</h4>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you wanted to leave session?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger btn-ok">Leave</a>
+            </div>
+        </div>
+    </div>
+</div>
 Description:
 <p>
     {{ session.description }}
 </p>
-<a href="/leave_session" class="btn btn-danger">Leave session</a>
+<a class="btn btn-danger"
+              data-href="/leave_session"
+              data-toggle="modal"
+              data-target="#confirm-delete">Leave session</a>
+<script>
+$('#confirm-delete').on('show.bs.modal', function(e) {
+$(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});
+</script>
 {% endblock %}
