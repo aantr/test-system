@@ -7,9 +7,9 @@
 
 <body class="text-center">
 <form class="form-signin" method="post">
-    {{ form.hidden_tag() }}
+    <div>{{ form.csrf_token }}</div>
 
-    <img class="mb-4" src="{{url_for('static', filename='img/icon.svg')}}" width="72" height="72">
+    <img class="mb-4" src="{{url_for('static', filename='img/icon.png')}}">
     <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
 
     {% for cat, msg in get_flashed_messages(True) %}

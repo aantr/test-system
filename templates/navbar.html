@@ -7,6 +7,7 @@
 ('/action', 'action', 'Action'),
 ('/invites', 'invites', 'Invites'),
 ] -%}
+
 {%- if current_user.has_rights_teacher() -%}
 {% set navigation_bar = navigation_bar + [
 ('/add_problem', 'add_problem', 'Add problem'),
@@ -15,8 +16,13 @@
 ('/groups', 'groups', 'Groups'),
 ('/add_group', 'add_group', 'Add group'),
 ('/my_problems', 'my_problems', 'My problems'),
-('/categories', 'categories', 'Categories'),
 ('/add_category', 'add_category', 'Add category'),
+] -%}
+{% endif %}
+
+{%- if current_user.has_rights_admin() -%}
+{% set navigation_bar = navigation_bar + [
+('/categories', 'categories', 'Categories'),
 ] -%}
 {% endif %}
 {% set active_page = active_page|default('') -%}
@@ -25,8 +31,8 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <img class="navbar-brand" src="{{ url_for('static', filename='img/icon.svg') }}"
-             width="32" style="margin-left: 16px;">
+        <img class="navbar-brand" src="{{ url_for('static', filename='img/icon32.png') }}"
+             style="margin-left: 16px;">
         <a class="navbar-brand" href="#">Test system</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -49,7 +55,7 @@
                                             href="/server_state">Server state</a></li>
                     <li class="nav-item"><b><a class="nav-link{% if active_page == 'myprofile' %} active{% endif%}"
                                                href="/profile/{{ current_user.id }}">{{
-                        current_user.username.capitalize() }}</a></b></li>
+                        current_user.username }}</a></b></li>
                 </ul>
             </form>
         </div>

@@ -3,10 +3,11 @@
 {% block content %}
 <body>
 <main role="main" class="container">
+    <p>Add group</p>
     <form action="" method="post">
         <div>{{ form.csrf_token }}</div>
         <h6>{{ form.name.label.text }}</h6>
-        {{ form.name(class="form-control", style="max-width: 30vw") }}</br>
+        <p>{{ form.name(class="form-control", style="max-width: 30vw") }}</p>
         {{ form.submit(type="submit", class="btn btn-primary", style="min-width: 75px") }}
     </form>
 </main>

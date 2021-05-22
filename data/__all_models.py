@@ -5,7 +5,6 @@ from . import image
 from . import source_code
 from . import test_result
 from . import problem_tests
-from . import task
 from . import problem_category
 from . import session
 from . import action

@@ -251,12 +251,35 @@ def download_problem_tests(id):
         as_attachment=True, attachment_filename=f'tests_{problem.id}.zip')
 
 
+@app.route('/problemset/<int:id>', methods=['GET'])
+@student_required
+def problemset_category(id):
+    db_sess = db_session.create_session()
+    category: ProblemCategory = db_sess.query(ProblemCategory). \
+        filter(ProblemCategory.id == id).first()
+    if not category:
+        abort(404)
+    problem = db_sess.query(Problem).filter(Problem.categories.any(id=id)).all()
+    name = category.name
+    return render_template('problemset.html', **locals())
+
+
+@app.route('/problemset/all', methods=['GET'])
+@student_required
+def problemset_all():
+    db_sess = db_session.create_session()
+    problem = db_sess.query(Problem).all()
+    name = 'All problems'
+    return render_template('problemset.html', **locals())
+
+
 @app.route('/problemset', methods=['GET'])
 @student_required
 def problemset():
     db_sess = db_session.create_session()
-    problem = db_sess.query(Problem).all()
-    return render_template('problemset.html', **locals())
+    categories = db_sess.query(ProblemCategory).all()
+    categories = [{'name': 'All', 'id': 'all'}] + categories
+    return render_template('problem_categories.html', **locals())
 
 
 @app.route('/my_problems', methods=['GET'])
