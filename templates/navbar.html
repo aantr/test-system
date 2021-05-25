@@ -16,12 +16,12 @@
 ('/groups', 'groups', 'Groups'),
 ('/add_group', 'add_group', 'Add group'),
 ('/my_problems', 'my_problems', 'My problems'),
-('/add_category', 'add_category', 'Add category'),
 ] -%}
 {% endif %}
 
 {%- if current_user.has_rights_admin() -%}
 {% set navigation_bar = navigation_bar + [
+('/add_category', 'add_category', 'Add category'),
 ('/categories', 'categories', 'Categories'),
 ] -%}
 {% endif %}
