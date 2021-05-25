@@ -18,8 +18,8 @@ from utils.init_db import init_db
 from utils.send_mail import test_email
 
 directory = os.path.dirname(__file__)
-SECRET_KEY = 'test_system_secret_key_lkzdt,356h356h356h'
-MAIL_CONFIRM_SECRET_KEY = 'test_system_confirm_mail_secret_key_lkzdtrhryyerbn,'
+SECRET_KEY = 'teststem_sect_kelkzdt,356h356h356h'
+MAIL_CONFIRM_SECRET_KEY = 'test_m_conf_sec_key_lkzdtrhryyerbn,'
 MAIL_HOST = 'smtp.gmail.com'
 MAIL_PORT = 465
 MAIL_LOGIN = ...
@@ -49,14 +49,14 @@ def on_recreate_db():
     user.username = 'admin'
     user.confirmed_email = True
     user.type = 10
-    user.set_password('123210')
+    user.set_password('admin')
     db_sess.add(user)
 
     user = User()
     user.username = 'teacher'
     user.type = 20
     user.confirmed_email = True
-    user.set_password('teacher123')
+    user.set_password('teacher')
     db_sess.add(user)
 
     for i in range(30):
