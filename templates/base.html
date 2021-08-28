@@ -17,6 +17,35 @@
 
     <title>Test system</title>
 </head>
-<body>{% block content %}{% endblock %}
-</body>
+<body>{% block base_content %}{% endblock %}</body>
+<style>
+    html {
+        position: relative;
+        min-height: 100%;
+    }
+
+    body {
+        margin: 0 0 100px;
+        /* bottom = footer height */
+        /*padding: 25px;*/
+    }
+
+    footer {
+        background-color: orange;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        overflow: hidden;
+    }
+</style>
+<footer class="footer mt-auto py-3 bg-light">
+    <div class="container">
+    <span class="text-muted">
+        Test system special for "Magnitogorsk, Lyceum 1"
+        Антропов Александр <a href="https://vk.com/antropov.alexander" style="font-size: small">VK</a>
+    </span>
+    </div>
+</footer>
+
 </html>
