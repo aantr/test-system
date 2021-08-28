@@ -187,7 +187,7 @@ def get_problem(id):
         images_path.append(f'{base}{image.id}.{image.extension}')
     examples = []
     for i in problem.examples.split(SubmitProblemForm.example_split_tag):
-        ex_data = [j.strip('\n') for j in i.strip('\n').split(SubmitProblemForm.example_data_tag)]
+        ex_data = [j.strip() for j in i.strip().split(SubmitProblemForm.example_data_tag)]
         examples.append(ex_data)
     if not problem.examples:
         examples = []

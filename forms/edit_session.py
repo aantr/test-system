@@ -1,12 +1,13 @@
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, TextAreaField
+from wtforms import SubmitField
 from wtforms.fields.html5 import TimeField
 from wtforms.validators import DataRequired, InputRequired
 
 from forms.utils.multiply_checkbox_field import MultiplyCheckboxField
 from forms.utils.string_field import StringField
 from utils.utils import get_duration_from_time
+from forms.utils.text_area_field import TextAreaField
 
 
 class EditSessionForm(FlaskForm):

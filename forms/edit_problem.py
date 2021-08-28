@@ -2,7 +2,7 @@ from copy import deepcopy
 
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, TextAreaField, FileField, IntegerField, \
+from wtforms import SubmitField, FileField, IntegerField, \
     MultipleFileField, BooleanField
 from wtforms.validators import DataRequired, NumberRange
 
@@ -12,6 +12,7 @@ from forms.utils.multiply_checkbox_field import MultiplyCheckboxField
 from forms.utils.string_field import StringField
 from program_testing.test_program import TestProgram
 from utils.utils import allowed_file
+from forms.utils.text_area_field import TextAreaField
 
 
 class EditProblemForm(FlaskForm):

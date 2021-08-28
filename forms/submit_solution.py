@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, TextAreaField, FileField, SelectField
+from wtforms import SubmitField, FileField, SelectField
 from wtforms.validators import DataRequired
+from forms.utils.text_area_field import TextAreaField
 
 
 class SubmitSolutionForm(FlaskForm):
