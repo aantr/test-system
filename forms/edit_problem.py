@@ -3,7 +3,7 @@ from copy import deepcopy
 from flask import request
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, FileField, IntegerField, \
-    MultipleFileField
+    MultipleFileField, BooleanField
 from wtforms.validators import DataRequired, NumberRange
 
 from data.image import Image
@@ -23,6 +23,7 @@ class EditProblemForm(FlaskForm):
     examples = TextAreaField('Examples', validators=[])
     note = TextAreaField('Note', validators=[])
     categories = MultiplyCheckboxField('problem_category', 'Categories')
+    display_problemset = BooleanField('Display in problem set', validators=[])
 
     file = FileField('Tests (zip archive)', validators=[])
     time = IntegerField('Time limit (in milliseconds)', validators=[

@@ -48,6 +48,7 @@ def add_problem():
         problem.output_text = form.output_text.data
         problem.note = form.note.data
         problem.task_text = form.task_text.data
+        problem.display_problemset = form.display_problemset.data
 
         for i in form.categories.checked:
             problem.categories.append(categories[i])
@@ -91,7 +92,8 @@ def edit_problem(id):
         abort(404)
     if problem.user_id != current_user.id:
         abort(403)
-    args = ['name', 'task_text', 'input_text', 'output_text', 'examples', 'note']
+    args = ['name', 'task_text', 'input_text',
+            'output_text', 'examples', 'note', 'display_problemset']
     form = EditProblemForm(
         time=problem.time_limit * 1000,
         memory=problem.memory_limit // 1024,
@@ -112,10 +114,13 @@ def edit_problem(id):
         problem.output_text = form.output_text.data
         problem.note = form.note.data
         problem.task_text = form.task_text.data
+        problem.display_problemset = form.display_problemset.data
+
         problem.categories.clear()
         for i in form.categories.checked:
             problem.categories.append(categories[i])
         db_sess.flush()
+
         if form.file.data:
             dir_tests = os.path.join(get_dir(), 'files', 'tests', f'{problem.problem_tests.id}')
             shutil.rmtree(dir_tests, ignore_errors=True)
@@ -169,6 +174,8 @@ def get_problem(id):
     problem = db_sess.query(Problem).filter(Problem.id == id).first()
     if not problem:
         abort(404)
+    if not problem.display_problemset and problem.user_id != current_user.id:
+        abort(403)
     if problem.images_ids:
         ids = list(map(int, problem.images_ids.split(',')))
     else:
@@ -259,7 +266,8 @@ def problemset_category(id):
         filter(ProblemCategory.id == id).first()
     if not category:
         abort(404)
-    problem = db_sess.query(Problem).filter(Problem.categories.any(id=id)).all()
+    problem = db_sess.query(Problem).filter(Problem.display_problemset == 1) \
+        .filter(Problem.categories.any(id=id)).all()
     name = category.name
     return render_template('problemset.html', **locals())
 
@@ -268,7 +276,7 @@ def problemset_category(id):
 @student_required
 def problemset_all():
     db_sess = db_session.create_session()
-    problem = db_sess.query(Problem).all()
+    problem = db_sess.query(Problem).filter(Problem.display_problemset == 1).all()
     name = 'All problems'
     return render_template('problemset.html', **locals())
 

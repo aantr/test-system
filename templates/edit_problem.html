@@ -1,5 +1,4 @@
 {% extends "navbar.html" %}
-{% set active_page = "add_problem" %}
 {% block content %}
 
 <head>
@@ -58,6 +57,9 @@
         <br>
         <h6>{{ form.note.label.text }}</h6>
         {{ form.note(class="form-control", style="min-height: 200px") }}<br>
+        <h6>{{ form.display_problemset.label.text }}</h6>
+        {{ form.display_problemset(class="form-check-input") }}<br>
+
         <h6>{{ form.categories.label.text }}</h6>
         {% for i in form.categories.choices %}
         <div class="form-group form-check">
@@ -81,20 +83,19 @@
     </form>
 </main>
 <script>
-function add_example(){
-var all_text = document.getElementById("examples_textarea").value;
-if (all_text.length != 0 && all_text.slice(-1) != "\n") all_text += "\n";
-all_text += "<example>\n";
-document.getElementById("examples_textarea").value = all_text;
-}
-function add_data(){
-var all_text = document.getElementById("examples_textarea").value;
-if (all_text.length != 0 && all_text.slice(-1) != "\n") all_text += "\n";
-all_text += "<data>\n";
-document.getElementById("examples_textarea").value = all_text;
-}
+  function add_example() {
+    var all_text = document.getElementById("examples_textarea").value;
+    if (all_text.length != 0 && all_text.slice(-1) != "\n") all_text += "\n";
+    all_text += "<example>\n";
+    document.getElementById("examples_textarea").value = all_text;
+  }
 
-
+  function add_data() {
+    var all_text = document.getElementById("examples_textarea").value;
+    if (all_text.length != 0 && all_text.slice(-1) != "\n") all_text += "\n";
+    all_text += "<data>\n";
+    document.getElementById("examples_textarea").value = all_text;
+  }
 
 
 </script>

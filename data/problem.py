@@ -40,6 +40,8 @@ class Problem(SqlAlchemyBase):
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.id'))
     user = orm.relation('User')
 
+    display_problemset = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+
     def get_time_limit(self):
         return f'{self.time_limit} s'
 

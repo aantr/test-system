@@ -56,6 +56,9 @@
         <br>
         <h6>{{ form.note.label.text }}</h6>
         {{ form.note(class="form-control", style="min-height: 200px") }}<br>
+        <h6>{{ form.display_problemset.label.text }}</h6>
+        {{ form.display_problemset(class="form-check-input") }}<br>
+
         <h6>{{ form.categories.label.text }}</h6>
         {% for i in form.categories.choices %}
         <div class="form-group form-check">
