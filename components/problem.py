@@ -8,6 +8,7 @@ from flask import render_template, redirect, abort
 from flask_login import login_required, current_user
 from wtforms.validators import DataRequired
 
+from data.session import Session
 from data.solution import Solution
 from forms.edit_problem import EditProblemForm
 from global_app import get_app, get_dir
@@ -20,7 +21,7 @@ from data.problem_category import ProblemCategory
 from data.problem_tests import ProblemTests
 from forms.submit_problem import SubmitProblemForm
 from utils.permissions_required import student_required, teacher_required
-from utils.utils import get_message_from_form
+from utils.utils import get_message_from_form, get_session_joined
 
 app = get_app()
 
@@ -174,7 +175,19 @@ def get_problem(id):
     problem = db_sess.query(Problem).filter(Problem.id == id).first()
     if not problem:
         abort(404)
-    if not problem.display_problemset and problem.user_id != current_user.id:
+
+    session = get_session_joined(db_sess)
+    session: Session
+    session_id = None
+    if session and \
+            (session.started or session.user_id == current_user.id):
+        problems_ids = [i.id for i in session.problems]
+        if id in problems_ids:
+            session_id = session.id
+
+    if not problem.display_problemset and \
+        problem.user_id != current_user.id and \
+            not session_id:
         abort(403)
     if problem.images_ids:
         ids = list(map(int, problem.images_ids.split(',')))
