@@ -4,6 +4,8 @@
 <head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
 </head>
+    <canvas id="base_canvas" style="position:fixed; z-index: -1;"></canvas>
+
 <main role="main" class="container">
     <h5 align="center">My profile</h5>
     <h5>Statistic</h5>
@@ -12,7 +14,11 @@
     {% else %}
     <p>Unable to create statistic, because there is no submits</p>
     {% endif %}
-    <script>
+    <br>
+    <a href="{{url_for('logout')}}" class="btn btn-danger">Logout</a>
+</main>
+
+<script>
         var ctx = document.getElementById("chart").getContext("2d");
         var chart = new Chart(ctx, {
         type: "bar",
@@ -32,7 +38,31 @@
         scales: {y: {beginAtZero: true}}
         },
         });
-    </script>
-    <a href="{{url_for('logout')}}" class="btn btn-danger">Logout</a>
-</main>
+
+  const s = window.screen;
+  const w = (base_canvas.width = s.width);
+const h = (base_canvas.height = s.height);
+  // const w = 200;
+  // const h = 200;
+
+  const ctx_m = document.getElementById("base_canvas").getContext("2d");
+
+  const p = Array(Math.floor(w / 10) + 1).fill(0);
+
+  const random = (items) => items[Math.floor(Math.random() * items.length)];
+
+  const hex = "0123456789ABCDEF%@#!(){}:>??".split("");
+
+  setInterval(() => {
+    ctx_m.fillStyle = "rgba(255,255,255,.075)";
+    ctx_m.fillRect(0, 0, w, h);
+    ctx_m.fillStyle = "#0f0";
+    ctx_m.font = '16px sans-serif';
+    p.map((v, i) => {
+      ctx_m.fillText(random(hex), i * 10, v);
+      p[i] = v >= h || v > 50 + 10000 * Math.random() ? 0 : v + 10;
+    });
+  }, 1000 / 30);
+
+</script>
 {% endblock %}

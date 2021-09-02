@@ -17,25 +17,32 @@
 
     <title>Test system</title>
 </head>
-<body>{% block base_content %}{% endblock %}</body>
+<body>
+
+{% block base_content %}{% endblock %}
+</body>
 <style>
     html {
-    position: relative;
-    min-height: 100%;
-}
-body {
-    margin: 0 0 100px;
-    /* bottom = footer height */
-    /*padding: 25px;*/
-}
-footer {
-    background-color: orange;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    overflow:hidden;
-}
+        position: relative;
+        min-height: 100%;
+    }
+
+    body {
+        margin: 0 0 100px;
+        /* bottom = footer height */
+        /*padding: 25px;*/
+        overflow: hidden;
+
+    }
+
+    footer {
+        background-color: orange;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        overflow: hidden;
+    }
 </style>
 <footer class="bg-light text-center text-lg-start">
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);font-size: small">
