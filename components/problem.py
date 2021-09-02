@@ -90,7 +90,7 @@ def edit_problem(id):
     problem = db_sess.query(Problem).filter(Problem.id == id).first()
     if not problem:
         abort(404)
-    if problem.user_id != current_user.id:
+    if problem.user_id != current_user.id and not current_user.has_rights_admin():
         abort(403)
     args = ['name', 'task_text', 'input_text',
             'output_text', 'examples', 'note', 'display_problemset']
@@ -201,7 +201,7 @@ def get_problem(id):
                            input_text=problem.input_text,
                            output_text=problem.output_text,
                            categories=categories)
-    edit = problem.user_id == current_user.id
+    edit = problem.user_id == current_user.id or current_user.has_rights_admin()
     success_solution = db_sess.query(Solution).filter(Solution.problem_id == id). \
         filter(Solution.user_id == current_user.id).filter(Solution.success == 1). \
         filter(Solution.session_id == args.get('session_id')).first()

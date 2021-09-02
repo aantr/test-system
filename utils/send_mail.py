@@ -13,6 +13,7 @@ app = None
 def test_email():
     global ready
     global app
+    global server
     app = get_app()
     server = smtplib.SMTP_SSL(app.config['MAIL_HOST'], app.config['MAIL_PORT'])
     if type(app.config['MAIL_LOGIN']) == str:

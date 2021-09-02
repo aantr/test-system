@@ -89,8 +89,8 @@ def submit(problem_id):
             session.user_id != current_user.id:
         available = False
 
-    if from_session_id != session_id:
-        session_id = None
+    # if from_session_id != session_id:
+    #     session_id = None
 
     if not available:
         return redirect(url_for('workplace_info'))
