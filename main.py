@@ -43,8 +43,10 @@ def init_account():
         with open('admin.txt', encoding='utf8') as f:
             line = f.read().strip().split()
             if len(line) > 1:
-                user = User()
-                user.username = line[0]
+                user = db_sess.query(User).filter(User.username == line[0]).first()
+                if not user:
+                    user = User()
+                    user.username = line[0]
                 user.confirmed_email = True
                 user.type = 10
                 user.set_password(line[1])
@@ -56,8 +58,10 @@ def init_account():
             for line in lines:
                 line = line.strip().split()
                 if len(line) > 1:
-                    user = User()
-                    user.username = line[0]
+                    user = db_sess.query(User).filter(User.username == line[0]).first()
+                    if not user:
+                        user = User()
+                        user.username = line[0]
                     user.confirmed_email = True
                     user.type = 20
                     user.set_password(line[1])
