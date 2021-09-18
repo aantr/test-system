@@ -74,7 +74,7 @@ class ProgLangPascalABCNET(ProgLang):
             return 0, err
         d, name = os.path.split(source)
         path = os.path.join(d, os.path.splitext(name)[0] + '.exe')
-        return 1, [path]
+        return 1, self.compiler[1:] + [path]
 
 
 class ProgLangCPP(ProgLang):
