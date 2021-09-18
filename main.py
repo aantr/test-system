@@ -34,52 +34,35 @@ app = global_app.get_app()
 app.config.from_object(__name__)
 current_user: User
 
-recreate_db = 0
 
-
-def on_recreate_db():
-    print('Recreate db...')
-    if os.path.exists(DB_PT):
-        os.remove(DB_PT)
-
+def init_account():
+    print('Init account...')
     db_session.global_init(app.config['DB_PT'])
     db_sess = db_session.create_session()
-
-    user = User()
-    user.username = 'admin'
-    user.confirmed_email = True
-    user.type = 10
-    user.set_password('admin')
-    db_sess.add(user)
-
-    user = User()
-    user.username = 'teacher'
-    user.type = 20
-    user.confirmed_email = True
-    user.set_password('teacher')
-    db_sess.add(user)
-
-    for i in range(30):
-        user = User()
-        user.username = f'student{i}'
-        user.type = 30
-        user.set_password(f'student{i}')
-        user.confirmed_email = True
-        db_sess.add(user)
-
-    cat = ProblemCategory()
-    cat.name = 'Массивы'
-    db_sess.add(cat)
-
-    cat = ProblemCategory()
-    cat.name = 'Функции'
-    db_sess.add(cat)
-
-    cat = ProblemCategory()
-    cat.name = 'Циклы'
-    db_sess.add(cat)
-
-    db_sess.commit()
+    if os.path.exists('admin.txt'):
+        with open('admin.txt', encoding='utf8') as f:
+            line = f.read().strip().split()
+            if len(line) > 1:
+                user = User()
+                user.username = line[0]
+                user.confirmed_email = True
+                user.type = 10
+                user.set_password(line[1])
+                db_sess.add(user)
+                db_sess.commit()
+    if os.path.exists('teacher.txt'):
+        with open('teacher.txt', encoding='utf8') as f:
+            lines = f.read().strip().split('\n')
+            for line in lines:
+                line = line.strip().split()
+                if len(line) > 1:
+                    user = User()
+                    user.username = line[0]
+                    user.confirmed_email = True
+                    user.type = 20
+                    user.set_password(line[1])
+                    db_sess.add(user)
+                    db_sess.commit()
 
 
 # Components
@@ -104,6 +87,7 @@ import components.categories
 def init():
     parser = argparse.ArgumentParser()
     parser.add_argument('--init_user', action='store_true')
+    parser.add_argument('--account', action='store_true')
     args = parser.parse_args()
 
     with open(app.config['CONFIG_LANG'], 'r') as f:
@@ -118,8 +102,8 @@ def init():
 
     tp.init(data)
 
-    if recreate_db:
-        on_recreate_db()
+    if args.account:
+        init_account()
     db_session.global_init(app.config['DB_PT'])
     init_db()
 
