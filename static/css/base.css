@@ -1,3 +1,32 @@
 body {
-background: #ffffff;
+    background: #fff;
+}
+
+a {
+    outline: none;
+    text-decoration: none;
+    padding: 2px 1px 0;
+}
+
+a:link {
+    color: #385099;
+}
+
+a:visited {
+    color: #263f8d;
+}
+
+a:focus {
+    border-bottom: 1px solid;
+    background: #314c92;
+}
+
+a:hover {
+    border-bottom: 1px solid;
+    background: rgba(50, 84, 142, 0.5);
+}
+
+a:active {
+    background: #1d3c79;
+    color: #aac6fe;
 }

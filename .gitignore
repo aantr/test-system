@@ -1,5 +1,4 @@
 /ignore
-_count_lines.py
-__pycache__
+__pycache__/
+*.pyc
 /my_solution
-/config/

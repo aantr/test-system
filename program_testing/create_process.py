@@ -27,7 +27,7 @@ def create_process(cmd: list, uid, private_folder):
         firejail = ['firejail', '--noprofile', '--net=none', '--nosound', '--novideo', '--quiet']
         # for i in range(len(cmd)):
         #     cmd[i] = cmd[i].replace(os.path.join(private_folder, ''), '')
-        cmd = firejail + cmd
+        # cmd = firejail + cmd
         print(' '.join(cmd))
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
                      preexec_fn=preexec(uid))
