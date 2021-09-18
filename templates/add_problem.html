@@ -57,7 +57,8 @@
         <h6>{{ form.note.label.text }}</h6>
         {{ form.note(class="form-control", style="min-height: 200px") }}<br>
         <h6>{{ form.display_problemset.label.text }}</h6>
-        {{ form.display_problemset(class="form-check-input") }}<br>
+        {{ form.display_problemset(class="form-check-input") }}
+        <label class="form-check-label" for="display_problemset">Yes / No</label><br><br>
 
         <h6>{{ form.categories.label.text }}</h6>
         {% for i in form.categories.choices %}
@@ -68,6 +69,9 @@
             <label class="form-check-label" for="{{ id }}">{{i[1]}}</label>
         </div>
         {% endfor %}<br>
+
+        <h6>{{ form.level.label.text }}</h6>
+        {{ form.level(class="form-control", type="number", style="max-width: 30vw") }}</br>
         <h6>{{ form.file.label.text }}</h6>
         {{ form.file(class="form-control", style="max-width: 30vw") }}</br>
         <h6>{{ form.time.label.text }}</h6>

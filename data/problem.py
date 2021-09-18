@@ -42,6 +42,8 @@ class Problem(SqlAlchemyBase):
 
     display_problemset = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
 
+    level = sqlalchemy.Column(sqlalchemy.Integer, default=100)
+
     def get_time_limit(self):
         return f'{self.time_limit} s'
 

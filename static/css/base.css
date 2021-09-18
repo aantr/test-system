@@ -9,12 +9,9 @@ a {
 }
 
 a:link {
-    color: #385099;
+    color: #0d1c47;
 }
 
-a:visited {
-    color: #263f8d;
-}
 
 a:focus {
     border-bottom: 1px solid;

@@ -50,6 +50,7 @@ def add_problem():
         problem.note = form.note.data
         problem.task_text = form.task_text.data
         problem.display_problemset = form.display_problemset.data
+        problem.level = form.level.data
 
         for i in form.categories.checked:
             problem.categories.append(categories[i])
@@ -94,7 +95,7 @@ def edit_problem(id):
     if problem.user_id != current_user.id and not current_user.has_rights_admin():
         abort(403)
     args = ['name', 'task_text', 'input_text',
-            'output_text', 'examples', 'note', 'display_problemset']
+            'output_text', 'examples', 'note', 'display_problemset', 'level']
     form = EditProblemForm(
         time=problem.time_limit * 1000,
         memory=problem.memory_limit // 1024,
@@ -116,6 +117,7 @@ def edit_problem(id):
         problem.note = form.note.data
         problem.task_text = form.task_text.data
         problem.display_problemset = form.display_problemset.data
+        problem.level = form.level.data
 
         problem.categories.clear()
         for i in form.categories.checked:

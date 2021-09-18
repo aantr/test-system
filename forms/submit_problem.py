@@ -25,6 +25,8 @@ class SubmitProblemForm(FlaskForm):
     note = TextAreaField('Note', validators=[])
     categories = MultiplyCheckboxField('problem_category', 'Categories')
     display_problemset = BooleanField('Display in problem set', validators=[])
+    level = IntegerField('Difficulty (100 - 1000)', validators=[
+        DataRequired(), NumberRange(min=100, max=1000)])
 
     file = FileField('Tests (zip archive)', validators=[DataRequired()])
     time = IntegerField('Time limit (in milliseconds)', validators=[
