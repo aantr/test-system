@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import signal
 import threading
 import time
 import zipfile
@@ -87,7 +88,7 @@ class TestProgram:
 
     def _get_from_queue(self, db_sess):
         solution_id = self.queue.pop(0)
-        db_sess.query(Solution).filter(Solution.id.in_(self.queue[1:])). \
+        db_sess.query(Solution).filter(Solution.id.in_(self.queue)). \
             update({Solution.state_arg: Solution.state_arg - 1},
                    synchronize_session=False)
         db_sess.commit()
@@ -162,7 +163,7 @@ class TestProgram:
 
         write_solution_start = self.get_start_time()
         verdict = 10
-        max_time = 0
+        max_time = []  # middle value of top 3 greatest
         max_memory = 0
 
         for i, (stdin, correct_answer) in enumerate(tests):
@@ -178,9 +179,8 @@ class TestProgram:
             try:
                 proc = create_process(compile_result[1],
                                       run_as_user_uid_linux,
-                                      source_dir)
-                proc.stdin.write(stdin.encode(lang.encoding))
-                proc.stdin.close()
+                                      source_dir,
+                                      stdin, lang)
             except Exception as e:
                 if proc is not None:
                     proc.kill()
@@ -254,12 +254,15 @@ class TestProgram:
             res.stderr = stderr
             test_results.append(res)
 
-            max_time = max(max_time, current_time)
+            max_time.append(current_time)
             max_memory = max(max_memory, current_memory)
             if not success:
                 solution.success = success
                 solution.failed_test = i
                 break
+        max_time = sorted(max_time, reverse=True)
+        max_time = max_time[:min(len(max_time), 1)]
+        max_time = sum(max_time) / len(max_time)
         solution.completed = 1
         solution.state = verdict
         solution.state_arg = None

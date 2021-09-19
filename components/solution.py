@@ -177,6 +177,7 @@ def get_solution(solution_id):
     except UnicodeDecodeError:
         source = 'Failed to load source code'
     lang = get_languages()[solution.lang_code_name].name
+    max_sym = 5000
     if solution.completed:
         tests = TestProgram.read_tests(solution.problem)
         test_results = TestProgram.read_test_results(solution)
@@ -186,7 +187,14 @@ def get_solution(solution_id):
             tests_success -= 1
             if current_user.has_rights_teacher():
                 stdin, correct = tests[len(test_results) - 1]
+                stdin = stdin[:max_sym]
+                correct = correct[:max_sym]
                 stdout = test_results[-1].stdout
                 stderr = test_results[-1].stderr
+                if stdout:
+                    stdout = stdout[:max_sym]
+                if stderr:
+                    stderr = stderr[:max_sym]
+
 
     return render_template('solution.html', **locals())

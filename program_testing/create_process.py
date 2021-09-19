@@ -1,4 +1,5 @@
 import os
+from tempfile import SpooledTemporaryFile as tempfile
 
 try:
     import pwd
@@ -21,7 +22,7 @@ def get_source_solution(uid):
     return source_solution_path
 
 
-def create_process(cmd: list, uid, private_folder):
+def create_process(cmd: list, uid, private_folder, stdin, lang):
     system = os.name
     if system == 'posix':
         firejail = ['firejail', '--noprofile', '--net=none', '--nosound', '--novideo', '--quiet']
@@ -32,7 +33,15 @@ def create_process(cmd: list, uid, private_folder):
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
                      preexec_fn=preexec(uid))
         return proc
-    proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
+
+    f = tempfile()
+    f.write(stdin.encode(lang.encoding))
+    f.seek(0)
+    proc = Popen(cmd, stdout=PIPE, stdin=f, stderr=PIPE)
+    # proc.stdin.write(stdin.encode(lang.encoding))
+    # proc.stdin.close()
+    f.close()
+
     return proc
 
 
