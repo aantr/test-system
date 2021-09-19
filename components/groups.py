@@ -45,9 +45,8 @@ def add_group():
         flash(f'Successfully added group "{group.name}"', category='success')
         return redirect(url_for('groups'))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
 
     return render_template('add_group.html', **locals())
 
@@ -78,9 +77,8 @@ def get_group(group_id):
         flash(f'Successfully edited group "{group.name}"', category='success')
         return redirect(url_for('groups'))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
     return render_template('edit_group.html', **locals())
 
 

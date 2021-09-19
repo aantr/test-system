@@ -28,7 +28,6 @@
 ] -%}
 {% endif %}
 {% set active_page = active_page|default('') -%}
-<!--<li class="nav-item" style="border-right: 2px solid #bbb;margin-left: 15px;margin-right: 15px;"></li>-->
 
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -47,8 +46,8 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {% for href, id, caption in navigation_bar -%}
-                <li class="nav-item"> <a class="nav-link{% if id == active_page %} active{% endif%}"
-                       href="{{ href|e }}">{{ caption|e }}</a></li>
+                <li class="nav-item"><a class="nav-link{% if id == active_page %} active{% endif%}"
+                                        href="{{ href|e }}">{{ caption|e }}</a></li>
                 {% endfor %}
             </ul>
             <form class="d-flex">
@@ -63,13 +62,9 @@
         </div>
     </div>
 </nav>
-<div class="container">
-    <p>{% for cat, msg in get_flashed_messages(True) %}
-    <div class="alert alert-{{ cat }}" role="alert">
-        {{ msg }}
-    </div>
-    {% endfor %}
-</div>
-{% block content %}{% endblock %}
+{%- for href, id, caption in navigation_bar -%}
+{% if id == active_page %}<p><h5 align="center">{{caption}}</h5>{% endif%}
+{% endfor %}
+<p>{% block content %}{% endblock %}
 </body>
 {% endblock %}

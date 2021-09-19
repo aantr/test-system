@@ -64,9 +64,8 @@ def register():
         flash('Successfully signed up, please confirm your email', category='success')
         return redirect(url_for('login_'))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
     return render_template('register.html', **locals())
 
 

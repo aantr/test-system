@@ -12,12 +12,6 @@
     <img class="mb-4" src="{{url_for('static', filename='img/icon.png')}}">
     <h1 class="h3 mb-3 font-weight-normal">Sign up</h1>
 
-    {% for cat, msg in get_flashed_messages(True) %}
-    <div class="alert alert-{{ cat }}" role="alert">
-        {{ msg }}
-    </div>
-    {% endfor %}
-
     {{ form.username(id="input_username", class="form-control",
     placeholder=form.username.label.text) }}
     {{ form.email(id="input_email", type="email", class="form-control",

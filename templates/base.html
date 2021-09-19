@@ -11,18 +11,64 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
             crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
-            crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+                crossorigin="anonymous"></script>
     <title>Test system</title>
 </head>
 <body>
 {% block base_content %}{% endblock %}
+<div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11"></div>
 </body>
+<script>
+  function createToast(title, smallText, text, color) {
+    let id = new Date().getTime();
+    let html = `
+<div class="toast" data-autohide="false" role="alert" aria-live="assertive"
+aria-atomic="true" id=${id} style="background-color: ${color}" data-animation="true">
+    <div class="toast-header">
+        <!--            <img src="..." class="rounded me-2" alt="...">-->
+        <b class="me-auto">${title}</b>
+        <small>${smallText}</small>
+        <button type="button" class="btn-close" data-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+        <div style="font-size: 16px" align="left">${text}</div>
+    </div>
+</div>
+<p>
+`;
+    document.getElementById('toast-container').innerHTML += html;
+    $(`#${id}`).toast('show');
+  }
+</script>
+{%- for cat, msg in get_flashed_messages(True) -%}
+{%- if cat == 'success' -%}
+<script>createToast("Success! :)", "", "{{msg}}", "#d9ffcf");</script>
+{%- elif cat == 'warning' -%}
+<script>createToast("Warning!", "", "{{msg}}", "#fcffcf");</script>
+{%- elif cat == 'danger' -%}
+<script>createToast("Error! :(", "", "{{msg}}", "#ffcfcf");</script>
+{%- else -%}
+<script>createToast("Information", "", "{{msg}}", "#cfe4ff");</script>
+{% endif %}
+{% endfor %}
 <style>
-    html {position: relative;min-height: 100%;}
-    body {margin: 0 0 100px;}
-    footer {position: absolute;left: 0;bottom: 0;width: 100%;}
+    html {
+        position: relative;
+        min-height: 100%;
+    }
+
+    body {
+        margin: 0 0 100px;
+    }
+
+    footer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+    }
 </style>
 <footer class="bg-light text-center text-lg-start">
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);font-size: small">

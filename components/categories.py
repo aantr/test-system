@@ -45,9 +45,8 @@ def edit_category(id):
         flash(f'Successfully edited category "{category.name}"', category='success')
         return redirect(url_for('categories'))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
     return render_template('edit_category.html', **locals())
 
 
@@ -81,7 +80,6 @@ def add_category():
         db_sess.commit()
         return redirect(url_for('categories'))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
     return render_template('add_category.html', **locals())

@@ -65,9 +65,8 @@ def add_session():
         db_sess.commit()
         return redirect(url_for('add_session'))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
 
     return render_template('add_session.html', form=form)
 
@@ -105,9 +104,8 @@ def edit_session(session_id):
         db_sess.commit()
         return redirect(url_for('get_session', session_id=session_id))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
 
     return render_template('edit_session.html', form=form)
 

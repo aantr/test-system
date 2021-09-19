@@ -70,7 +70,6 @@ def select_user():
         selectable_search_ids = [i.id for i in selectable_search_objects]
 
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
     return render_template('select_users.html', **locals())

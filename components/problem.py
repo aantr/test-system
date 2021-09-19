@@ -79,9 +79,8 @@ def add_problem():
         db_sess.commit()
         return redirect(url_for('add_problem'))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
     return render_template('add_problem.html', **locals())
 
 
@@ -162,9 +161,8 @@ def edit_problem(id):
         db_sess.commit()
         return redirect(url_for('get_problem', id=problem.id))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
     return render_template('edit_problem.html', **locals())
 
 

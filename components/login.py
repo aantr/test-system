@@ -38,17 +38,18 @@ def login_():
         elif not user.confirmed_email:
             flash('Email not confirmed', category='danger')
         else:
-            login_user(user, remember=False, duration=timedelta(minutes=1))
+            flash('Logged in', category='info')
+            login_user(user, remember=form.remember_me.data, duration=timedelta(days=5))
             return redirect(url_for('index'))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
     return render_template('login.html', **locals())
 
 
 @app.route('/logout')
 @login_required
 def logout():
+    flash('Logged out', category='info')
     logout_user()
     return redirect('/')

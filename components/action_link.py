@@ -70,7 +70,7 @@ def action():
         else:
             return redirect(url_for(f'action_link', str_id=action.str_id))
     else:
-        msg = get_message_from_form(form)
-        if msg:
-            flash(msg, category='danger')
+        for i in get_message_from_form(form):
+            flash(i, category='danger')
+
     return render_template('action_link.html', **locals())

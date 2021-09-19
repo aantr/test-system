@@ -1,17 +1,20 @@
 import datetime
 
 from flask_login import current_user
+from flask_wtf import FlaskForm
+from wtforms import Field
 
 from data.session import SessionMember
 
 
-def get_message_from_form(form):
+def get_message_from_form(form: FlaskForm):
+    res = []
     for i in form.__dict__.values():
+        i: Field
         if hasattr(i, 'errors'):
             if i.errors:
-                msg = f'{i.label.text}: {i.errors[0]}'
-                return msg
-    return ''
+                res.append(f'{i.label.text}: {i.errors[0]}')
+    return res[:1]
 
 
 def get_session_joined(db_sess):
