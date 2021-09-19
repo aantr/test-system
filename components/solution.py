@@ -131,6 +131,21 @@ def status():
     return render_template('status.html', **locals())
 
 
+@app.route('/all_submits')
+@student_required
+def all_submits():
+    db_sess = db_session.create_session()
+    solution = db_sess.query(Solution). \
+        filter(Solution.session_id == None).order_by(Solution.sent_date.desc()).all()
+    solution_rows = [[Markup(render_template(
+        'status_row.html',
+        row=get_solution_row(i))), i.id] for i in solution]
+    rows_to_update = [i.id for i in solution if not i.completed]
+    update_timeout = current_app.config['UPDATE_STATUS_TIMEOUT']
+    status_base = render_template('status_base.html', **locals())
+    return render_template('all_submits.html', **locals())
+
+
 @app.route('/update')
 @student_required
 def update():

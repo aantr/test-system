@@ -8,11 +8,6 @@ a {
     padding: 2px 1px 0;
 }
 
-a:link {
-    color: #0d1c47;
-}
-
-
 a:focus {
     border-bottom: 1px solid;
     background: #314c92;
