@@ -417,15 +417,14 @@ class TestProgram:
                         if path_w in s1:
                             s1.remove(path_w)
                         else:
-                            print(1)
+                            print(4)
                             return False
-                    else:
-                        return False
         except zipfile.error as e:
             if DEBUG:
                 print(e)
             return False
         if s1:
+            print(2)
             return False
         return True
 

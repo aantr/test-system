@@ -19,17 +19,17 @@ class SubmitSessionForm(FlaskForm):
     submit = SubmitField('Add')
 
     def validate(self):
-        res = True
-        if not FlaskForm.validate(self):
-            res = False
         self.problems.checked = []
         for i in self.problems.choices:
             if self.problems.prefix_id + i[0] in request.form:
                 self.problems.checked.append(i[0])
+
+        if not FlaskForm.validate(self):
+            return False
         if not self.problems.checked:
             self.problems.errors.append('At least one task should be selected')
-            res = False
+            return False
         if get_duration_from_time(self.time.data).total_seconds() < 60:
             self.time.errors.append('Duration must be at least 1 minute')
-            res = False
-        return res
+            return False
+        return True

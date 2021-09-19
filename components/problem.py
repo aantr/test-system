@@ -74,13 +74,17 @@ def add_problem():
                                    image.get_name()), 'wb') as f:
                 f.write(i.stream.read())
         problem.images_ids = ','.join(map(str, ids))
-        test_program.add_problem(problem, form.file.data.stream.read())
+        test_program.add_problem(problem, open(form.file.path, 'br').read())
+        os.remove(form.file.path)
         flash(f'Successfully added problem "{problem.name}"', category='success')
         db_sess.commit()
         return redirect(url_for('add_problem'))
     else:
         for i in get_message_from_form(form):
             flash(i, category='danger')
+    if hasattr(form.file, 'path'):
+        os.remove(form.file.path)
+
     return render_template('add_problem.html', **locals())
 
 
@@ -129,7 +133,8 @@ def edit_problem(id):
             db_sess.delete(problem.problem_tests)
             problem.problem_tests = ProblemTests()
             db_sess.flush()
-            test_program.add_problem(problem, form.file.data.stream.read())
+            test_program.add_problem(problem, open(form.file.path, 'br').read())
+            os.remove(form.file.path)
         if form.images.data and form.images.data[0]:
             if problem.images_ids:
                 ids = list(map(int, problem.images_ids.split(',')))
@@ -163,6 +168,8 @@ def edit_problem(id):
     else:
         for i in get_message_from_form(form):
             flash(i, category='danger')
+    if hasattr(form.file, 'path'):
+        os.remove(form.file.path)
     return render_template('edit_problem.html', **locals())
 
 

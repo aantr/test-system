@@ -1,3 +1,5 @@
+import os
+import random
 from copy import deepcopy
 
 from flask import request
@@ -10,6 +12,7 @@ from data.image import Image
 from data.problem_tests import ProblemTests
 from forms.utils.multiply_checkbox_field import MultiplyCheckboxField
 from forms.utils.string_field import StringField
+from global_app import get_dir
 from program_testing.test_program import TestProgram
 from utils.utils import allowed_file
 from forms.utils.text_area_field import TextAreaField
@@ -53,9 +56,15 @@ class EditProblemForm(FlaskForm):
         if self.file.data and not allowed_file(self.file.data.filename, ProblemTests.get_extensions()):
             self.file.errors.append('Incorrect zip archive format')
             return False
-        if self.file.data and not TestProgram.check_tests_zip(deepcopy(self.file.data.stream).read()):
-            self.file.errors.append('Incorrect zip archive format')
-            return False
+
+        if self.file.data:
+            path = os.path.join(get_dir(), 'files', 'tests', f'temp{random.randint(100000, 1000000)}.zip')
+            request.files['file'].save(path)
+            read = open(path, 'br').read()
+            self.file.path = path
+            if not TestProgram.check_tests_zip(read):
+                self.file.errors.append('Incorrect zip archive format')
+                return False
 
         examples = self.examples.data.strip().split(self.example_split_tag)
         for i in examples:

@@ -5,7 +5,7 @@ from werkzeug.exceptions import abort
 from data import db_session
 from data.problem_category import ProblemCategory
 from data.user import User
-from forms.egit_category import EditCategoryForm
+from forms.edit_category import EditCategoryForm
 from forms.submit_category import SubmitCategoryForm
 
 from global_app import get_app

@@ -7,7 +7,7 @@ from components.action_link import add_action
 from data.group import Group, GroupMember
 from data.invite import Invite
 from data.user import User
-from forms.egit_group import EditGroupForm
+from forms.edit_group import EditGroupForm
 from forms.submit_group import SubmitGroupForm
 from data import db_session
 from global_app import get_app
