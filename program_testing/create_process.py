@@ -105,7 +105,7 @@ def init_user(uid):
         rights = '---'
         cmd = [setfacl, '-m', f'u:{u_name}:' + rights, path]
         call(cmd)
-
+    print(_whitelist)
     for path in _whitelist:
         rights = 'r-x'
         cmd = [setfacl, '-m', f'u:{u_name}:' + rights, path]
