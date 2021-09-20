@@ -23,10 +23,12 @@ def get_source_solution(uid):
 
 
 def test_create_process(uid):
+    u_name = pwd.getpwuid(uid).pw_name
     system = os.name
     cmd = ['whoami']
     if system == 'posix':
-        proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE, preexec_fn=preexec(uid))
+        cmd = ['sudo', '-u', u_name] + cmd
+        proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
         return proc
     proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
     return proc
@@ -39,7 +41,7 @@ def create_process(cmd: list, uid, private_folder, stdin, lang):
         f = tempfile()
         f.write(stdin.encode(lang.encoding))
         f.seek(0)
-        proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE, preexec_fn=preexec(uid))
+        proc = Popen(cmd, stdout=PIPE, stdin=f, stderr=PIPE, preexec_fn=preexec(uid))
         f.close()
         return proc
 
