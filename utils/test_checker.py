@@ -28,7 +28,9 @@ def test_checker(app):
     print(a+b)
     '''
 
-    sol = send_solution(0, source, 'python', None, db_sess.query(User).first(), db_sess)
+    sol = send_solution(
+        db_sess.query(Problem).first().id,
+        source, 'python', None, db_sess.query(User).first(), db_sess)
     sol_id = sol.id
 
     while 1:
