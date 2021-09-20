@@ -50,7 +50,7 @@ namespace MyApplication
      }
   }
 }
-''', 'cs'),
+''', 'c#'),
         (rb'''
 #include <iostream>
 #include <bits/stdc++.h>
