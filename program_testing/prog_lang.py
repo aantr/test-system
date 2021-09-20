@@ -49,7 +49,7 @@ class ProgLang:
 
 class ProgLangPython(ProgLang):
     def __init__(self):
-        super().__init__('Python', 'python', 'py')
+        super().__init__('Python 3.7.3', 'python', 'py')
 
     def compile(self, source):
         cmd = [self.compiler[0], '-I', '-m', 'py_compile', source]
@@ -80,7 +80,7 @@ class ProgLangPascalABCNET(ProgLang):
 
 class ProgLangFreePascal(ProgLang):
     def __init__(self):
-        super().__init__('Free Pascal', 'freepascal', 'pas')
+        super().__init__('Free Pascal 3.0.4+dfsg-22', 'freepascal', 'pas')
 
     def compile(self, source):
         d, name = os.path.split(source)
@@ -96,7 +96,7 @@ class ProgLangFreePascal(ProgLang):
 
 class ProgLangCPP(ProgLang):
     def __init__(self):
-        super().__init__('C++', 'c++', 'cpp')
+        super().__init__('C++ 8.3.0', 'c++', 'cpp')
 
     def compile(self, source):
         d, name = os.path.split(source)
@@ -112,7 +112,7 @@ class ProgLangCPP(ProgLang):
 
 class ProgLangC(ProgLang):
     def __init__(self):
-        super().__init__('C', 'c', 'c')
+        super().__init__('GCC 8.3.0', 'c', 'c')
 
     def compile(self, source):
         d, name = os.path.split(source)
@@ -144,7 +144,7 @@ class ProgLangCS(ProgLang):
 
 class ProgLangJava(ProgLang):
     def __init__(self):
-        super().__init__('Java', 'java', 'java')
+        super().__init__('Java (jdk 11.0.11)', 'java', 'java')
 
     def compile(self, source):
         d, name = os.path.split(source)
