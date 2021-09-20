@@ -9,8 +9,9 @@ from program_testing import test_program as tp
 import global_app
 from data import db_session
 from data.user import User
+from program_testing.create_process import test_create_process
 from program_testing.message import get_message_solution
-from program_testing.test_program import TestProgram
+from program_testing.test_program import TestProgram, run_uid
 from utils.send_solution import send_solution
 
 
@@ -20,6 +21,9 @@ def test_checker(app):
                               kwargs={'threads': app.config['TEST_THREADS']})
     thread.start()
     time.sleep(0.5)
+
+    p = test_create_process(run_uid())
+    print(p.communicate())
 
     tests = [
         (b'''

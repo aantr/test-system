@@ -22,6 +22,16 @@ def get_source_solution(uid):
     return source_solution_path
 
 
+def test_create_process(uid):
+    system = os.name
+    cmd = ['whoami']
+    if system == 'posix':
+        proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE, preexec_fn=preexec(uid))
+        return proc
+    proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
+    return proc
+
+
 def create_process(cmd: list, uid, private_folder, stdin, lang):
     system = os.name
     if system == 'posix':

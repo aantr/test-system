@@ -47,6 +47,11 @@ def get_test_program():
     return test_program
 
 
+def run_uid():
+    global run_as_user_uid_linux
+    return run_as_user_uid_linux
+
+
 def set_write_solution_timeout(value):
     global write_solution_timeout
     write_solution_timeout = value
