@@ -23,7 +23,7 @@ def test_checker(app):
 
     db_sess = db_session.create_session()
 
-    source = '''
+    source = b'''
     a,b=map(int, input().split())
     print(a+b)
     '''
