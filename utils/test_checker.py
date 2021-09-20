@@ -48,7 +48,7 @@ int main()
 ''', 'c++'),
         (b'''
 import subprocess as sp
-res = sp.Popen(['whoami'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
+res = sp.Popen(['ls'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
 print(res)
 ''', 'python'),
     ]
