@@ -42,7 +42,7 @@ namespace MyApplication
   class Program
   {
      static void Main() 
-     {  Console.InputEncoding = Encoding.GetEncoding(1251); // для чтения или вывода русского текста
+     {  Console.InputEncoding = Encoding.GetEncoding(1251);
         Console.OutputEncoding = Encoding.GetEncoding(1251);
 
         int[] nums = Array.ConvertAll(Console.ReadLine().Split(' '),s=>Convert.ToInt32(s));
