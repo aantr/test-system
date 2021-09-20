@@ -25,24 +25,26 @@ def get_source_solution(uid):
 def create_process(cmd: list, uid, private_folder, stdin, lang):
     system = os.name
     if system == 'posix':
-        firejail = ['firejail', '--noprofile', '--net=none', '--nosound', '--novideo', '--quiet']
-        # for i in range(len(cmd)):
-        #     cmd[i] = cmd[i].replace(os.path.join(private_folder, ''), '')
-        # cmd = firejail + cmd
         print(' '.join(cmd))
-        proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE,
-                     preexec_fn=preexec(uid))
+        f = tempfile()
+        f.write(stdin.encode(lang.encoding))
+        f.seek(0)
+        proc = Popen(cmd, stdout=PIPE, stdin=f, stderr=PIPE, preexec_fn=preexec(uid))
+        f.close()
         return proc
 
     f = tempfile()
     f.write(stdin.encode(lang.encoding))
     f.seek(0)
     proc = Popen(cmd, stdout=PIPE, stdin=f, stderr=PIPE)
+    f.close()
+    return proc
     # proc.stdin.write(stdin.encode(lang.encoding))
     # proc.stdin.close()
-    f.close()
-
-    return proc
+    # firejail = ['firejail', '--noprofile', '--net=none', '--nosound', '--novideo', '--quiet']
+    # for i in range(len(cmd)):
+    #     cmd[i] = cmd[i].replace(os.path.join(private_folder, ''), '')
+    # cmd = firejail + cmd
 
 
 def preexec(uid):

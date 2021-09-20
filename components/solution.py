@@ -3,58 +3,27 @@ import json
 from flask import Markup, url_for, flash, current_app
 from flask import render_template, request, \
     redirect, abort
-from flask_login import login_required, current_user
-
+from flask_login import current_user
 from data.session import Session
 from data.user import User
 from global_app import get_app
-from program_testing import test_program as tp
 
 from data import db_session
 from data.problem import Problem
 
 from data.solution import Solution
-from data.source_code import SourceCode
-from data.test_result import TestResult
 from forms.submit_solution import SubmitSolutionForm
 from program_testing import prog_lang
 from program_testing.message import get_message_solution
 from program_testing.prog_lang import get_languages
 from program_testing.test_program import TestProgram
 from utils.permissions_required import student_required
+from utils.send_solution import send_solution
 from utils.utils import get_session_joined, get_message_from_form
 from utils.solution_row import get_solution_row
 
 app = get_app()
 current_user: User
-
-
-def send_solution(problem_id, source, lang, session_id, db_sess):
-    test_program = tp.get_test_program()
-
-    source_code = SourceCode()
-    db_sess.add(source_code)
-    db_sess.flush()
-
-    test_result = TestResult()
-    db_sess.add(test_result)
-    db_sess.flush()
-
-    solution = Solution()
-    solution.user_id = current_user.id
-    solution.problem_id = problem_id
-    solution.lang_code_name = lang
-    solution.test_result = test_result
-    solution.source_code = source_code
-    solution.session_id = session_id
-
-    db_sess.add(solution)
-    db_sess.flush()
-
-    test_program.add_solution(source, solution)
-    test_program.add_to_queue(db_sess, solution)
-
-    return solution
 
 
 @app.route('/submit/<int:problem_id>', methods=['GET', 'POST'])
@@ -104,7 +73,7 @@ def submit(problem_id):
             flash('Select file or input source code', category='danger')
             return render_template('submit.html', form=form, problem=problem)
 
-        solution = send_solution(problem_id, source, form.select.data, session_id, db_sess)
+        solution = send_solution(problem_id, source, form.select.data, session_id, current_user, db_sess)
         if session_id:
             return redirect(url_for('workplace_status'))
         return redirect('/status')
@@ -120,7 +89,7 @@ def submit(problem_id):
 def status():
     db_sess = db_session.create_session()
     solution = db_sess.query(Solution).filter(Solution.user_id == current_user.id). \
-        filter(Solution.session_id == None).order_by(Solution.sent_date.desc()).all()
+        filter(Solution.session_id == None).order_by(Solution.sent_date.desc()).limit(100).all()
     solution_rows = [[Markup(render_template(
         'status_row.html',
         row=get_solution_row(i))), i.id] for i in solution]
@@ -135,7 +104,7 @@ def status():
 def all_submits():
     db_sess = db_session.create_session()
     solution = db_sess.query(Solution). \
-        filter(Solution.session_id == None).order_by(Solution.sent_date.desc()).all()
+        filter(Solution.session_id == None).order_by(Solution.sent_date.desc()).limit(100).all()
     solution_rows = [[Markup(render_template(
         'status_row.html',
         row=get_solution_row(i))), i.id] for i in solution]
@@ -195,6 +164,5 @@ def get_solution(solution_id):
                     stdout = stdout[:max_sym]
                 if stderr:
                     stderr = stderr[:max_sym]
-
 
     return render_template('solution.html', **locals())
