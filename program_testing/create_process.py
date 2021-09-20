@@ -79,7 +79,7 @@ def init_user(uid):
                 forbidden_path.append(check_output([b'which', i]).strip())
             except Exception:
                 continue
-    whitelist = ['bash']
+    whitelist = ['bash', 'chown']
 
     languages = get_languages()
     u_name = pwd.getpwuid(uid).pw_name
