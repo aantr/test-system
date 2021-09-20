@@ -33,7 +33,7 @@ begin
    readln(x,y);
    writeln(x+y);
 end.
-''', 'pascalabc.net'),
+''', 'freepascal'),
         (rb'''
 #include <iostream>
 using namespace std;

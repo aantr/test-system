@@ -10,7 +10,7 @@ def init(config):
     languages = {i.code_name: i for i in map(
         lambda x: x(),
         [
-            ProgLangPython, ProgLangPascalABCNET,
+            ProgLangPython, ProgLangPascalABCNET, ProgLangFreePascal,
             ProgLangCPP, ProgLangJava, ProgLangC, ProgLangCS
         ])}
 
@@ -66,14 +66,30 @@ class ProgLangPascalABCNET(ProgLang):
         super().__init__('PascalABC.NET', 'pascalabc.net', 'pas')
 
     def compile(self, source):
+        d, name = os.path.split(source)
+        path = os.path.join(d, os.path.splitext(name)[0] + '.exe')
         cmd = [self.compiler[0], source]
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
         comm = proc.communicate()
         if proc.poll():
             err = comm[0]
             return 0, err
+        return 1, self.compiler[1:] + [path]
+
+
+class ProgLangFreePascal(ProgLang):
+    def __init__(self):
+        super().__init__('Free Pascal', 'freepascal', 'pas')
+
+    def compile(self, source):
         d, name = os.path.split(source)
-        path = os.path.join(d, os.path.splitext(name)[0] + '.exe')
+        path = os.path.join(d, os.path.splitext(name)[0])
+        cmd = [self.compiler[0], '-Sd', '-Cr', '-Ct', '-Ci', '-XS', '-O2', '-vw', source]
+        proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
+        comm = proc.communicate()
+        if proc.poll():
+            err = comm[0]
+            return 0, err
         return 1, self.compiler[1:] + [path]
 
 
