@@ -11,6 +11,7 @@ import psutil
 from global_app import get_dir
 from program_testing import prog_lang
 from program_testing.create_process import create_process, get_source_solution
+from program_testing.message import get_message_solution
 from program_testing.prog_lang import ProgLang
 from data import db_session
 from data.problem import Problem
@@ -273,8 +274,6 @@ class TestProgram:
         self.write_solution(db_sess, solution)
         self.clear_folder(source_dir)
 
-        print(verdict)
-
     def get_queue_length(self):
         return len(self.queue)
 
@@ -347,6 +346,7 @@ class TestProgram:
             # print(f'[Test system] --- Time of writing solution ---: '
             #       f'{TestProgram.get_delta_time(start):.7f}')
             ...
+            print(get_message_solution(solution))
 
     @staticmethod
     def abort_testing(db_sess, solution, error: str, test_results, commit=True):

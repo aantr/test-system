@@ -35,6 +35,7 @@ def test_checker(app):
 
     while 1:
         time.sleep(0.5)
+        db_sess = db_session.create_session()
         sol: Solution = db_sess.query(Solution).filter(Solution.id == sol_id).first()
         print(f'status ({sol.id}):', get_message_solution(sol))
         if sol.completed:
