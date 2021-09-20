@@ -21,7 +21,7 @@ directory = os.path.dirname(__file__)
 write_solution_timeout = 0.3
 check_proc_delay = 0.001
 languages: list = ...
-DEBUG = False
+DEBUG = True
 source_solution: str = ...
 
 run_as_user_uid_linux = None
@@ -243,7 +243,8 @@ class TestProgram:
                     run = False
 
             if DEBUG:
-                print(f'[Test system] Delta time of proc: {summary / count:.7f}')
+                # print(f'[Test system] Delta time of proc: {summary / count:.7f}')
+                ...
 
             proc.kill()
 
@@ -341,8 +342,9 @@ class TestProgram:
         if commit:
             db_sess.commit()
         if DEBUG:
-            print(f'[Test system] --- Time of writing solution ---: '
-                  f'{TestProgram.get_delta_time(start):.7f}')
+            # print(f'[Test system] --- Time of writing solution ---: '
+            #       f'{TestProgram.get_delta_time(start):.7f}')
+            ...
 
     @staticmethod
     def abort_testing(db_sess, solution, error: str, test_results, commit=True):
