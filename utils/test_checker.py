@@ -39,4 +39,30 @@ def test_checker(app):
         sol: Solution = db_sess.query(Solution).filter(Solution.id == sol_id).first()
         print(f'status ({sol.id}):', get_message_solution(sol))
         if sol.completed:
+            stdin = None
+            stdout = None
+            stderr = None
+            correct = None
+            tests = TestProgram.read_tests(sol.problem)
+            test_results = TestProgram.read_test_results(sol)
+            tests_success = len(test_results)
+            message_solution = get_message_solution(sol)
+            if not sol.success:
+                tests_success -= 1
+                stdin, correct = tests[len(test_results) - 1]
+                stdin = stdin
+                correct = correct
+                stdout = test_results[-1].stdout
+                stderr = test_results[-1].stderr
+                if stdout:
+                    stdout = stdout
+                if stderr:
+                    stderr = stderr
+                print(f'''
+                stdin {stdin}
+                stdout {stdout}
+                stderr {stderr}
+                correct {correct}
+                ''')
+
             break

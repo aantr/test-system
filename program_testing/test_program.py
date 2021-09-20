@@ -346,7 +346,6 @@ class TestProgram:
             # print(f'[Test system] --- Time of writing solution ---: '
             #       f'{TestProgram.get_delta_time(start):.7f}')
             ...
-            print(get_message_solution(solution))
 
     @staticmethod
     def abort_testing(db_sess, solution, error: str, test_results, commit=True):
@@ -424,14 +423,12 @@ class TestProgram:
                         if path_w in s1:
                             s1.remove(path_w)
                         else:
-                            print(4)
                             return False
         except zipfile.error as e:
             if DEBUG:
                 print(e)
             return False
         if s1:
-            print(2)
             return False
         return True
 
