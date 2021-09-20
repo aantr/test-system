@@ -27,7 +27,7 @@ def test_create_process(uid):
     system = os.name
     cmd = ['whoami']
     if system == 'posix':
-        cmd = ['sudo', '-u', u_name] + cmd
+        # cmd = ['sudo', '-H', '-u', u_name] + cmd
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
         return proc
     proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
