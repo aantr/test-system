@@ -100,7 +100,6 @@ class TestProgram:
 
         while True:
             time.sleep(0.1)
-            print(self.queue)
             if self.queue:
                 try:
                     solution_id = self._get_from_queue(db_sess)
@@ -273,6 +272,8 @@ class TestProgram:
         self.write_test_results(solution, test_results)
         self.write_solution(db_sess, solution)
         self.clear_folder(source_dir)
+
+        print(verdict)
 
     def get_queue_length(self):
         return len(self.queue)
