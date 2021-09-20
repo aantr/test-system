@@ -100,6 +100,7 @@ class TestProgram:
 
         while True:
             time.sleep(0.1)
+            print(self.queue)
             if self.queue:
                 try:
                     solution_id = self._get_from_queue(db_sess)
