@@ -25,7 +25,6 @@ def get_source_solution(uid):
 def create_process(cmd: list, uid, private_folder, stdin, lang):
     system = os.name
     if system == 'posix':
-        print(' '.join(cmd))
         f = tempfile()
         f.write(stdin.encode(lang.encoding))
         f.seek(0)

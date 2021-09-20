@@ -21,48 +21,74 @@ def test_checker(app):
     thread.start()
     time.sleep(0.5)
 
-    db_sess = db_session.create_session()
-
-    source = b'''
+    tests = [
+        (b'''
 a,b=map(int, input().split())
 print(a+b)
-'''
+''', 'python'),
+        (b'''
+var x,y: integer;
 
-    sol = send_solution(
-        db_sess.query(Problem).first().id,
-        source, 'python', None, db_sess.query(User).first(), db_sess)
-    sol_id = sol.id
-
-    while 1:
-        time.sleep(0.5)
+begin
+   readln(x,y);
+   writeln(x+y);
+end.
+''', 'pascalabc.net'),
+        (rb'''
+#include <iostream>
+using namespace std;
+int main()
+{ int a,b;
+  ios::sync_with_stdio(0);
+  cin.tie(0);
+  cin>>a>>b;
+  cout<<(a+b)<<"\n";
+  return 0;
+}
+''', 'c++'),
+        (b'''
+import subprocess as sp
+res = sp.Popen(['whoami'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
+print(res)
+''', 'python'),
+    ]
+    for source, lang in tests:
         db_sess = db_session.create_session()
-        sol: Solution = db_sess.query(Solution).filter(Solution.id == sol_id).first()
-        print(f'status ({sol.id}):', get_message_solution(sol))
-        if sol.completed:
-            stdin = None
-            stdout = None
-            stderr = None
-            correct = None
-            tests = TestProgram.read_tests(sol.problem)
-            test_results = TestProgram.read_test_results(sol)
-            tests_success = len(test_results)
-            message_solution = get_message_solution(sol)
-            if not sol.success:
-                tests_success -= 1
-                stdin, correct = tests[len(test_results) - 1]
-                stdin = stdin
-                correct = correct
-                stdout = test_results[-1].stdout
-                stderr = test_results[-1].stderr
-                if stdout:
-                    stdout = stdout
-                if stderr:
-                    stderr = stderr
-                print(f'''
-                stdin {stdin}
-                stdout {stdout}
-                stderr {stderr}
-                correct {correct}
-                ''')
+        sol = send_solution(
+            db_sess.query(Problem).first().id,
+            source, lang, None, db_sess.query(User).first(), db_sess)
+        sol_id = sol.id
 
-            break
+        while 1:
+            time.sleep(0.5)
+            db_sess = db_session.create_session()
+            sol: Solution = db_sess.query(Solution).filter(Solution.id == sol_id).first()
+            print(f'status ({sol.id}):', get_message_solution(sol))
+            if sol.completed:
+                stdin = None
+                stdout = None
+                stderr = None
+                correct = None
+                tests = TestProgram.read_tests(sol.problem)
+                test_results = TestProgram.read_test_results(sol)
+                tests_success = len(test_results)
+                message_solution = get_message_solution(sol)
+                if not sol.success:
+                    tests_success -= 1
+                    stdin, correct = tests[len(test_results) - 1]
+                    stdin = stdin
+                    correct = correct
+                    stdout = test_results[-1].stdout
+                    stderr = test_results[-1].stderr
+                    if stdout:
+                        stdout = stdout
+                    if stderr:
+                        stderr = stderr
+                    print(f'''
+                    stdin {stdin}
+                    stdout {stdout}
+                    stderr {stderr}
+                    correct {correct}
+                    ''')
+
+                break
