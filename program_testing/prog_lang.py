@@ -139,7 +139,7 @@ class ProgLangCS(ProgLang):
         if proc.poll():
             err = comm[0]
             return 0, err
-        return 1, [path]
+        return 1, self.compiler[1:] + [path]
 
 
 class ProgLangJava(ProgLang):

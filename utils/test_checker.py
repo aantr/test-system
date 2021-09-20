@@ -35,13 +35,22 @@ begin
 end.
 ''', 'freepascal'),
     (b'''
-var x,y: integer;
+using System;
+using System.Text;
+namespace MyApplication
+{
+  class Program
+  {
+     static void Main() 
+     {  Console.InputEncoding = Encoding.GetEncoding(1251); // для чтения или вывода русского текста
+        Console.OutputEncoding = Encoding.GetEncoding(1251);
 
-begin
-   readln(x,y);
-   writeln(x+y);
-end.
-''', 'pascalabc.net'),
+        int[] nums = Array.ConvertAll(Console.ReadLine().Split(' '),s=>Convert.ToInt32(s));
+        Console.WriteLine((nums[0]+nums[1]).ToString());
+     }
+  }
+}
+''', 'cs'),
         (rb'''
 #include <iostream>
 #include <bits/stdc++.h>
