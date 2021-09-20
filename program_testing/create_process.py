@@ -29,7 +29,7 @@ def create_process(cmd: list, uid, private_folder, stdin, lang):
         f = tempfile()
         f.write(stdin.encode(lang.encoding))
         f.seek(0)
-        proc = Popen(cmd, stdout=PIPE, stdin=f, stderr=PIPE, preexec_fn=preexec(uid))
+        proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE, preexec_fn=preexec(uid))
         f.close()
         return proc
 
