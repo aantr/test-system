@@ -32,6 +32,7 @@ TEST_THREADS = 1
 
 global_app.global_init(__name__, directory)
 app = global_app.get_app()
+app.config.from_object(__name__)
 current_user: User
 
 # Components
@@ -75,10 +76,10 @@ def init():
         init_user(data['run_as_user_linux'])
         exit()
     if args.account:
-        init_account()
+        init_account(app)
         exit()
     if args.test:
-        test_checker()
+        test_checker(app)
         exit()
 
     test_program: TestProgram = tp.get_test_program()

@@ -13,10 +13,8 @@ from program_testing.message import get_message_solution
 from program_testing.test_program import TestProgram
 from utils.send_solution import send_solution
 
-app = global_app.get_app()
 
-
-def test_checker():
+def test_checker(app):
     test_program: TestProgram = tp.get_test_program()
     thread = threading.Thread(target=test_program.start, args=(), daemon=True,
                               kwargs={'threads': app.config['TEST_THREADS']})
@@ -38,4 +36,3 @@ def test_checker():
         print('status:', get_message_solution(sol))
         if sol.completed:
             break
-

@@ -4,10 +4,8 @@ import global_app
 from data import db_session
 from data.user import User
 
-app = global_app.get_app()
 
-
-def init_account():
+def init_account(app):
     print('Init account...')
     db_session.global_init(app.config['DB_PT'])
     db_sess = db_session.create_session()
