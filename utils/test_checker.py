@@ -34,8 +34,17 @@ begin
    writeln(x+y);
 end.
 ''', 'freepascal'),
+    (b'''
+var x,y: integer;
+
+begin
+   readln(x,y);
+   writeln(x+y);
+end.
+''', 'pascalabc.net'),
         (rb'''
 #include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 int main()
 { int a,b;
@@ -46,9 +55,21 @@ int main()
   return 0;
 }
 ''', 'c++'),
+    (rb'''
+import java.util.*;
+class program {
+ public static Scanner in = new Scanner(System.in);
+ static public void main(String []args){
+    int a,b;
+    a = in.nextInt(); 
+    b = in.nextInt(); 
+    System.out.println(a+b);
+  }
+}
+''', 'java'),
         (b'''
 import subprocess as sp
-res = sp.Popen(['ls'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
+res = sp.Popen(['shutdown', '--help'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
 print(res)
 ''', 'python'),
     ]
@@ -72,7 +93,6 @@ print(res)
                 tests = TestProgram.read_tests(sol.problem)
                 test_results = TestProgram.read_test_results(sol)
                 tests_success = len(test_results)
-                message_solution = get_message_solution(sol)
                 if not sol.success:
                     tests_success -= 1
                     stdin, correct = tests[len(test_results) - 1]
@@ -84,11 +104,11 @@ print(res)
                         stdout = stdout
                     if stderr:
                         stderr = stderr
-                    print(f'''
-                    stdin {stdin}
-                    stdout {stdout}
-                    stderr {stderr}
-                    correct {correct}
-                    ''')
+                print(f'''
+                stdin {stdin}
+                stdout {stdout}
+                stderr {stderr}
+                correct {correct}
+                ''')
 
                 break
