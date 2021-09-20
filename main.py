@@ -32,7 +32,6 @@ TEST_THREADS = 1
 
 global_app.global_init(__name__, directory)
 app = global_app.get_app()
-app.config.from_object(__name__)
 current_user: User
 
 # Components

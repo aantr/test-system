@@ -8,6 +8,7 @@ def global_init(name, dir):
     global app, directory
 
     app = Flask(name)
+    app.config.from_object(__name__)
     directory = dir
 
 
