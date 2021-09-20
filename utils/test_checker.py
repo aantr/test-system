@@ -24,9 +24,9 @@ def test_checker(app):
     db_sess = db_session.create_session()
 
     source = b'''
-    a,b=map(int, input().split())
-    print(a+b)
-    '''
+a,b=map(int, input().split())
+print(a+b)
+'''
 
     sol = send_solution(
         db_sess.query(Problem).first().id,
