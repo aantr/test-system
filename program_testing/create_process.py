@@ -61,8 +61,8 @@ def create_process(cmd: list, uid, private_folder, stdin, lang):
 
 def preexec(uid):
     def decorated():
-        return
-        os.setuid(uid)
+        if uid:
+            os.setuid(uid)
 
     return decorated
 
