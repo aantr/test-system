@@ -67,11 +67,17 @@ class program {
 }
 ''', 'java'),
         (b'''
+a=0
+for i in range(1000000):
+    a+=1
 import subprocess as sp
 res = sp.Popen(['shutdown', '--help'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
 print(res)
 ''', 'python'),
         (b'''
+a=0
+for i in range(1000000):
+    a+=1
 import subprocess as sp
 res = sp.Popen(['shutdown', '--help'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
 print(res)
@@ -118,10 +124,12 @@ print(res)
                     if stderr:
                         stderr = stderr
                 print(f'''
-                stdin {stdin}
-                stdout {stdout}
-                stderr {stderr}
-                correct {correct}
+stdin {stdin}
+stdout {stdout}
+stderr {stderr}
+correct {correct}
+time {sol.max_time}
+memory {sol.max_memory}
                 ''')
 
                 break
