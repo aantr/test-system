@@ -31,8 +31,8 @@
     <br>
     <h5 align="center">#{{ problem.id }} <b>{{ problem.name }}</b>
         {%- if success_solution -%}<b>(solved)</b>{% endif %}</h5>
-    <div align="center">Time limit: {{ problem.get_time_limit() }}</div>
-    <div align="center">Memory limit: {{ problem.get_memory_limit() }}</div>
+    <div align="center">Time limit: <b>{{ problem.get_time_limit() }}</b></div>
+    <div align="center">Memory limit: <b>{{ problem.get_memory_limit() }}</b></div>
     {% if categories -%}
     <div>Categories: <b>{{ categories }}</b></div>
     {% endif %}

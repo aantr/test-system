@@ -45,7 +45,9 @@ class Problem(SqlAlchemyBase):
     level = sqlalchemy.Column(sqlalchemy.Integer, default=100)
 
     def get_time_limit(self):
-        return f'{self.time_limit} s'
+        return f'{int(self.time_limit * 1000)} ms'
 
     def get_memory_limit(self):
+        if (self.memory_limit // 1024) % 1024 == 0:
+            return f'{self.memory_limit // 1024 // 1024} Mb'
         return f'{self.memory_limit // 1024} Kb'

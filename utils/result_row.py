@@ -15,10 +15,10 @@ def get_result_row(db_sess, user, session: Session, problem_ids):
         filter(Solution.completed == 1). \
         filter(Solution.user_id == user.id).order_by(Solution.sent_date).all()
     total_success_attempts = 0
-
+    ignore_states = [11, 19]
     for i in solutions:
         i: Solution
-        if not send[i.problem_id][1]:
+        if not send[i.problem_id][1] and i.state not in ignore_states:
             send[i.problem_id][0] += 1
         if i.success and not send[i.problem_id][1]:
             send[i.problem_id][1] = True
@@ -32,7 +32,7 @@ def get_result_row(db_sess, user, session: Session, problem_ids):
     last_correct_send = None
     for i in problem_ids:
         if send[i][1]:
-            penalty += 10 * send[i][0]
+            penalty += 10 * (send[i][0] - 1)
             total += 1
             if last_correct_send is None or send[i][2] > last_correct_send:
                 last_correct_send = send[i][2]
@@ -42,7 +42,7 @@ def get_result_row(db_sess, user, session: Session, problem_ids):
         row.append([0, last_correct_send.strftime(datetime_format())])
     else:
         row.append([1, 0])
-    row.append([0, penalty])
+    row.append([0, int(penalty)])
     row.append([0, total])
     return row, last_correct_send, total_success_attempts
 
