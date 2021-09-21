@@ -78,7 +78,7 @@ print(res)
 ''', 'pypy'),
     ]
     ids = []
-    for i in range(5):
+    for i in range(15):
         ids.append(-1)
         for source, lang in tests:
             db_sess = db_session.create_session()
