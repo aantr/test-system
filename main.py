@@ -28,7 +28,7 @@ MAIL_PASSWORD = ...
 DB_PT = os.path.join(directory, 'db/test_system.db')
 CONFIG_LANG = os.path.join(directory, 'config/test_program.json')
 UPDATE_STATUS_TIMEOUT = 0.5
-TEST_THREADS = 1
+TEST_THREADS = 10
 
 global_app.global_init(__name__, directory)
 app = global_app.get_app()
