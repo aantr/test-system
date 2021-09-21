@@ -88,6 +88,7 @@ print(res)
             sol_id = sol.id
             ids.append(sol_id)
 
+    start = time.time()
     for sol_id in ids:
         if sol_id == -1:
             print('<----------------- test ----------------->')
@@ -124,3 +125,4 @@ print(res)
                 ''')
 
                 break
+    print(f'time: {time.time() - start}')
