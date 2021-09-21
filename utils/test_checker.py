@@ -77,15 +77,18 @@ res = sp.Popen(['shutdown', '--help'], stdout=sp.PIPE, stderr=sp.PIPE).communica
 print(res)
 ''', 'pypy'),
     ]
+    ids = []
     for source, lang in tests:
         db_sess = db_session.create_session()
         sol = send_solution(
             db_sess.query(Problem).first().id,
             source, lang, None, db_sess.query(User).first(), db_sess)
         sol_id = sol.id
+        ids.append(sol_id)
 
+    for sol_id in ids:
         while 1:
-            time.sleep(0.5)
+            time.sleep(0.3)
             db_sess = db_session.create_session()
             sol: Solution = db_sess.query(Solution).filter(Solution.id == sol_id).first()
             print(f'status ({sol.id}):', get_message_solution(sol))
