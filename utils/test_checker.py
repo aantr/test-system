@@ -78,15 +78,20 @@ print(res)
 ''', 'pypy'),
     ]
     ids = []
-    for source, lang in tests:
-        db_sess = db_session.create_session()
-        sol = send_solution(
-            db_sess.query(Problem).first().id,
-            source, lang, None, db_sess.query(User).first(), db_sess)
-        sol_id = sol.id
-        ids.append(sol_id)
+    for i in range(10):
+        ids.append(-1)
+        for source, lang in tests:
+            db_sess = db_session.create_session()
+            sol = send_solution(
+                db_sess.query(Problem).first().id,
+                source, lang, None, db_sess.query(User).first(), db_sess)
+            sol_id = sol.id
+            ids.append(sol_id)
 
     for sol_id in ids:
+        if sol_id == -1:
+            print('<----------------- test ----------------->')
+            continue
         while 1:
             time.sleep(0.3)
             db_sess = db_session.create_session()
