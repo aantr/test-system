@@ -42,25 +42,7 @@ begin
    writeln(x+y);
 end.
 ''', 'freepascal'),
-        (b'''
-using System;
-using System.Text;
-namespace MyApplication
-{
-  class Program
-  {
-     static void Main() 
-     {  Console.InputEncoding = Encoding.GetEncoding(1251);
-        Console.OutputEncoding = Encoding.GetEncoding(1251);
-
-        int[] nums = Array.ConvertAll(Console.ReadLine().Split(' '),s=>Convert.ToInt32(s));
-        Console.WriteLine((nums[0]+nums[1]).ToString());
-     }
-  }
-}
-''', 'c#'),
         (rb'''
-#include <iostream>
 #include <bits/stdc++.h>
 using namespace std;
 int main()
@@ -89,6 +71,11 @@ import subprocess as sp
 res = sp.Popen(['shutdown', '--help'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
 print(res)
 ''', 'python'),
+        (b'''
+import subprocess as sp
+res = sp.Popen(['shutdown', '--help'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
+print(res)
+''', 'pypy'),
     ]
     for source, lang in tests:
         db_sess = db_session.create_session()
