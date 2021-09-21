@@ -31,6 +31,10 @@ a,b=map(int, input().split())
 print(a+b)
 ''', 'python'),
         (b'''
+a,b=map(int, input().split())
+print(a+b)
+''', 'pypy'),
+        (b'''
 var x,y: integer;
 
 begin
@@ -38,7 +42,7 @@ begin
    writeln(x+y);
 end.
 ''', 'freepascal'),
-    (b'''
+        (b'''
 using System;
 using System.Text;
 namespace MyApplication
@@ -68,7 +72,7 @@ int main()
   return 0;
 }
 ''', 'c++'),
-    (rb'''
+        (rb'''
 import java.util.*;
 class program {
  public static Scanner in = new Scanner(System.in);
