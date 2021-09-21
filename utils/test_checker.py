@@ -68,7 +68,7 @@ class program {
 ''', 'java'),
         (b'''
 a=0
-for i in range(1000000):
+for i in range(5000000):
     a+=1
 import subprocess as sp
 res = sp.Popen(['shutdown', '--help'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
@@ -76,7 +76,7 @@ print(res)
 ''', 'python'),
         (b'''
 a=0
-for i in range(1000000):
+for i in range(5000000):
     a+=1
 import subprocess as sp
 res = sp.Popen(['shutdown', '--help'], stdout=sp.PIPE, stderr=sp.PIPE).communicate()
@@ -84,7 +84,7 @@ print(res)
 ''', 'pypy'),
     ]
     ids = []
-    for i in range(15):
+    for i in range(3):
         ids.append(-1)
         for source, lang in tests:
             db_sess = db_session.create_session()
