@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block base_content %}
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/signup.css')}}"/>
+</head>
+
+<body class="text-center">
+<form class="form-signup" method="post">
+    <div>{{ form.csrf_token }}</div>
+
+    <img class="mb-4" src="{{url_for('static', filename='img/icon.png')}}">
+    <h1 class="h3 mb-3 font-weight-normal">Email confirmation</h1>
+
+    <p>{{ form.code(id="code", class="form-control",
+        placeholder=form.code.label.text, style="font-size: large") }}</p>
+
+    <div class="text-break bd-highlight">
+        <p style="font-size: medium"><b>{{ username }}</b>, please check your email address.
+            We sent a verification code to <b>{{ user.email }}</b>.</p>
+
+    </div>
+
+    <p>{{ form.submit(class="btn btn-lg btn-primary", type="submit", style="min-width: 150px;") }}</p>
+    <a href="{{ url_for('login_') }}">Already have an account? Login</a>
+
+</form>
+</body>
+
+{% endblock %}

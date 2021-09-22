@@ -10,3 +10,4 @@ from . import session
 from . import action
 from . import group
 from . import invite
+from . import verification_code

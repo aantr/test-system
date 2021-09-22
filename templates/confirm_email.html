@@ -5,12 +5,12 @@
     <title>Test system</title>
 </head>
 <body>
-<h3>[Test system]</h3>
-<p>Hi {{ name }}!
-    Your account was successfully created. Please click the link below<br>
-    to confirm your email address and activate your account:</p>
-<p>
-    <a href="{{ confirm_url }}" class="btn btn-success btn-lg" role="button">Confirm</a>
-</p>
+<div style="font-family: Helvetica; font-size: large">
+    <h3>[Test system]</h3>
+    <p>Hi {{ name }}!<br>
+        Your account was successfully created. Please submit the code below
+        to confirm your email address and activate your account:</p>
+    <p align="center" style="font-size: xx-large">{{code}}</p>
+</div>
 </body>
 </html>

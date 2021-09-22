@@ -9,7 +9,7 @@ from data.user import User
 from forms.action_link import ActionLinkForm
 from global_app import get_app
 from utils.permissions_required import student_required
-from utils.unique_code import get_code
+from utils.unique_code import get_code4
 from utils.utils import get_message_from_form
 
 app = get_app()
@@ -29,7 +29,7 @@ def _stop_action(str_id):
 
 def add_action(db_sess, url, description, commit=True):
     action = Action()
-    action.str_id = get_code().upper()
+    action.str_id = get_code4().upper()
     action.url = url
     action.description = description
     db_sess.add(action)

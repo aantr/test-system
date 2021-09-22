@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from flask import render_template, redirect, flash, url_for
+from flask import render_template, redirect, flash, url_for, request
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from data import db_session
 from data.user import User
@@ -25,7 +25,7 @@ def load_user(user_id):
 def login_():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    form = LoginForm()
+    form = LoginForm(username=request.args.get('username'))
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.username == form.username.data).first()
