@@ -46,10 +46,6 @@ var
   s:string;
   i,k:integer;
 begin
-  assign(input,'input.txt');
-  reset(input);
-  assign(output,'output.txt');
-  rewrite(output);
   readln(s);
   k:=0;
   for i:=1 to length(s) do
