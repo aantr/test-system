@@ -54,15 +54,15 @@ const h = (base_canvas.height = s.height);
   const hex = "0123456789ABCDEF%@#!(){}:>??".split("");
 
   setInterval(() => {
-    ctx_m.fillStyle = "rgba(255,255,255,.075)";
+    ctx_m.fillStyle = "rgba(255,255,255,.1)";
     ctx_m.fillRect(0, 0, w, h);
-    ctx_m.fillStyle = "#0f0";
+    ctx_m.fillStyle = "#eee";
     ctx_m.font = '16px sans-serif';
     p.map((v, i) => {
-      ctx_m.fillText(random(hex), i * 10, v);
-      p[i] = v >= h || v > 50 + 10000 * Math.random() ? 0 : v + 10;
+      ctx_m.fillText(random(hex), i * 30, v);
+      p[i] = v >= h || v > 50 + 10000 * Math.random() ? 0 : v + 20;
     });
-  }, 1000 / 30);
+  }, 1000 / 40);
 
 </script>
 {% endblock %}
