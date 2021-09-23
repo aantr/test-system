@@ -36,11 +36,30 @@ print(a+b)
 ''', 'pypy'),
         (b'''
 var x,y: integer;
-
 begin
    readln(x,y);
    writeln(x+y);
 end.
+''', 'freepascal'),
+        (b'''
+var
+  s:string;
+  i,k:integer;
+begin
+  assign(input,'input.txt');
+  reset(input);
+  assign(output,'output.txt');
+  rewrite(output);
+  readln(s);
+  k:=0;
+  for i:=1 to length(s) do
+    if s[i] in ['A','E','I','O','U','Y'] then
+      inc(k);
+  writeln(k);
+  close(input);
+  close(output);
+end.
+
 ''', 'freepascal'),
         (rb'''
 #include <bits/stdc++.h>
@@ -84,7 +103,7 @@ print(res)
 ''', 'pypy'),
     ]
     ids = []
-    for i in range(3):
+    for i in range(1):
         ids.append(-1)
         for source, lang in tests:
             db_sess = db_session.create_session()
@@ -124,6 +143,7 @@ print(res)
                     if stderr:
                         stderr = stderr
                 print(f'''
+lang {sol.lang_code_name}
 stdin {stdin}
 stdout {stdout}
 stderr {stderr}
