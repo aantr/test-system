@@ -10,9 +10,10 @@
             <h5 class="card-title">{{ i.name }}{% if i.started %} <b>(Started)</b>{% endif %}</h5>
             <p class="card-text">{{ i.description }}</p>
             {% if not i.started %}
-            <p class="card-text">Duration:<br>{{ i.duration.strftime('%H:%M:%S') }}</p>
+            <p class="card-text" style="font-size: x-large;">
+            {{ i.duration.strftime('%H:%M:%S') }}</p>
             {% else %}
-            <p class="card-text">Time left:<br>
+            <p class="card-text" style="font-size: x-large;">
                 <b><big>
                     <span id="time_left{{ i.id }}"></span>
                 </big></b></p>

@@ -1,7 +1,8 @@
 {%- for j in row -%}
 {%- if j[0] -%}
 {%- if j[1] -%}
-<td><div><b><font color="{% if j[2] %}green{% else %}red{% endif %}">{% if j[2] %}+{% else %}-{% endif %}{{ j[1] }}</font></b></div></td>
+<td style="{% if j[2] %}background: #aaffaa{% endif %}"><div><b><font color="{% if j[2] %}green{% else %}red{% endif %}">
+    {% if j[2] %}+{% else %}-{% endif %}{% if j[1]-1 %}{{ j[1]-1 }}{% endif %}</font></b></div></td>
 {% else %}
 <td><b>---</b></td>
 {% endif %}

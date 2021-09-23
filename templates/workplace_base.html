@@ -3,12 +3,11 @@
 {% block content %}
 <main role="main" class="container">
     {% if not session.started %}
-    <p>Duration:<br>{{ session.duration.strftime('%H:%M:%S') }}</p>
+    <p style="font-size: x-large;">{{ session.duration.strftime('%H:%M:%S') }}</p>
     {% else %}
-    <p>Time left:<br>
-        <b><big>
-            <span id="time_left{{ session.id }}"></span>
-        </big></b></p>
+    <p style="font-size: x-large;"><b><big>
+        <span id="time_left{{ session.id }}"></span>
+    </big></b></p>
     {% endif %}
 
     <h5 align="center">Workplace{% if session.started %} <font color="green">(started)</font>
@@ -52,6 +51,7 @@
 {% else %}
     var timer = {};
 {% endif %}
+
 </script>
 <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 {% endblock %}

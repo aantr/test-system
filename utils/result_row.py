@@ -37,7 +37,7 @@ def get_result_row(db_sess, user, session: Session, problem_ids):
             if last_correct_send is None or send[i][2] > last_correct_send:
                 last_correct_send = send[i][2]
     if last_correct_send and session.start_date:
-        penalty += (last_correct_send - session.start_date).total_seconds() // 60
+        penalty += max(0, (last_correct_send - session.start_date).total_seconds() // 60)
     if last_correct_send:
         row.append([0, last_correct_send.strftime(datetime_format())])
     else:

@@ -306,6 +306,7 @@ def delete_session(session_id):
         flash('Cannot delete started session, please stop it before deleting', category='danger')
         return redirect(url_for('get_session', session_id=session_id))
     db_sess.query(SessionMember).filter(SessionMember.session_id == session_id).delete()
+    db_sess.query(Solution).filter(Solution.session_id == session_id).delete()
     db_sess.delete(session)
     db_sess.commit()
     flash(f'Successfully deleted session "{session.name}"', category='success')
