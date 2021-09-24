@@ -12,7 +12,7 @@ def init(config):
         lambda x: x(),
         [
             ProgLangCPP,
-            ProgLangFreePascal,
+            ProgLangPascalABCNet,
             ProgLangPython,
             ProgLangPyPy,
             ProgLangJava,
@@ -117,36 +117,20 @@ class ProgLangPyPy(ProgLang):
         return 1, [self.compiler[0], get_rpython(source)]
 
 
-class ProgLangPascalABCNET(ProgLang):
+class ProgLangPascalABCNet(ProgLang):
     def __init__(self):
-        super().__init__('PascalABC.NET', 'pascalabc.net', 'pas')
+        super().__init__('PascalABC.NET v3.8.1.2985', 'pabcnet', 'pas')
 
     def compile(self, source):
         d, name = os.path.split(source)
         path = os.path.join(d, os.path.splitext(name)[0] + '.exe')
-        cmd = [self.compiler[0], source]
+        cmd = [self.compiler[0], self.compiler[1], source]
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
         comm = proc.communicate()
         if proc.poll():
             err = comm[0]
             return 0, err
-        return 1, self.compiler[1:] + [path]
-
-
-class ProgLangFreePascal(ProgLang):
-    def __init__(self):
-        super().__init__('Free Pascal 3.0.4', 'freepascal', 'pas')
-
-    def compile(self, source):
-        d, name = os.path.split(source)
-        path = os.path.join(d, os.path.splitext(name)[0])
-        cmd = [self.compiler[0], '-Sd', '-Cr', '-Ct', '-Ci', '-XS', '-O2', '-vw', source]
-        proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
-        comm = proc.communicate()
-        if proc.poll():
-            err = comm[0]
-            return 0, err
-        return 1, self.compiler[1:] + [path]
+        return 1, [path]
 
 
 class ProgLangCPP(ProgLang):
