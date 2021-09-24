@@ -40,7 +40,7 @@ begin
    readln(x,y);
    writeln(x+y);
 end.
-''', 'freepascal'),
+''', 'pabcnet'),
         (b'''
 var
   s:string;
@@ -56,7 +56,7 @@ begin
   close(output);
 end.
 
-''', 'freepascal'),
+''', 'pabcnet'),
         (rb'''
 #include <bits/stdc++.h>
 using namespace std;
