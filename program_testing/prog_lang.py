@@ -127,7 +127,7 @@ class ProgLangPascalABCNet(ProgLang):
         new_source = source[source.find('source_solution'):]
         cmd = [self.compiler[0], self.compiler[1], new_source]
         print(cmd)
-        proc = Popen(cmd, shell=True, stdout=PIPE, stdin=PIPE, stderr=PIPE)
+        proc = Popen(cmd, shell=True, stdout=PIPE, stdin=PIPE, stderr=PIPE, cwd='/var/www')
         comm = proc.communicate()
         if proc.poll():
             err = comm[0]
