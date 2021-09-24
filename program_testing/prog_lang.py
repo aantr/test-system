@@ -124,7 +124,7 @@ class ProgLangPascalABCNet(ProgLang):
     def compile(self, source):
         d, name = os.path.split(source)
         path = os.path.join(d, os.path.splitext(name)[0] + '.exe')
-        cmd = [self.compiler[0], self.compiler[1], source]
+        cmd = [self.compiler[0], self.compiler[1] + ' '+ source]
         print(cmd)
         proc = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)
         comm = proc.communicate()
